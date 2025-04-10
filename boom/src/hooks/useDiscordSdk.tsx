@@ -13,8 +13,10 @@ const isEmbedded = queryParams.get('frame_id') != null
 let discordSdk: DiscordSDK | DiscordSDKMock
 
 if (isEmbedded) {
+	console.log('Running in embedded mode')
 	discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID)
 } else {
+	console.log('Running in mock mode')
 	// We're using session storage for user_id, guild_id, channel_id, and location_id
 	// This way the user/guild/channel/location will be maintained until the tab is closed, even if you refresh
 	// Session storage will generate new unique mocks for each tab you open

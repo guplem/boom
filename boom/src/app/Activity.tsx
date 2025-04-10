@@ -1,3 +1,4 @@
+import { Profile } from '@/components/Profile'
 import { useSyncState } from '@robojs/sync'
 import { useEffect, useRef, useState } from 'react'
 import { useDiscordSdk } from '../hooks/useDiscordSdk'
@@ -29,6 +30,9 @@ export const Activity = () => {
 		// Requesting the channel in GDMs (when the guild ID is null) requires
 		// the dm_channels.read scope which requires Discord approval.
 		if (!authenticated || !discordSdk.channelId || !discordSdk.guildId) {
+			if (!authenticated) setChannelName('Unable to get channel: not authenticated')
+			else if (!discordSdk.channelId) setChannelName('Unable to get channel: no channel id')
+			else if (!discordSdk.guildId) setChannelName('Unable to get channel: no guild id')
 			return
 		}
 
@@ -37,6 +41,8 @@ export const Activity = () => {
 		discordSdk.commands.getChannel({ channel_id: discordSdk.channelId }).then((channel) => {
 			if (channel.name) {
 				setChannelName(channel.name)
+			} else {
+				setChannelName('Unknown Channel name')
 			}
 		})
 	}, [authenticated, discordSdk])
@@ -51,7 +57,11 @@ export const Activity = () => {
 
 	return (
 		<div>
-			{channelName ? <h3>#{channelName}</h3> : <h3>{status}</h3>}
+			<Profile />
+			{channelName ? <h3>{channelName}</h3> : <h3>channel name</h3>}
+			<p>status: {status}</p>
+			<p>channel id: {discordSdk.channelId}</p>
+			<p>guild id: {discordSdk.guildId}</p>
 			<video ref={videoPlayer} className="video" src="/sample.mp4" controls={false} loop />
 			<br />
 			<button onClick={isPlaying ? onPause : onPlay}>{isPlaying ? 'Pause' : 'Play'}</button>
