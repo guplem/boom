@@ -134,3 +134,21 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Robo.js and Discord Activity specific
+.robo
+.wrangler
+.dev.vars
+.cloudflare
+
+# Local dev certificates
+*.pem
+*.crt
+*.key
+
+# Build directories
+build/
+dist-activities/
+
+# Local media files that might be used for testing
+public/sample.mp4
