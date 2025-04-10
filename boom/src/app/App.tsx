@@ -1,3 +1,4 @@
+import { SyncContextProvider } from '@robojs/sync'
 import { DiscordContextProvider } from '../hooks/useDiscordSdk'
 import { Activity } from './Activity'
 import './App.css'
@@ -18,7 +19,9 @@ import './App.css'
 export default function App() {
 	return (
 		<DiscordContextProvider>
-			<Activity />
+			<SyncContextProvider>
+				<Activity />
+			</SyncContextProvider>
 		</DiscordContextProvider>
 	)
 }

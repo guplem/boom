@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useSyncState } from '@robojs/sync'
+import { useEffect, useRef, useState } from 'react'
 import { useDiscordSdk } from '../hooks/useDiscordSdk'
 
 /**
@@ -10,6 +11,19 @@ import { useDiscordSdk } from '../hooks/useDiscordSdk'
 export const Activity = () => {
 	const { authenticated, discordSdk, status } = useDiscordSdk()
 	const [channelName, setChannelName] = useState<string>()
+	const [isPlaying, setPlaying] = useSyncState<boolean>(false, ['video', discordSdk.channelId])
+	const videoPlayer = useRef<HTMLVideoElement>(null)
+
+	const onPause = (): void => {
+		if (isPlaying) {
+			setPlaying(false)
+		}
+	}
+	const onPlay = (): void => {
+		if (!isPlaying) {
+			setPlaying(true)
+		}
+	}
 
 	useEffect(() => {
 		// Requesting the channel in GDMs (when the guild ID is null) requires
@@ -27,11 +41,22 @@ export const Activity = () => {
 		})
 	}, [authenticated, discordSdk])
 
+	useEffect(() => {
+		if (isPlaying) {
+			videoPlayer.current?.play()
+		} else if (!isPlaying) {
+			videoPlayer.current?.pause()
+		}
+	}, [isPlaying])
+
 	return (
 		<div>
 			<img src="/rocket.png" className="logo" alt="Discord" />
 			<h1>Hello, World</h1>
 			{channelName ? <h3>#{channelName}</h3> : <h3>{status}</h3>}
+			<video ref={videoPlayer} className="video" src="/sample.mp4" controls={false} loop />
+			<br />
+			<button onClick={isPlaying ? onPause : onPlay}>{isPlaying ? 'Pause' : 'Play'}</button>
 			<small>
 				Powered by <strong>Robo.js</strong>
 			</small>

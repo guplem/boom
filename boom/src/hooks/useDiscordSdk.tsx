@@ -1,6 +1,6 @@
 import { DiscordSDK, DiscordSDKMock } from '@discord/embedded-app-sdk'
-import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
 type DiscordSession = UnwrapPromise<ReturnType<typeof discordSdk.commands.authenticate>>
@@ -15,8 +15,8 @@ let discordSdk: DiscordSDK | DiscordSDKMock
 if (isEmbedded) {
 	discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID)
 } else {
-	// We're using session storage for user_id, guild_id, and channel_id
-	// This way the user/guild/channel will be maintained until the tab is closed, even if you refresh
+	// We're using session storage for user_id, guild_id, channel_id, and location_id
+	// This way the user/guild/channel/location will be maintained until the tab is closed, even if you refresh
 	// Session storage will generate new unique mocks for each tab you open
 	// Any of these values can be overridden via query parameters
 	// i.e. if you set https://my-tunnel-url.com/?user_id=test_user_id
@@ -24,8 +24,9 @@ if (isEmbedded) {
 	const mockUserId = getOverrideOrRandomSessionValue('user_id')
 	const mockGuildId = getOverrideOrRandomSessionValue('guild_id')
 	const mockChannelId = getOverrideOrRandomSessionValue('channel_id')
+	const mockLocationId = getOverrideOrRandomSessionValue('location_id')
 
-	discordSdk = new DiscordSDKMock(import.meta.env.VITE_DISCORD_CLIENT_ID, mockGuildId, mockChannelId)
+	discordSdk = new DiscordSDKMock(import.meta.env.VITE_DISCORD_CLIENT_ID, mockGuildId, mockChannelId, mockLocationId)
 	const discriminator = String(mockUserId.charCodeAt(0) % 5)
 
 	discordSdk._updateCommandMocks({
@@ -57,7 +58,8 @@ export { discordSdk }
 enum SessionStorageQueryParam {
 	user_id = 'user_id',
 	guild_id = 'guild_id',
-	channel_id = 'channel_id'
+	channel_id = 'channel_id',
+	location_id = 'location_id'
 }
 
 function getOverrideOrRandomSessionValue(queryParam: `${SessionStorageQueryParam}`) {
