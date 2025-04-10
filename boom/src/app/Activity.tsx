@@ -51,15 +51,10 @@ export const Activity = () => {
 
 	return (
 		<div>
-			<img src="/rocket.png" className="logo" alt="Discord" />
-			<h1>Hello, World</h1>
 			{channelName ? <h3>#{channelName}</h3> : <h3>{status}</h3>}
 			<video ref={videoPlayer} className="video" src="/sample.mp4" controls={false} loop />
 			<br />
 			<button onClick={isPlaying ? onPause : onPlay}>{isPlaying ? 'Pause' : 'Play'}</button>
-			<small>
-				Powered by <strong>Robo.js</strong>
-			</small>
 		</div>
 	)
 }
