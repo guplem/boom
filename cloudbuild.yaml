@@ -1,4 +1,18 @@
 steps:
+  # Debug step to show the working directory and list files
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "=== DEBUG INFORMATION FROM cloudbuild.yaml ==="
+        echo "Current working directory: $(pwd)"
+        echo "Listing repository root files:"
+        ls -la
+        echo "Checking for Dockerfile:"
+        ls -la docker/prod/
+        echo "=== END DEBUG INFORMATION ==="
+
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     dir: "boom" # Set the working directory to the boom folder where package.json exists
