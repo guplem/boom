@@ -2,10 +2,12 @@
 
 A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript, and React.
 
+> To see how the project was initially created, check out the [tutorial](/tutorial.md).
+
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v16 or newer
-- [npm](https://www.npmjs.com/) v7 or newer
+- [Node.js](https://nodejs.org/) v18 or newer
+- [npm](https://www.npmjs.com/) v8 or newer
 - A [Discord Developer Portal](https://discord.com/developers/applications) account
 
 ## Setup
@@ -20,7 +22,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    ```bash
    cd boom
    ```
-> The project directory is the root folder where the `package.json` file is located. It is inside the cloned repository folder: `\repoFolder\boom`.
+   > The project directory is the root folder where the `package.json` file is located. It is inside the cloned repository folder: `\repoFolder\boom`.
 
 1. Install dependencies:
    ```bash
@@ -28,16 +30,16 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    ```
 
 1. Create a new Discord application in the [Discord Developer Portal](https://discord.com/developers/applications):
-   - Create a new application
-   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:3000`)
-   - Copy your Client ID and Client Secret
+   - Create a new application.
+   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:3000`).
+   - Copy your Client ID and Client Secret.
 
 1. Create a `.env` file in the project directory with the following content:
    ```properties
    # Enable source maps for easier debugging
    NODE_OPTIONS="--enable-source-maps"
 
-   # Find your credentials in the Discord Developer portal - https://discord.com/developers/applications
+   # Find your credentials in the Discord Developer Portal - https://discord.com/developers/applications
    DISCORD_CLIENT_ID="your_client_id"
    DISCORD_CLIENT_SECRET="your_client_secret"
    VITE_DISCORD_CLIENT_ID="your_client_id"
@@ -46,16 +48,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    PORT="3000"
    ```
 
-## Discord OAuth2 Configuration
-
-For authentication to work properly within Discord, you need to configure OAuth2 redirects:
-
-1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Select your application and navigate to the "OAuth2" section
-3. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`)
-4. This is separate from the URL Mappings configuration and is required for authentication to work properly
-
-## Running Locally
+## Running Locally while Developing
 
 Start the development server:
 
@@ -64,17 +57,36 @@ npm run dev
 ```
 
 This will:
-- Start the Discord Activity server
-- Create a temporary Cloudflare tunnel for testing
-- Display a URL you can use to access your application from Discord
+- Start the Discord Activity server.
+- Create a temporary Cloudflare tunnel for testing.
+- Display a URL you can use to access your application from Discord.
 
 Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) and add it to your Discord application:
+1. Go to your application in the [Discord Developer Portal](https://discord.com/developers/applications).
+1. Navigate to "Activities" (formerly Rich Presence) > "URL Mappings".
+1. Add an entry with the following:
+   - Root Mapping: `/`
+   - Target: Your tunnel URL.
+1. Navigate to the "OAuth2" section.
+1. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`).
+
+## Discord Configuration for Production
+
+### URL Mappings
+To configure URL mappings for your Discord application, follow these steps:
+    
 1. Go to your application in the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Navigate to "Activities" (formerly Rich Presence) > "URL Mappings"
 3. Add an entry with the following:
-   - Name: "Development"
-   - URL: Your tunnel URL
-   - Status: "Enabled"
+   - Root Mapping: `/`
+   - Target: Your tunnel URL
+
+### Authentication
+For authentication to work properly within Discord, you need to configure OAuth2 redirects:
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Select your application and navigate to the "OAuth2" section
+3. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`)
 
 ## Accessing in Discord
 
@@ -105,18 +117,8 @@ Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) an
 - `npm run doctor`: Run diagnostics on your project
 - `npm run upgrade`: Upgrade Robo.js dependencies
 
-### API Development
 
-Create new files in the `/src/api` directory. The filename becomes the API route.
-
-```typescript
-// src/api/example.ts
-export default (): { message: string } => {
-  return { message: "This is an example endpoint" };
-}
-```
-
-### Using the Sync State
+### Synchronization of State between Clients
 
 The project uses `@robojs/sync` for state synchronization. Use the `useSyncState` hook with proper TypeScript typing:
 
@@ -174,6 +176,19 @@ export const MyComponent = (): JSX.Element => {
       {/* Component JSX */}
     </div>
   );
+}
+```
+
+### API Development
+
+> This is not in use, but it is available for future use.
+
+Create new files in the `/src/api` directory. The filename becomes the API route.
+
+```typescript
+// src/api/example.ts
+export default (): { message: string } => {
+  return { message: "This is an example endpoint" };
 }
 ```
 
