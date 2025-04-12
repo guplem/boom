@@ -3,7 +3,7 @@
  * Whatever is returned from this function will be sent as the response.
  *
  * See it in action:
- * http://localhost:3000/api/hello
+ * http://localhost:8080/api/hello
  *
  * Learn more:
  * https://robojs.dev/plugins/server

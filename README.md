@@ -6,8 +6,8 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v18 or newer
-- [npm](https://www.npmjs.com/) v8 or newer
+- [Node.js](https://nodejs.org/) v22 or newer
+- [npm](https://www.npmjs.com/)
 - A [Discord Developer Portal](https://discord.com/developers/applications) account
 
 ## Setup
@@ -31,7 +31,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
 
 1. Create a new Discord application in the [Discord Developer Portal](https://discord.com/developers/applications):
    - Create a new application.
-   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:3000`).
+   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:8080`).
    - Copy your Client ID and Client Secret.
 
 1. Create a `.env` file in the project directory with the following content:
@@ -45,7 +45,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    VITE_DISCORD_CLIENT_ID="your_client_id"
 
    # Change this port number if needed
-   PORT="3000"
+   PORT="8080"
    ```
 
 ## Running Locally while Developing
@@ -58,11 +58,11 @@ npm run dev
 > To run the project **dockerized**, use `docker-compose up --build` from the repository root folder. This will build the Docker image and start the container. *It requires Docker and Docker Compose installed on your machine.*
 
 After running the command:
-- The Discord Activity server will be started on `http://localhost:3000`.
+- The Discord Activity server will be started on `http://localhost:8080`.
 - A temporary Cloudflare tunnel for testing will be created.
 - A URL will be displayed that you can use to access your application from Discord.
 
-> At this point, the app is not yet visible in Discord, but it is accessible with limited functionality at `http://localhost:3000`.
+> At this point, the app is not yet visible in Discord, but it is accessible with limited functionality at `http://localhost:8080`.
 
 Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) and add it to your Discord application:
 1. Go to your application in the [Discord Developer Portal](https://discord.com/developers/applications).

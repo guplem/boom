@@ -10,7 +10,7 @@ COPY package.json ./
 # This seems to be necessary lately to make NPM install not take forever: https://forums.docker.com/t/npm-install-in-docker-tutorial-is-taking-forever/139328/14
 RUN npm config set strict-ssl false
 
-# Create a package-lock.json file  so that npm ci works
+# Create a package-lock.json file so that npm ci works
 RUN npm install --package-lock-only
 
 # Install dependencies
@@ -20,7 +20,7 @@ RUN npm ci --loglevel verbose
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Run the app
 CMD ["npm", "run", "dev"]
