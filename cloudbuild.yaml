@@ -13,7 +13,7 @@ steps:
         ls -la boom/
         echo "Checking for Dockerfile:"
         ls -la boom/docker/prod/
-        echo "=== END DEBUG INFORMATION ==="
+        echo "=== END OF DEBUG INFORMATION ==="
 
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
