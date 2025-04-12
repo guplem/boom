@@ -73,6 +73,22 @@ Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) an
 1. Navigate to the "OAuth2" section.
 1. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`).
 
+### Docker Dependency Issues
+
+It is possible that the dependencies will not be properly installed or updated in the Docker containers even after rebuilding them. In this case, you will need to remove the node_modules volume (to do so you will need to delete the container first) with the following command:
+
+```bash
+docker container rm boom_container; docker volume rm boom_node_modules_volume
+```
+
+Then you can rebuild the containers and install the dependencies again:
+
+```bash
+docker-compose up --build
+```
+
+> These commands can be chained for a clean build every time: `docker container rm boom_container; docker volume rm boom_node_modules_volume; docker-compose up --build`
+
 ## Discord Configuration for Production
 
 ### URL Mappings
