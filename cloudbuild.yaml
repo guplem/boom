@@ -9,14 +9,22 @@ steps:
         echo "Current working directory: $(pwd)"
         echo "Listing repository root files:"
         ls -la
+        echo "Listing boom directory:"
+        ls -la boom/
         echo "Checking for Dockerfile:"
-        ls -la docker/prod/
+        ls -la boom/docker/prod/
         echo "=== END DEBUG INFORMATION ==="
 
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
-    dir: "boom" # Set the working directory to the boom folder where package.json exists
-    args: ["build", "-t", "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest", "-f", "docker/prod/Dockerfile", "."]
+    args: [
+        "build",
+        "-t",
+        "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest",
+        "-f",
+        "boom/docker/prod/Dockerfile",
+        "boom", # Set the build context to the boom directory
+      ]
 
 # Push the container image to Artifact Registry
 images:
