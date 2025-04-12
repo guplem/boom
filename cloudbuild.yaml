@@ -1,20 +1,4 @@
 steps:
-  # Debug step to show the working directory and list files
-  - name: "gcr.io/cloud-builders/docker"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        echo "=== DEBUG INFORMATION FROM cloudbuild.yaml ==="
-        echo "Current working directory: $(pwd)"
-        echo "Listing repository root files:"
-        ls -la
-        echo "Listing boom directory:"
-        ls -la boom/
-        echo "Checking for Dockerfile:"
-        ls -la boom/docker/prod/
-        echo "=== END OF DEBUG INFORMATION ==="
-
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args: [

@@ -19,8 +19,14 @@ RUN npm ci --loglevel verbose
 # Copy the rest of the application
 COPY . .
 
+# Build the application for production
+RUN npm run build
+
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Run the app
-CMD ["npm", "run", "dev"]
+# Set host to 0.0.0.0 to allow external connections
+ENV HOST=0.0.0.0
+
+# Run the app in production mode
+CMD ["npm", "run", "start"]
