@@ -30,4 +30,8 @@ steps:
 images:
   - "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest"
 
+# Configure build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 timeout: "1800s" # Set a reasonable timeout (30 minutes)
