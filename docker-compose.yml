@@ -1,0 +1,12 @@
+services:
+  boom:
+    build:
+      context: ./boom
+      dockerfile: docker/dev/Dockerfile
+    ports:
+      - "3000:8080"
+    env_file:
+      - ./boom/.env
+    volumes:
+      - ./boom:/app
+      - /app/node_modules # This is often done to ensure that the node_modules directory inside the container is isolated and not affected by the host machine's environment. It can also prevent the host's node_modules from being overwritten by the container's and also prevent issues with modules that are platform-specific.

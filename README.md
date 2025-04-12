@@ -55,11 +55,14 @@ Start the development server:
 ```bash
 npm run dev
 ```
+> To run the project **dockerized**, use `docker-compose up --build` from the repository root folder. This will build the Docker image and start the container. *It requires Docker and Docker Compose installed on your machine.*
 
-This will:
-- Start the Discord Activity server.
-- Create a temporary Cloudflare tunnel for testing.
-- Display a URL you can use to access your application from Discord.
+After running the command:
+- The Discord Activity server will be started on `http://localhost:3000`.
+- A temporary Cloudflare tunnel for testing will be created.
+- A URL will be displayed that you can use to access your application from Discord.
+
+> At this point, the app is not yet visible in Discord, but it is accessible with limited functionality at `http://localhost:3000`.
 
 Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) and add it to your Discord application:
 1. Go to your application in the [Discord Developer Portal](https://discord.com/developers/applications).
