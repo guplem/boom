@@ -25,8 +25,9 @@ RUN npm run build
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Set host to 0.0.0.0 to allow external connections
+# Set environment variables for Robo.js
 ENV HOST=0.0.0.0
+ENV PORT=8080
 
 # Run the app in production mode
 CMD ["npm", "run", "start"]
