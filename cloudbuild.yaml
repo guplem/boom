@@ -2,11 +2,11 @@ steps:
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args: [
-        "build",
-        "-t",
-        "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest",
-        "-f",
-        "boom/docker/prod/Dockerfile",
+        "build", # Build the Docker image
+        "-t", # Flag to specify the image name and tag
+        "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest", # Specify the image name and tag
+        "-f", # Flag to enable Dockerfile path specification
+        "boom/docker/prod/Dockerfile", # Specify the Dockerfile path
         "boom", # Set the build context to the boom directory
       ]
 
