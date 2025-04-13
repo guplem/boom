@@ -22,5 +22,5 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Run the app
+# Run the app - explicitly use the host flag to ensure binding to all interfaces
 CMD ["npm", "run", "dev"]

@@ -44,7 +44,8 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    DISCORD_CLIENT_SECRET="your_client_secret"
    VITE_DISCORD_CLIENT_ID="your_client_id"
 
-   # Change this port number if needed
+   # Server configuration
+   HOST="0.0.0.0"
    PORT="8080"
    ```
 

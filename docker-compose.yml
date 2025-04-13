@@ -7,11 +7,14 @@ services:
       dockerfile: docker/dev/Dockerfile
     ports:
       - "8080:8080" # Map the container's port (the first number) to the host's port (the second number). This allows you to access the application running inside the container on port 8080 of your host machine.
+    environment:
+      - NODE_ENV=development
     env_file:
       - ./boom/.env
     volumes:
       - ./boom:/app # Share the host machine's Dashboard directory with the container's /app directory
       - node_modules_volume:/app/node_modules # Use a named volume for node_modules # This is done to ensure that the node_modules directory inside the container is isolated and not affected by the host machine's environment. It can also prevent issues with modules that are platform-specific.
+    network_mode: "bridge" # Add this line to use host network mode which can help with connectivity issues
 
 volumes: # Named volumes must be defined under the volumes section
   node_modules_volume:
