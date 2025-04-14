@@ -1,5 +1,5 @@
+import { DiscordContextProvider } from '@/hooks/useDiscordSdk'
 import { SyncContextProvider } from '@robojs/sync'
-import { DiscordContextProvider } from '../hooks/useDiscordSdk'
 import { Activity } from './Activity'
 import './App.css'
 
