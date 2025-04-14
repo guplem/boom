@@ -9,13 +9,13 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
 - [Node.js](https://nodejs.org/) v22 or newer
 - [npm](https://www.npmjs.com/)
 - A [Discord Developer Portal](https://discord.com/developers/applications) account
+- [Docker](https://www.docker.com/) (optional, for production deployment)
 
 ## Setup
 
 1. Clone this repository and navigate to the repository directory:
    ```bash
    git clone https://github.com/guplem/boom.git
-   cd boom
    ```
 
 1. Navigate to the project directory:
@@ -31,7 +31,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
 
 1. Create a new Discord application in the [Discord Developer Portal](https://discord.com/developers/applications):
    - Create a new application.
-   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:8080`).
+   - Go to the "OAuth2" section and add a redirect URL (e.g., `http://localhost:3000`).
    - Copy your Client ID and Client Secret.
 
 1. Create a `.env` file in the project directory with the following content:
@@ -44,26 +44,26 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
    DISCORD_CLIENT_SECRET="your_client_secret"
    VITE_DISCORD_CLIENT_ID="your_client_id"
 
-   # Server configuration
-   HOST="0.0.0.0"
-   PORT="8080"
+   # Change this port number if needed
+   PORT="3000"
    ```
 
-## Running Locally while Developing
+## Development Mode
 
-Start the development server:
+Start the development server with hot reloading and automatic tunneling:
+
+> The command must be run from within the project directory: `/repoFolder/boom`.
 
 ```bash
 npm run dev
 ```
-> To run the project **dockerized**, use `docker-compose up --build` from the repository root folder. This will build the Docker image and start the container. *It requires Docker and Docker Compose installed on your machine.*
 
 After running the command:
-- The Discord Activity server will be started on `http://localhost:8080`.
+- The Discord Activity server will be started on `http://localhost:3000`.
 - A temporary Cloudflare tunnel for testing will be created.
 - A URL will be displayed that you can use to access your application from Discord.
 
-> At this point, the app is not yet visible in Discord, but it is accessible with limited functionality at `http://localhost:8080`.
+> At this point, the app is not yet visible in Discord, but it is accessible with limited functionality at `http://localhost:3000`.
 
 Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) and add it to your Discord application:
 1. Go to your application in the [Discord Developer Portal](https://discord.com/developers/applications).
@@ -74,14 +74,63 @@ Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) an
 1. Navigate to the "OAuth2" section.
 1. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`).
 
-### Docker Dependency Issues
+## Production Deployment
+
+### Option 1: Using Docker (Recommended for Production)
+
+The project includes a Dockerfile configured for production deployment:
+
+> The commands must be run from within the project directory: `/repoFolder/boom`.
+
+1. Build the Docker image:
+   ```bash
+   docker build -t boom-discord-activity .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 8080:3000 -d --env-file .env boom-discord-activity
+   ```
+
+> Make sure your .env file has the correct environment variables for production.
+
+The application will be accessible at `http://localhost:8080`.
+
+### Option 2: Direct Build and Run
+
+> The commands must be run from within the project directory: `/repoFolder/boom`.
+
+1. Build the project for production:
+   ```bash
+   npm run build
+   ```
+
+2. Start the production server:
+   ```bash
+   npm run start
+   ```
+
+The application will be accessible at `http://localhost:3000`.
+
+### Option 3: Using Docker Compose
+
+The project includes a Docker Compose file for easier management of the application and its dependencies:
+
+```bash
+docker-compose up --build
+```
+
+The application will be accessible at `http://localhost:8080`.
+
+#### Docker Issues
+
+> This is mostly only relevant if you are using Docker Compose, since the Dockerfile does not have/name a volume for node_modules.
 
 It is possible that the dependencies will not be properly installed or updated in the Docker containers even after rebuilding them. In this case, you will need to remove the node_modules volume (to do so you will need to delete the container first) with the following command:
 
 ```bash
 docker container rm boom_container; docker volume rm boom_node_modules_volume
 ```
-
 Then you can rebuild the containers and install the dependencies again:
 
 ```bash
@@ -99,14 +148,14 @@ To configure URL mappings for your Discord application, follow these steps:
 2. Navigate to "Activities" (formerly Rich Presence) > "URL Mappings"
 3. Add an entry with the following:
    - Root Mapping: `/`
-   - Target: Your tunnel URL
+   - Target: Your production URL
 
 ### Authentication
 For authentication to work properly within Discord, you need to configure OAuth2 redirects:
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Select your application and navigate to the "OAuth2" section
-3. In the "Redirects" section, add your tunnel URL (e.g., `https://your-random-name.trycloudflare.com`)
+3. In the "Redirects" section, add your production URL
 
 ## Accessing in Discord
 
