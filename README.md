@@ -9,7 +9,7 @@ A Discord Activity project built with [Robo.js](https://robojs.dev), TypeScript,
 - [Node.js](https://nodejs.org/) v22 or newer
 - [npm](https://www.npmjs.com/)
 - A [Discord Developer Portal](https://discord.com/developers/applications) account
-- [Docker](https://www.docker.com/) (optional, for production deployment)
+- Google Cloud Platform account (for deployment)
 
 ## Setup
 
@@ -76,68 +76,48 @@ Copy the tunnel URL (looks like `https://your-random-name.trycloudflare.com`) an
 
 ## Production Deployment
 
-### Option 1: Using Docker (Recommended for Production)
+### Using Google Cloud Build and Cloud Run
 
-The project includes a Dockerfile configured for production deployment:
+The project is set up to automatically deploy to Google Cloud Run when changes are pushed to the main branch:
 
-> The commands must be run from within the project directory: `/repoFolder/boom`.
+1. Ensure your GCP project has the following APIs enabled:
+   - Cloud Build API
+   - Cloud Run API
 
-1. Build the Docker image:
-   ```bash
-   docker build -t boom-discord-activity .
-   ```
+2. Set up a Cloud Build trigger in your GCP Console:
+   - Navigate to Cloud Build > Triggers
+   - Connect your GitHub repository
+   - Configure the trigger to activate on pushes to the `main` branch
+   - Ensure the build configuration file is set to `cloudbuild.yaml`
 
-2. Run the container:
-   ```bash
-   docker run -p 8080:3000 -d --env-file .env boom-discord-activity
-   ```
+3. Grant the necessary IAM permissions to your Cloud Build service account:
+   - Cloud Run Admin
+   - Service Account User
 
-> Make sure your .env file has the correct environment variables for production.
+4. Set up environment variables in your Cloud Run service:
+   - Navigate to Cloud Run > Services > boom-service
+   - Edit and deploy new revision
+   - Go to "Variables & Secrets" tab
+   - Add all the environment variables from your `.env` file
 
-The application will be accessible at `http://localhost:8080`.
+The Cloud Build configuration will:
+1. Install dependencies
+2. Build the application
+3. Deploy it to Cloud Run as a service named `boom-service`
 
-### Option 2: Direct Build and Run
+### Manual Deployment Option
 
-> The commands must be run from within the project directory: `/repoFolder/boom`.
+You can also build and deploy manually:
 
-1. Build the project for production:
-   ```bash
-   npm run build
-   ```
+```bash
+# Build the project
+npm run build
 
-2. Start the production server:
-   ```bash
-   npm run start
-   ```
+# Start the production server
+npm run start
+```
 
 The application will be accessible at `http://localhost:3000`.
-
-### Option 3: Using Docker Compose
-
-The project includes a Docker Compose file for easier management of the application and its dependencies:
-
-```bash
-docker-compose up --build
-```
-
-The application will be accessible at `http://localhost:8080`.
-
-#### Docker Issues
-
-> This is mostly only relevant if you are using Docker Compose, since the Dockerfile does not have/name a volume for node_modules.
-
-It is possible that the dependencies will not be properly installed or updated in the Docker containers even after rebuilding them. In this case, you will need to remove the node_modules volume (to do so you will need to delete the container first) with the following command:
-
-```bash
-docker container rm boom_container; docker volume rm boom_node_modules_volume
-```
-Then you can rebuild the containers and install the dependencies again:
-
-```bash
-docker-compose up --build
-```
-
-> These commands can be chained for a clean build every time: `docker container rm boom_container; docker volume rm boom_node_modules_volume; docker-compose up --build`
 
 ## Discord Configuration for Production
 
@@ -148,14 +128,14 @@ To configure URL mappings for your Discord application, follow these steps:
 2. Navigate to "Activities" (formerly Rich Presence) > "URL Mappings"
 3. Add an entry with the following:
    - Root Mapping: `/`
-   - Target: Your production URL
+   - Target: Your Cloud Run service URL (e.g., `https://boom-service-xxxx-xx.a.run.app`)
 
 ### Authentication
 For authentication to work properly within Discord, you need to configure OAuth2 redirects:
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Select your application and navigate to the "OAuth2" section
-3. In the "Redirects" section, add your production URL
+3. In the "Redirects" section, add your Cloud Run service URL
 
 ## Accessing in Discord
 
@@ -185,7 +165,6 @@ For authentication to work properly within Discord, you need to configure OAuth2
 - `npm run invite`: Generate an invite link for Discord
 - `npm run doctor`: Run diagnostics on your project
 - `npm run upgrade`: Upgrade Robo.js dependencies
-
 
 ### Synchronization of State between Clients
 

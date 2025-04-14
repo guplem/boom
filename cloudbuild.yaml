@@ -1,21 +1,33 @@
 steps:
-  # Build the container image
-  - name: "gcr.io/cloud-builders/docker"
-    args: [
-        "build", # Build the Docker image
-        "-t", # Flag to specify the image name and tag
-        "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest", # Specify the image name and tag
-        "-f", # Flag to enable Dockerfile path specification
-        "boom/docker/prod/Dockerfile", # Specify the Dockerfile path
-        "boom", # Set the build context to the boom directory
-      ]
+  # Install dependencies
+  - name: "node:22"
+    entrypoint: npm
+    args: ["install"]
+    dir: "boom"
+    id: "install"
 
-# Push the container image to Artifact Registry
-images:
-  - "europe-southwest1-docker.pkg.dev/boom-456608/boom/my-image:latest"
+  # Build the application
+  - name: "node:22"
+    entrypoint: npm
+    args: ["run", "build"]
+    dir: "boom"
+    id: "build"
+    waitFor: ["install"]
 
-# Configure build options
-options:
-  logging: CLOUD_LOGGING_ONLY
+  # Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud run deploy boom-service \
+          --source ./boom \
+          --region europe-southwest1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --project boom-456608
+    id: "deploy"
+    waitFor: ["build"]
 
-timeout: "1800s" # Set a reasonable timeout (30 minutes)
+# Set timeout for the entire build process
+timeout: "1800s" # 30 minutes
