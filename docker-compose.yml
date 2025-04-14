@@ -6,7 +6,7 @@ services:
       context: ./boom
       dockerfile: docker/dev/Dockerfile
     ports:
-      - "8080:8080" # Map the container's port (the first number) to the host's port (the second number). This allows you to access the application running inside the container on port 8080 of your host machine.
+      - "8080:3000" # Host port 8080 maps to container port 3000
     environment:
       - NODE_ENV=development
     env_file:
