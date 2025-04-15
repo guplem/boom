@@ -27,8 +27,11 @@ RUN npm install -g serve
 # Copy the built application from the builder stage
 COPY --from=builder /app/dist /app/dist
 
-# Expose the port the app runs on
-EXPOSE 5173
+# Use the PORT environment variable from Cloud Run
+ENV PORT=8080
 
-# Command to run the application
-CMD ["serve", "-s", "dist", "-l", "5173"]
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Command to run the application - use the PORT env variable and add CORS headers
+CMD ["sh", "-c", "serve -s dist -l $PORT --cors"]
