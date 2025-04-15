@@ -67,16 +67,14 @@ The project is set up to be automatically deployed to Google Cloud Run using a c
    - Set the location to "Repository" and the path to `cloudbuild.yaml`
    - Click "Create"
 
-4. Manual deployment can be triggered with:
-   ```bash
-   gcloud builds submit --config=cloudbuild.yaml
-   ```
+4. Enable public access to the Cloud Run service:
+   - Go to the GCP Console > Cloud Run
+   - Select your service
+   - Click on Security
+   - Under "Authentication", select "Allow unauthenticated invocations"
+   - Click "Save"
 
-The deployment will:
-- Install dependencies
-- Build the application
-- Create a Docker container
-- Deploy to Cloud Run with public access
+> Manual deployment can be triggered with `gcloud builds submit --config=cloudbuild.yaml`
 
 ## Working with the Codebase
 
