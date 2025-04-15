@@ -14,20 +14,35 @@ steps:
     id: "build"
     waitFor: ["install"]
 
+  # Build and push the container image
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "europe-southwest1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/boom-service:${SHORT_SHA}", "./boom"]
+    id: "docker-build"
+    waitFor: ["build"]
+
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "europe-southwest1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/boom-service:${SHORT_SHA}"]
+    id: "docker-push"
+    waitFor: ["docker-build"]
+
   # Deploy to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: "bash"
+    entrypoint: gcloud
     args:
-      - "-c"
-      - |
-        gcloud run deploy boom-service \
-          --source ./boom \
-          --region europe-southwest1 \
-          --platform managed \
-          --allow-unauthenticated \
-          --project boom-456608
+      - "run"
+      - "deploy"
+      - "boom-service"
+      - "--image=europe-southwest1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/boom-service:${SHORT_SHA}"
+      - "--region=europe-southwest1"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--port=5173"
     id: "deploy"
-    waitFor: ["build"]
+    waitFor: ["docker-push"]
 
 # Set timeout for the entire build process
 timeout: "1800s" # 30 minutes
+
+substitutions:
+  _SERVICE_NAME: boom-service
