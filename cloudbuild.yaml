@@ -1,3 +1,4 @@
+# Disable automatic buildpacks - use custom build steps only
 steps:
   # Install dependencies
   - name: "node:22"

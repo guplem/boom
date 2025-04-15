@@ -45,27 +45,38 @@ After running the command:
 
 ### Using Google Cloud Build and Cloud Run
 
-The project is set up to be automatically deployed to Google Cloud Run when changes are pushed to the main branch:
+The project is set up to be automatically deployed to Google Cloud Run using a custom build process defined in `cloudbuild.yaml`:
 
 1. Ensure your GCP project has the following APIs enabled:
    - Cloud Build API
    - Cloud Run API
+   - Artifact Registry API
 
-1. Connect a GitHub repository to your GCP project:
-   - Go to the GCP Console
-   - Navigate to Cloud Run > Connect Repo
-      - Select your GitHub repository and authorize access
-      - Select *Node.js* as the build type
-      - Set `/boom` as the build directory
-      - //Set the entrypoint to `npm run build`
-   - Set the service name (e.g., `boom`)
-   - Allow unauthenticated invocations for the service (optional, but recommended for public access)
-   - Set the region for your Cloud Run service (e.g., `europe-southwest1`)
-   - Set the minimum instances for the service to 0 to enable cold start.
-   - Set the port to `5173`
-   - Set the memory limit for the service (e.g., `1 GiB`)
-   - Set the maximum instances for the service (e.g., `3` for small scaling)
+2. Create a repository in Artifact Registry:
+   ```bash
+   gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=europe-southwest1 --description="Docker repository for Cloud Run deployments"
+   ```
 
+3. Create a Cloud Build trigger:
+   - Go to the GCP Console > Cloud Build > Triggers
+   - Click "Create Trigger"
+   - Set a name for your trigger (e.g., "boom-deploy")
+   - Choose your source repository
+   - Select the branch you want to trigger builds from
+   - Under "Configuration", choose "Cloud Build configuration file (yaml or json)"
+   - Set the location to "Repository" and the path to `cloudbuild.yaml`
+   - Click "Create"
+
+4. Manual deployment can be triggered with:
+   ```bash
+   gcloud builds submit --config=cloudbuild.yaml
+   ```
+
+The deployment will:
+- Install dependencies
+- Build the application
+- Create a Docker container
+- Deploy to Cloud Run with public access
 
 ## Working with the Codebase
 
