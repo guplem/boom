@@ -1,54 +1,61 @@
-# React + TypeScript + Vite
+# Real-Time Counter Demo (Vite + React + Express + Socket.io)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a real-time synchronized counter demo using Vite (React) for the frontend and Express/Socket.io for the backend, all deployed as a single service (suitable for Google Cloud Run).
 
-Currently, two official plugins are available:
+## Features
+- Real-time counter: All connected clients see the same counter value, updated instantly when any client increments or decrements.
+- Single service: Both frontend and backend are served from one Node.js/Express server.
+- Ready for deployment to Google Cloud Run.
+- **The real-time counter is the default page.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Project Structure
+- `src/client/` — Vite React frontend (entrypoint: `src/client/main.tsx`)
+- `src/server/` — Express + Socket.io backend
 
-## Expanding the ESLint configuration
+## Local Development
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Run both frontend and backend in development mode:**
+   ```bash
+   npx concurrently "vite --config vite.config.ts" "ts-node src/server/server.ts"
+   ```
+   - The Vite dev server runs on its default port (usually 5173).
+   - The backend runs on port 3000 by default.
+   - Adjust ports as needed in your configuration.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+3. **Open multiple browser windows at `http://localhost:5173` to test real-time sync.**
+   - The real-time counter page is loaded by default.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Production Build & Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. **Build the frontend:**
+   ```bash
+   npm run build
+   ```
+   This outputs the static files to `dist/`.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+2. **Start the server (serves static files and websocket):**
+   ```bash
+   node dist/server/server.js
+   ```
+   - The server listens on the port defined by the `PORT` environment variable (default: 3000).
+
+3. **Deploy to Cloud Run:**
+   - Ensure your Dockerfile copies both the frontend build and server code.
+   - Expose the correct port (Cloud Run expects `$PORT`).
+   - Websockets are supported by Cloud Run out of the box.
+
+## Environment Variables
+- `PORT` — The port the server listens on (Cloud Run sets this automatically).
+
+## Notes
+- All code uses explicit TypeScript type annotations for clarity and maintainability.
+- For troubleshooting, the server logs client connection and disconnection events.
+- The default entrypoint is `src/client/main.tsx` (real-time counter).
+
+---
+
+For further customization or questions, see the code comments or contact the maintainer.
