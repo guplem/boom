@@ -45,5 +45,8 @@ steps:
 # Set timeout for the entire build process
 timeout: "1800s" # 30 minutes
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   _SERVICE_NAME: boom-service
