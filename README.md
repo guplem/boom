@@ -51,15 +51,20 @@ The project is set up to be automatically deployed to Google Cloud Run when chan
    - Cloud Build API
    - Cloud Run API
 
-2. Set up a Cloud Build trigger in your GCP Console:
-   - Navigate to Cloud Build > Triggers
-   - Connect your GitHub repository
-   - Configure the trigger to activate on pushes to the `main` branch
-   - Ensure the build configuration file is set to `cloudbuild.yaml`
-
-3. Grant the necessary IAM permissions to your Cloud Build service account:
-   - Cloud Run Admin
-   - Service Account User
+1. Connect a GitHub repository to your GCP project:
+   - Go to the GCP Console
+   - Navigate to Cloud Run > Connect Repo
+      - Select your GitHub repository and authorize access
+      - Select *Node.js* as the build type
+      - Set `/boom` as the build directory
+      - //Set the entrypoint to `npm run build`
+   - Set the service name (e.g., `boom`)
+   - Allow unauthenticated invocations for the service (optional, but recommended for public access)
+   - Set the region for your Cloud Run service (e.g., `europe-southwest1`)
+   - Set the minimum instances for the service to 0 to enable cold start.
+   - Set the port to `5173`
+   - Set the memory limit for the service (e.g., `1 GiB`)
+   - Set the maximum instances for the service (e.g., `3` for small scaling)
 
 
 ## Working with the Codebase
