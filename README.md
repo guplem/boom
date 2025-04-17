@@ -75,3 +75,19 @@ The project is set up to be automatically deployed to Google Cloud Run using a c
    - Click "Save"
 
 > Manual deployment can be triggered with `gcloud builds submit --config=cloudbuild.yaml`
+
+## Working with the Codebase
+
+### Synchronization of State between Clients
+
+The project uses `@robojs/sync` for state synchronization. Use the `useSyncState` hook with proper TypeScript typing:
+
+```typescript
+import { useSyncState } from '@robojs/sync'
+
+// For state shared across all clients
+const [sharedState, setSharedState] = useSyncState<boolean>(false, ['uniqueId'])
+
+// For state shared only within a room (group of clients)
+const [channelState, setChannelState] = useSyncState<string>("", ['uniqueId', roomId])
+```
