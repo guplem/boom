@@ -1,252 +1,167 @@
-# robo-base
-A base project for creating an easily-deployable WebApp using [RoboJS](https://robojs.dev/).
+# 🎴 Boom - Web Card Game
 
-> Note: This README provides step-by-step instructions for setting up and deploying a RoboJS WebApp using the `main` branch.  
+A real-time multiplayer web implementation of the **Boom** card game, built with [RoboJS](https://robojs.dev/) and React.
 
-> For a fully implemented example showcasing additional RoboJS features, see the `sync-web-app` branch. That branch is referenced multiple times in this README as it contains simple but functional examples of the features discussed here. It can also be used as a starting point for your own project.
+> **Boom** is a strategic card game where players eliminate opponents by destroying their life storage cards. The last player standing wins!
 
-## Prerequisites
+> **⚠️ Development Status**: This is currently a skeleton implementation being built up progressively. Core multiplayer functionality and game mechanics are being developed incrementally.
+
+## 🚀 TL;DR - Quick Start for Non-Programmers
+
+Want to just run the game? Here's the fastest way:
+
+1. **Install Node.js**: Download from [nodejs.org](https://nodejs.org/) (choose the LTS version)
+2. **Download this project**: Click the green "Code" button above → "Download ZIP" → Extract it
+3. **Open terminal/command prompt** in the extracted folder
+4. **Run these commands**:
+   ```bash
+   npm install
+   npm run dev
+   ```
+5. **Open your browser** and go to `http://localhost:3000`
+6. **Share the tunnel URL** (shown in terminal) with friends to play together!
+
+That's it! 🎉
+
+---
+
+## 🎮 Game Overview
+
+**Boom** is a tactical card game where 2-6 players battle using a standard deck of cards:
+
+- **Goal**: Be the last player with life storage cards remaining
+- **Setup**: Each player starts with 3 cards in hand + 3 life storage cards on the board
+- **Gameplay**: Take turns to swap cards, attack opponents, or use special "Boom" abilities
+- **Cards**: Numbers (1-10) store life and deal damage, Face cards (J,Q,K) enable special abilities
+
+**📖 Full Rules**: 
+- [Spanish Rules](./rules/Physical%20Version/ES.md) 
+- [English Rules](./rules/Physical%20Version/EN.md)
+
+## 🛠️ Prerequisites for Development
 
 - [Node.js](https://nodejs.org/) v22 or newer
-- [npm](https://www.npmjs.com/)
-- A [Google Cloud Platform (GCP)](https://console.cloud.google.com/) account and [GCP CLI](https://cloud.google.com/sdk/docs/install) (for deployment)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+- A modern web browser
+- *(Optional)* [Google Cloud Platform account](https://console.cloud.google.com/) for deployment
 
-## Setup
+## 🏗️ Development Setup
 
-> Only required if you are starting a new project using the `main` branch.
-
-1. Fork this repository or use it as a template for your own project.
-
-2. Clone your repository to your computer and navigate to its directory.
-
-3. Create a new project using the RoboJS CLI. Replace `<projectName>` with your desired project name:
+1. **Clone the repository**:
    ```bash
-   npx create-robo <projectName> && mv <projectName>/* . ; rmdir -r <projectName>
+   git clone <repository-url>
+   cd boom
    ```
 
-4. Select *Web Application* as the project type.
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-5. Enable the following features for the project:
-   - *TypeScript*
-   - *React*
-   - *Prettier*
-   - *ESLint*
-   > See linting documentation [here](https://robojs.dev/robojs/linting).
+3. **Create environment file** (optional):
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Default `.env` content:
+   ```dotenv
+   # Enable source maps for easier debugging
+   NODE_OPTIONS="--enable-source-maps"
+   
+   # Development server port
+   PORT="3000"
+   ```
 
-   > The *opinionated* configuration of *Prettier* and *ESLint* is bundled with this project. You can remove it or customize it later if needed by altering the `.prettierrc`, `.prettierignore` and `eslint.config.mjs` files.
+## 🎯 Development
 
-6. Enable *Sync* if your project requires state synchronization between clients.
-
-   > For more details, see the [Synchronization of State between Clients](#synchronization-of-state-between-clients) section.
-
-> At the end, you may see a few warnings about moving files after running the command. These can be safely ignored.
-
-### Configuring Path Aliases
-
-> Only required if you are starting a new project using the `main` branch.
-
-To avoid having to use relative paths in your imports, you can set up path aliases for your project. This allows you to use non-relative imports like `import { MyComponent } from '@/components/MyComponent'` instead of `import { MyComponent } from '../../components/MyComponent'`.
-
-1. In `tsconfig.json`, update `compilerOptions`:
-     ```jsonc
-     {
-       "compilerOptions": {
-         // ...existing code...
-         "baseUrl": ".",
-         "paths": {
-           "@/*": ["src/*"]
-         }
-       }
-     }
-     ```
-
-2. In `config/vite.mjs`, under `resolve.alias`:
-     ```javascript
-     import path from 'path'
-     // ...existing code...
-     resolve: {
-       alias: {
-         '@': path.resolve(__dirname, '../src')
-       }
-     }
-     ```
-
-> You can see an example of this in [this commit](https://github.com/guplem/robo-base/commit/99f6a70849d39d664121a4b1b75453178a64015c).
-
-### Environment Variables
-
-You can create a `.env` file in the root directory of your project to set environment variables. This file is ignored by Git, so it won't be pushed to your repository.
-
-The default `.env` file created by the RoboJS CLI contains the following variables:
-```dotenv
-# Enable source maps for easier debugging
-NODE_OPTIONS="--enable-source-maps"
-
-# Change this port number if needed
-PORT="3000"
-```
-
-## Development Mode and Local Hosting
-
-Start the development server with hot reloading:
-
-> Make sure you have run `npm install` before starting the development server.
-
+**Start development server**:
 ```bash
 npm run dev
 ```
 
-After running the command:
-- The server will start at `http://localhost:3000/`.
-- An external tunnel will be created (the URL will appear in the console). This allows you to test on other devices or share the server with others.
+This will:
+- Start the game server at `http://localhost:3000/`
+- Create an external tunnel for remote testing (URL shown in console)
+- Enable hot reloading for development
+- Allow multiple players to join from different devices
 
-> If you want to run it using Docker, you can use `docker build -t robo-app .; docker run -p 3000:3000 robo-app`.
+**Docker alternative**:
+```bash
+docker build -t boom-game .
+docker run -p 3000:3000 boom-game
+```
 
-## Deployment
 
-### Google Cloud
+## 🔧 Technology Stack
 
-This project is pre-configured for automatic deployment to Google Cloud Run using a custom build process defined in `cloudbuild.yaml`.
+- **Frontend**: React + TypeScript + Vite
+- **Backend**: RoboJS Server + Node.js
+- **Real-time Communication**: [@robojs/sync](https://robojs.dev/plugins/sync)
+- **State Management**: React Context + RoboJS Sync + Zustand (local state)
+- **Development**: Hot reloading, TypeScript, ESLint, Prettier
+- **Database**: Flashcore (for game state persistence)
 
-1. In the file located at `config\plugins\robojs\server.ts`, add the `hostname` parameter to the server configuration with the value `0.0.0.0`:
-   ```typescript
-   export default {
-      cors: true,
-      hostname: '0.0.0.0'
-      // other options...
-   }
-   ``` 
+## 🚀 Deployment (Optional)
 
-2. Update the `_SERVICE_NAME` variable in the `cloudbuild.yaml` file (under the *substitutions* section) to a recognizable name. This name will be used to create the Cloud Run service (e.g., "project-name-service").
+> **Note**: Deployment is completely optional. The game runs perfectly locally for development and private games.
 
-3. Create a new project in the [Google Cloud Console](https://console.cloud.google.com).
+### Google Cloud Run
 
-4. Select the project in the top bar of the GCP console.
+Pre-configured for easy cloud deployment:
 
-5. Enable the [Artifact Registry API](https://console.cloud.google.com/artifacts).
-
-6. Install the [GCP CLI](https://cloud.google.com/sdk/docs/install) and verify the installation:
-   ```bash
-   gcloud --version
+1. **Update service name** in `cloudbuild.yaml`:
+   ```yaml
+   substitutions:
+     _SERVICE_NAME: boom-card-game
    ```
 
-7. Log in to your GCP account:
-   ```bash
-   gcloud auth login
-   ```
+2. **Follow GCP setup**: See [detailed deployment guide](https://robojs.dev/hosting/cloud-run)
 
-8. Set the project ID in your terminal:
-   ```bash
-   gcloud config set project <project-id>
-   ```
-   > You can find the project ID in the [GCP console](https://console.cloud.google.com/welcome).
+3. **Auto-deploy**: Pushes to main branch automatically deploy
 
-9. Create a repository in Artifact Registry:
-   ```bash
-   gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=europe-southwest1 --description="Docker repository for Cloud Run deployments"
-   ```
-
-   > You can change the location to your preferred region. The example above uses `europe-southwest1`.
-
-10. Enable the [Cloud Build Triggers API](https://console.cloud.google.com/cloud-build/triggers).
-
-11. Create a Cloud Build trigger:
-   - Click "Connect Repository".
-   - Link your GitHub account to GCP and grant access to the repository by selecting "*Edit repositories on GitHub*".
-   - After selecting the repository, choose *Create a trigger*.
-   - Set a name (e.g., "project-name-deploy").
-   - In the *Source* section, specify the branch to trigger builds from (the default is `main`).
-   - In the *Configuration* section, choose "Cloud Build configuration file (YAML or JSON)".
-   - Set the location to *Repository* and the path to `cloudbuild.yaml` (this is probably already set by default).
-   - Select a service account.
-   - Click "Create".
-
-12. Set up the service account with the necessary permissions:
-   - Go to the [IAM & Admin](https://console.cloud.google.com/iam-admin/iam) page.
-   - Find the service account you selected in the previous step (it should have a name like `something@something.gserviceaccount.com`).
-   - Click the pencil icon to edit the service account.
-   - *Add* the following role: `Cloud Run Admin`.
-   - Click "Save".
-
-13. Trigger the first build:
-    - Go to the [Cloud Build Triggers](https://console.cloud.google.com/cloud-build/triggers) page.
-    - Click the "Run" button next to the trigger you just created.
-
-    > Alternatively, you can push a commit to the branch you specified in the trigger settings. This will automatically trigger a build.
-
-The build process will automatically:
-- Create a Cloud Run service with your specified name if it doesn't exist
-- Configure it with public access (allow unauthenticated invocations)
-- Enable cold boot capabilities (CPU throttling when idle)
-- Set maximum CPU scaling to 3 CPUs
-
-### Manual Deployment
-To trigger a manual deployment, run:
+**Manual deployment**:
 ```bash
 gcloud builds submit --config=cloudbuild.yaml
 ```
 
-## Working with RoboJS Plugins
-Use [RoboJS's plugin system](https://robojs.dev/plugins/directory) to add functionality through plugins. Here are some useful plugins:
+## 🤝 Contributing
 
-### Synchronization of State between Clients
-Use [@robojs/sync](https://robojs.dev/plugins/sync) to share state in real time between clients.
+Contributions are welcome! This is an evolving project with many opportunities:
 
-The `useSyncState` hook creates a state synchronized between clients. The state can be shared across all clients or within a specific subset of clients:
-```typescript
-import { useSyncState } from '@robojs/sync';
+### Development Areas
+- **Game Logic**: Implementing card game rules and mechanics
+- **UI/UX**: Improving the visual game experience  
+- **AI System**: Designing and implementing computer opponents
+- **Performance**: Optimizing real-time synchronization
+- **Testing**: Game logic validation and edge cases
 
-// For state shared across all clients
-const [sharedState, setSharedState] = useSyncState<boolean>(false, ['uniqueId']);
+### How to Contribute
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/card-animations`)
+3. Implement your changes with tests
+4. Commit with clear messages (`git commit -m 'Add card flip animations'`)
+5. Push and create a Pull Request
 
-// For state scoped to a room (group of clients)
-const [roomState, setRoomState] = useSyncState<string>('', ['uniqueId', roomId]);
-```
+### Code Standards
+- Follow existing TypeScript patterns
+- Include type annotations for all functions
+- Add comments for complex game logic
+- Test multiplayer scenarios thoroughly
 
-Don't forget to wrap your app with the `SyncContextProvider` as shown [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/app/index.tsx).
+## 📚 Resources
 
-> An example implementation of this feature can be found [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/app/modules/counter/Page.tsx).
+- **Game Rules**: [Spanish](./rules/Physical%20Version/ES.md) | [English](./rules/Physical%20Version/EN.md)
+- **RoboJS Documentation**: [robojs.dev](https://robojs.dev/)
+- **Real-time Sync**: [@robojs/sync plugin](https://robojs.dev/plugins/sync)
+- **React Development**: [React docs](https://react.dev/)
 
-#### Providing synchronized state to the component tree
-You can provide the synchronized state to the component tree using the [React Context API](https://react.dev/reference/react/createContext). This enables access to the synchronized state from any component within the tree.
+---
 
-> You can see an example of how to define the context [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/app/modules/counter/Context.ts), how to provide it [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/app/modules/counter/Page.tsx) and how to consume it [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/app/modules/counter/Controls.tsx)
+**🎮 Ready to play Boom?** 
 
-### Scheduling Tasks
-Use [@robojs/cron](https://robojs.dev/plugins/cron) to schedule jobs at specific intervals or times.
+Run `npm run dev` and challenge your friends to a strategic card battle! Share the tunnel URL for instant multiplayer action. 🃏⚡
 
-> Install the plugin with `npx robo add @robojs/cron`.
-
-You can schedule a job to run when your Robo starts by creating `src/events/_start.ts`:
-```typescript
-import { Cron } from '@robojs/cron';
-
-export default (): void => {
-    Cron('*/10 * * * * *', (): void => {
-        // This job runs every 10 seconds!
-    });
-};
-```
-
-> The `Cron` constructor returns a job object that can be used to pause, resume, stop, or get the next run time.
-
-See also how to [use a separate file for your job logic](https://robojs.dev/plugins/cron#job-file) and how to [persist jobs across server restarts](https://robojs.dev/plugins/cron#job-file).
-
-> An example implementation of this feature can be found [here](https://github.com/guplem/robo-base/blob/sync-web-app/src/events/_start.ts).
-
-## Working with RoboJS's core features
-RoboJS provides a powerful set of features to enhance your application. Note that most core features are only available on the backend (server-side), not in the browser (client-side, e.g., `src/app`).
-
-> Avoid importing from `robo.js` in the frontend. Instead, expose backend functionality via API endpoints.
-
-Some utilities, like the [Logger](https://robojs.dev/robojs/logger), can be used in the browser by importing the subpath:
-
-```typescript
-import { logger } from 'robo.js/logger.js';
-
-logger.info('This message is logged from the browser (client)!');
-```
-
+*Questions? Issues? Ideas for the AI system? Open an issue or start a discussion!*
 For other backend state or features, create API endpoints in `src/api` and fetch them from your frontend. See the [Playground Demo](https://robojs.dev/playground) for examples.
 
 > As discussed [here](https://discord.com/channels/1087134933908193330/1365947805180629022/1366169583198670951), this avoids bundling Node-specific code into the browser build.
