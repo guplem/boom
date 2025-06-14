@@ -22,6 +22,8 @@ export default function RoomPicker(): JSX.Element {
 			setError(`Room "${roomFieldValue}" does not exist`);
 			return;
 		}
+
+		setError(null);
 		join(roomFieldValue);
 	};
 
