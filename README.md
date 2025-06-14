@@ -59,11 +59,10 @@ That's it! 🎉
    ```
 
 3. **Create environment file** (optional):
-   ```bash
-   cp .env.example .env
-   ```
+
+  Create a `.env` file in the root directory to customize settings. This is optional but recommended for development.
    
-   Default `.env` content:
+   Default contents:
    ```dotenv
    # Enable source maps for easier debugging
    NODE_OPTIONS="--enable-source-maps"
