@@ -67,7 +67,7 @@ function createGamePlayer(id: string, gameConfig: GameConfig = {}): GamePlayer {
  * @param value - The original value of the accumulator
  * @returns A new Accumulator data object
  */
-function createAccumulator(value: number): Accumulator {
+export function createAccumulator(value: number): Accumulator {
 	return {
 		originalValue: value,
 		attacks: [],
