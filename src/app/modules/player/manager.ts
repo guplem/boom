@@ -14,7 +14,10 @@ export const PlayerContext: React.Context<PlayerContextType | null> =
  * Ensures all items in the array are Player instances
  * Converts plain objects to Player instances if needed
  */
-export const ensurePlayerInstances = (players: unknown[]): Player[] => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ensurePlayerInstances = (players: any[]): Player[] => {
+	if (!players || players.length === 0) return [];
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return players.map((player: any): Player => {
 		if (player instanceof Player) {
@@ -24,13 +27,59 @@ export const ensurePlayerInstances = (players: unknown[]): Player[] => {
 	});
 };
 
+/**
+ * Checks if a user already owns a non-bot player
+ */
+export const userOwnsNonBotPlayer = (players: Player[], userId: string): boolean => {
+	return players.some((player: Player): boolean => player.owner === userId && !player.isBot);
+};
+
+/**
+ * Validates if a player can be added based on ownership rules
+ * Users can only own one non-bot player at a time
+ */
+export const validatePlayerAddition = (
+	existingPlayers: Player[],
+	newPlayer: Player,
+): { isValid: boolean; error?: string } => {
+	// Allow adding bot players without restriction
+	if (newPlayer.isBot) {
+		return { isValid: true };
+	}
+
+	// Check if user already owns a non-bot player
+	if (userOwnsNonBotPlayer(existingPlayers, newPlayer.owner)) {
+		return {
+			isValid: false,
+			error: 'User can only own one non-bot player at a time',
+		};
+	}
+
+	return { isValid: true };
+};
+
 export const addPlayer = async (
 	setPlayers: Dispatch<SetStateAction<Player[]>>,
 	player: Player,
-): Promise<void> => {
-	setPlayers((prevPlayers: Player[]): Player[] => {
-		console.log(`Adding player: ${player.name}`);
-		return [...prevPlayers, player];
+): Promise<{ success: boolean; error?: string }> => {
+	return new Promise((resolve): void => {
+		setPlayers((prevPlayers: Player[]): Player[] => {
+			// Validate player addition
+			const validation: {
+				isValid: boolean;
+				error?: string;
+			} = validatePlayerAddition(prevPlayers, player);
+
+			if (!validation.isValid) {
+				console.warn(`Failed to add player ${player.name}: ${validation.error}`);
+				resolve({ success: false, error: validation.error });
+				return prevPlayers; // Return unchanged state
+			}
+
+			console.log(`Adding player: ${player.name}`);
+			resolve({ success: true });
+			return [...prevPlayers, player];
+		});
 	});
 };
 

@@ -1,12 +1,14 @@
+import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import PlayerCard from '@/app/modules/player/card';
 import PlayerForm from '@/app/modules/player/form';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { JSX, MouseEvent } from 'react';
+import { JSX, MouseEvent, useContext } from 'react';
 
 export default function PlayerPage(): JSX.Element {
 	const { room, leave }: RoomStoreType = RoomStore();
+	const gameContext: GameContextType | null = useContext(GameContext);
 
 	return (
 		<PlayerContext.Consumer>
@@ -72,6 +74,29 @@ export default function PlayerPage(): JSX.Element {
 									)}
 									{playerProvider.players.length === 0 && <p>No players yet</p>}
 								</div>
+							</div>
+
+							<div
+								// Div (container) that centers its child at its center
+								className='centeredChildren'
+							>
+								<button
+									// The centered div (element)
+									onClick={(): void => {
+										if (playerProvider.players.length > 0) {
+											if (!gameContext) {
+												alert('Game context not available');
+												return;
+											}
+
+											gameContext?.startGame(playerProvider.players);
+										} else {
+											alert('Please add at least one player to start the game.');
+										}
+									}}
+								>
+									Start Game
+								</button>
 							</div>
 						</div>
 

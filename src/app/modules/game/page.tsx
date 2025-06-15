@@ -1,3 +1,6 @@
+import BoardPage from '@/app/modules/board/page';
+import { ensureGameInstance, GameContext, nextTurn, startGame } from '@/app/modules/game/manager';
+import { Game } from '@/app/modules/game/model';
 import {
 	addPlayer,
 	ensurePlayerInstances,
@@ -14,6 +17,7 @@ export default function GamePage(): JSX.Element {
 	const { room }: RoomStoreType = RoomStore();
 
 	const [players, setPlayers] = useSyncState<Player[]>([], [room, 'players']);
+	const [game, setGame] = useSyncState<Game | null>(null, [room, 'game']);
 
 	return (
 		<div
@@ -21,17 +25,23 @@ export default function GamePage(): JSX.Element {
 				minHeight: '100vh',
 			}}
 		>
-			<PlayerContext.Provider
+			<GameContext.Provider
 				value={{
-					players: ensurePlayerInstances(players), // Because this comes from the network, they are not objects but plain data, so we need to ensure they are instances of Player
-					addPlayer: (player: Player) => addPlayer(setPlayers, player),
-					removePlayer: (id: string) => removePlayer(setPlayers, id),
+					game: ensureGameInstance(game), // Because this comes from the network, it is not an object but plain data, so we need to ensure it is an instance of Game
+					startGame: (players: Player[]) => startGame(setGame, players),
+					nextTurn: () => nextTurn(setGame),
 				}}
 			>
-				{/* TODO: Show PlayerPage or BoardPage depending on the game state. Turn > 0 means BoardPage */}
-				<PlayerPage />
-				{/* TODO: Show a "start" button */}
-			</PlayerContext.Provider>
+				<PlayerContext.Provider
+					value={{
+						players: ensurePlayerInstances(players), // Because this comes from the network, they are not objects but plain data, so we need to ensure they are instances of Player
+						addPlayer: (player: Player) => addPlayer(setPlayers, player),
+						removePlayer: (id: string) => removePlayer(setPlayers, id),
+					}}
+				>
+					{game ? <BoardPage /> : <PlayerPage />}
+				</PlayerContext.Provider>
+			</GameContext.Provider>
 		</div>
 	);
 }
