@@ -1,6 +1,7 @@
 import HandCard from '@/app/modules/card/hand';
 import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import { GamePlayer } from '@/app/modules/game/model';
+import { remainingAccumulators, remainingHp } from '@/app/modules/game/utils';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { JSX, MouseEvent } from 'react';
 
@@ -51,11 +52,15 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 								flexDirection: 'row',
 							}}
 						>
+							{/* ======= PLAYER HAND ======= */}
 							<div
 								style={{
 									flex: 1,
-									minWidth: '220px',
+									minWidth: '200px',
 									backgroundColor: 'var(--container)',
+									flexDirection: 'column',
+									display: 'flex',
+									justifyContent: 'space-between',
 								}}
 							>
 								<small
@@ -76,13 +81,30 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									</a>{' '}
 									{room}
 								</small>
-								{userGamePlayer.hand.map((handCard, index) => (
-									<HandCard key={index} originalValue={handCard}></HandCard>
-								))}
+								<div>
+									{userGamePlayer.hand.map((handCard, index) => (
+										<HandCard key={index} originalValue={handCard}></HandCard>
+									))}
+								</div>
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'row',
+										justifyContent: 'space-evenly',
+										alignItems: 'center',
+										gap: '10px',
+										margin: '10px',
+									}}
+								>
+									<div>{remainingHp(userGamePlayer.accumulators)} HP</div>
+									<div>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</div>
+								</div>
 							</div>
+
+							{/* ======= PLAYERS BOARD ======= */}
 							<div
 								style={{
-									flex: 6,
+									flex: 7,
 									backgroundColor: 'red',
 								}}
 							></div>

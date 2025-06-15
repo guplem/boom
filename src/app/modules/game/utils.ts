@@ -1,3 +1,5 @@
+import { Accumulator } from '@/app/modules/game/model';
+
 /**
  * Generates a random card number (0-9) based on weighted probabilities.
  * Uses a weighted random selection algorithm where each card can have different chances of being selected.
@@ -30,4 +32,30 @@ export const getRandomCard = (chances: Record<number, number> = {}): number => {
 
 	// Select random card from the weighted pool
 	return cardsPool[Math.floor(Math.random() * cardsPool.length)];
+};
+
+export const remainingAccumulators = (accumulators: Accumulator[]): Accumulator[] => {
+	const activeAccumulators: Accumulator[] = [];
+	for (const accumulator of accumulators) {
+		let remaining: number = accumulator.originalValue;
+		for (const attack of accumulator.attacks) {
+			remaining -= attack;
+		}
+		if (remaining > 0) {
+			activeAccumulators.push(accumulator);
+		}
+	}
+	return activeAccumulators;
+};
+
+export const remainingHp = (accumulators: Accumulator[]): number => {
+	let totalHp: number = 0;
+	for (const accumulator of remainingAccumulators(accumulators)) {
+		let remaining: number = accumulator.originalValue;
+		for (const attack of accumulator.attacks) {
+			remaining -= attack;
+		}
+		totalHp += Math.max(remaining, 0); // Ensure we don't count negative HP
+	}
+	return totalHp;
 };
