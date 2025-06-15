@@ -1,12 +1,22 @@
 import GamePage from '@/app/modules/game/page';
 import RoomPage from '@/app/modules/room/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
+import { UserStore, UserStoreType } from '@/app/modules/user/store';
 import { JSX, useEffect } from 'react';
 
 export default function App(): JSX.Element {
 	const { room, join }: RoomStoreType = RoomStore();
+	const { id, setId }: UserStoreType = UserStore();
 
-	// Handle URL parameters on app initialization
+	// Ensure user ID is set on app initialization
+	useEffect((): void => {
+		if (!id) {
+			setId();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	// Handle room URL parameters on app initialization
 	useEffect((): void => {
 		const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
 		const roomParam: string | null = urlParams.get('room');

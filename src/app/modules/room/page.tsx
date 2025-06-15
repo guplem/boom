@@ -1,6 +1,7 @@
 import RoomCreator from '@/app/modules/room/creator';
 import RoomPicker from '@/app/modules/room/picker';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
+import { UserStore } from '@/app/modules/user/store';
 import { JSX, useState } from 'react';
 
 export default function RoomPage(): JSX.Element {
@@ -53,6 +54,7 @@ export default function RoomPage(): JSX.Element {
 			style={{
 				minHeight: '100vh',
 				minWidth: '100vw',
+				flexDirection: 'column',
 			}}
 		>
 			<div
@@ -74,6 +76,14 @@ export default function RoomPage(): JSX.Element {
 				</div>
 				<div style={{ marginTop: '10px' }}>{joiningRoom ? <RoomPicker /> : <RoomCreator />}</div>
 			</div>
+			<p>User ID: {UserStore.getState().id}</p>
+			{/* <button
+				onClick={(): void => {
+					UserStore.getState().setId();
+				}}
+			>
+				Regenerate User ID
+			</button> */}
 		</div>
 	);
 }
