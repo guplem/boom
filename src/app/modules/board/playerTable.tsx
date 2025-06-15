@@ -4,14 +4,19 @@ import { remainingAccumulators } from '@/app/modules/game/utils';
 import PlayerCard from '@/app/modules/player/card';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
-import { JSX } from 'react';
+import React, { JSX } from 'react';
 
-interface PlayerTableParams {
+interface PlayerTableProps extends React.HTMLAttributes<HTMLDivElement> {
 	playerId: string;
 	gamePlayer: GamePlayer;
 }
 
-export default function PlayerTable({ playerId, gamePlayer }: PlayerTableParams): JSX.Element {
+export default function PlayerTable({
+	playerId,
+	gamePlayer,
+	style,
+	...props
+}: PlayerTableProps): JSX.Element {
 	return (
 		<>
 			<PlayerContext.Consumer>
@@ -24,14 +29,15 @@ export default function PlayerTable({ playerId, gamePlayer }: PlayerTableParams)
 					if (!playerData) {
 						return <div>Unknown player: {playerId}</div>;
 					}
-
 					return (
 						<div
 							style={{
 								display: 'flex',
 								flexDirection: 'row',
 								gap: '10px',
+								...style,
 							}}
+							{...props}
 						>
 							<PlayerCard style={{ height: '100px' }} player={playerData} />
 							{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (

@@ -15,7 +15,6 @@ export default function PlayerCard({
 }: PlayerCardProps): JSX.Element {
 	return (
 		<div
-			key={player.id}
 			style={{
 				display: 'flex',
 				flexDirection: 'column',

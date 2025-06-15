@@ -1,7 +1,10 @@
 import { CounterContext, CounterContextType } from '@/app/modules/counter/manager';
-import { JSX } from 'react';
+import React, { JSX } from 'react';
 
-export default function CounterControls(): JSX.Element {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface CounterControlsProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export default function CounterControls({ style, ...props }: CounterControlsProps): JSX.Element {
 	return (
 		<CounterContext.Consumer>
 			{(counterProvider: CounterContextType | null): JSX.Element => {
@@ -9,9 +12,15 @@ export default function CounterControls(): JSX.Element {
 				if (!counterProvider) {
 					return <p>Counter context not available</p>;
 				}
-
 				return (
-					<div style={{ display: 'flex', gap: '10px' }}>
+					<div
+						style={{
+							display: 'flex',
+							gap: '10px',
+							...style,
+						}}
+						{...props}
+					>
 						<button style={{ marginTop: '10px' }} onClick={counterProvider.decrement}>
 							{`Decrease to ${counterProvider.count + -1}`}
 						</button>
