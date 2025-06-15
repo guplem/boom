@@ -9,6 +9,11 @@ export interface GameContextType {
 	startGame: (_players: Player[]) => void;
 	nextTurn: () => void;
 	getCurrentPlayer: (_game: Game) => GamePlayer;
+	executeAction: (
+		_playerId: string,
+		_action: ActionTypes,
+		_actionParams: AttackActionParams | SwapActionParams | DiscardActionParams | BoomActionParams,
+	) => void;
 }
 
 export const GameContext: React.Context<GameContextType | null> =
@@ -40,12 +45,14 @@ export const getCurrentPlayer = (game: Game): GamePlayer => {
 	return game.players[game.turn % game.players.length];
 };
 
+/* eslint-disable no-unused-vars */
 export enum ActionTypes {
 	Attack = 'attack',
 	Swap = 'swap',
 	Discard = 'discard',
 	Boom = 'boom',
 }
+/* eslint-enable no-unused-vars */
 
 export interface AttackActionParams {
 	targetPlayerId: string;

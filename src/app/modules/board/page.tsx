@@ -1,10 +1,10 @@
 import PlayerTable from '@/app/modules/board/playerTable';
 import HandCard from '@/app/modules/card/hand';
-import { GameContext, GameContextType } from '@/app/modules/game/manager';
+import { ActionTypes, GameContext, GameContextType } from '@/app/modules/game/manager';
 import { GamePlayer } from '@/app/modules/game/model';
 import { remainingAccumulators, remainingHp } from '@/app/modules/game/utils';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { JSX, MouseEvent } from 'react';
+import { JSX, MouseEvent, useState } from 'react';
 
 interface BoardPageParams {
 	/** The id for the player that the user is controlling */
@@ -13,6 +13,8 @@ interface BoardPageParams {
 
 export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Element {
 	const { room, leave }: RoomStoreType = RoomStore();
+	const [handSelected, setHandSelected] = useState<number | null>(null);
+
 	return (
 		<>
 			<GameContext.Consumer>
@@ -31,19 +33,16 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 							</div>
 						);
 					}
-					// return (
-					// 	<div>
-					// 		{JSON.stringify(gameProvider)}
-					// 		<button
-					// 			onClick={(e: MouseEvent<HTMLButtonElement>): void => {
-					// 				e.preventDefault();
-					// 				gameProvider.nextTurn();
-					// 			}}
-					// 		>
-					// 			Next Turn
-					// 		</button>
-					// 	</div>
-					// );
+
+					function handleSelectHandCard(handCardIndex: number): void {
+						setHandSelected((prevSelected) => {
+							if (prevSelected === handCardIndex) {
+								return null; // Deselect if already selected
+							}
+							return handCardIndex; // Select the new card
+						});
+					}
+
 					return (
 						<div
 							style={{
@@ -59,8 +58,8 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									flex: 1,
 									minWidth: '200px',
 									backgroundColor: 'var(--container)',
-									flexDirection: 'column',
 									display: 'flex',
+									flexDirection: 'column',
 									justifyContent: 'space-between',
 									padding: '10px',
 								}}
@@ -82,17 +81,26 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 										Leave Room
 									</a>{' '}
 									{room}
-								</small>
+								</small>{' '}
 								<div
 									style={{
 										display: 'flex',
 										flexDirection: 'column',
 										justifyContent: 'center',
 										gap: '10px',
+										minHeight: 0,
 									}}
 								>
 									{userGamePlayer.hand.map((handCard, index) => (
-										<HandCard key={index} originalValue={handCard} />
+										<HandCard
+											onClick={() => handleSelectHandCard(index)}
+											style={{
+												cursor: 'pointer',
+											}}
+											key={index}
+											originalValue={handCard}
+											isSelected={handSelected === index}
+										/>
 									))}
 								</div>
 								<div
@@ -107,6 +115,17 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 								>
 									<div>{remainingHp(userGamePlayer.accumulators)} HP</div>
 									<div>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</div>
+								</div>
+								<div>
+									<button
+										onClick={() =>
+											gameProvider.executeAction(userGamePlayer.id, ActionTypes.Discard, {
+												sourceHandIndex: handSelected!,
+											})
+										}
+									>
+										Discard Hand Card
+									</button>
 								</div>
 							</div>
 
