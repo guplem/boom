@@ -1,5 +1,6 @@
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
+import { createPlayer } from '@/app/modules/player/setup';
 import { FormEvent, JSX, useContext, useState } from 'react';
 
 export default function PlayerForm(): JSX.Element {
@@ -27,7 +28,7 @@ export default function PlayerForm(): JSX.Element {
 			return;
 		}
 
-		const newPlayer: Player = new Player({
+		const newPlayer: Player = createPlayer({
 			name: playerName.trim() || undefined,
 			color: playerColor.trim() || undefined,
 			isBot: isBot,

@@ -11,23 +11,6 @@ export const PlayerContext: React.Context<PlayerContextType | null> =
 	createContext<PlayerContextType | null>(null);
 
 /**
- * Ensures all items in the array are Player instances
- * Converts plain objects to Player instances if needed
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ensurePlayerInstances = (players: any[]): Player[] => {
-	if (!players || players.length === 0) return [];
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return players.map((player: any): Player => {
-		if (player instanceof Player) {
-			return player;
-		}
-		return new Player(player);
-	});
-};
-
-/**
  * Checks if a user already owns a non-bot player
  */
 export const userOwnsNonBotPlayer = (players: Player[], userId: string): boolean => {

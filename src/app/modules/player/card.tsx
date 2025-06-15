@@ -1,4 +1,5 @@
 import { Player } from '@/app/modules/player/model';
+import { isPlayerOwned } from '@/app/modules/player/utils';
 import { JSX } from 'react';
 
 interface PlayerCardProps {
@@ -29,7 +30,7 @@ export default function PlayerCard({ player, removePlayer }: PlayerCardProps): J
 					flex: 1,
 				}}
 			>
-				{player.isOwned() && <span>Owned</span>}
+				{isPlayerOwned(player) && <span>Owned</span>}
 				<span
 					style={{
 						overflow: 'hidden',
