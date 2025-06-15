@@ -1,3 +1,4 @@
+import PlayerTable from '@/app/modules/board/playerTable';
 import HandCard from '@/app/modules/card/hand';
 import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import { GamePlayer } from '@/app/modules/game/model';
@@ -61,6 +62,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									flexDirection: 'column',
 									display: 'flex',
 									justifyContent: 'space-between',
+									padding: '10px',
 								}}
 							>
 								<small
@@ -81,9 +83,16 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									</a>{' '}
 									{room}
 								</small>
-								<div>
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'column',
+										justifyContent: 'center',
+										gap: '10px',
+									}}
+								>
 									{userGamePlayer.hand.map((handCard, index) => (
-										<HandCard key={index} originalValue={handCard}></HandCard>
+										<HandCard key={index} originalValue={handCard} />
 									))}
 								</div>
 								<div
@@ -105,9 +114,16 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 							<div
 								style={{
 									flex: 7,
-									backgroundColor: 'red',
+									display: 'flex',
+									flexDirection: 'column',
+									gap: '10px',
+									padding: '10px',
 								}}
-							></div>
+							>
+								{gameProvider.game?.players.map((player) => (
+									<PlayerTable key={player.id} playerId={player.id} gamePlayer={player} />
+								))}
+							</div>
 						</div>
 					);
 				}}

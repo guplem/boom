@@ -1,10 +1,23 @@
+import { Accumulator } from '@/app/modules/game/model';
 import React, { JSX } from 'react';
 
 interface GameCardProps extends React.HTMLAttributes<HTMLDivElement> {
-	originalValue: number;
+	accumulator: Accumulator;
 }
 
-export default function HandCard({ originalValue, style, ...props }: GameCardProps): JSX.Element {
+export default function AccumulatorCard({
+	accumulator,
+	style,
+	...props
+}: GameCardProps): JSX.Element {
+	let remainingHp: number = accumulator.originalValue;
+	for (const attack of accumulator.attacks) {
+		remainingHp -= attack;
+	}
+	if (remainingHp < 0) {
+		remainingHp = 0;
+	}
+
 	return (
 		<div
 			style={{
@@ -20,7 +33,7 @@ export default function HandCard({ originalValue, style, ...props }: GameCardPro
 			}}
 			{...props}
 		>
-			{originalValue}
+			{remainingHp}
 		</div>
 	);
 }

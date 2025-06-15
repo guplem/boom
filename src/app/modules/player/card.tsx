@@ -1,13 +1,18 @@
 import { Player } from '@/app/modules/player/model';
 import { isPlayerOwned } from '@/app/modules/player/utils';
-import { JSX } from 'react';
+import React, { JSX } from 'react';
 
-interface PlayerCardProps {
+interface PlayerCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	player: Player;
 	removePlayer?: (_id: string) => void | undefined; // Optional, if you want to handle player removal
 }
 
-export default function PlayerCard({ player, removePlayer }: PlayerCardProps): JSX.Element {
+export default function PlayerCard({
+	player,
+	removePlayer,
+	style,
+	...props
+}: PlayerCardProps): JSX.Element {
 	return (
 		<div
 			key={player.id}
@@ -16,7 +21,9 @@ export default function PlayerCard({ player, removePlayer }: PlayerCardProps): J
 				flexDirection: 'column',
 				aspectRatio: '1 / 1',
 				backgroundColor: player.color,
+				...style, // Merge provided styles with default styles
 			}}
+			{...props}
 		>
 			{/* Top section with ownership indicator, name, and bot indicator */}
 			<div
