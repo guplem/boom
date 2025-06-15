@@ -6,7 +6,7 @@ import { useSyncState } from '@robojs/sync';
 import { JSX } from 'react';
 
 export default function GamePage(): JSX.Element {
-	const { room, leave }: RoomStoreType = RoomStore();
+	const { room }: RoomStoreType = RoomStore();
 
 	const [players, setPlayers] = useSyncState<Player[]>([], [room, 'players']);
 
