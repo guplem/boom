@@ -10,6 +10,20 @@ export interface PlayerContextType {
 export const PlayerContext: React.Context<PlayerContextType | null> =
 	createContext<PlayerContextType | null>(null);
 
+/**
+ * Ensures all items in the array are Player instances
+ * Converts plain objects to Player instances if needed
+ */
+export const ensurePlayerInstances = (players: unknown[]): Player[] => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return players.map((player: any): Player => {
+		if (player instanceof Player) {
+			return player;
+		}
+		return new Player(player);
+	});
+};
+
 export const addPlayer = async (
 	setPlayers: Dispatch<SetStateAction<Player[]>>,
 	player: Player,

@@ -1,3 +1,5 @@
+import { UserStore } from '@/app/modules/user/store';
+
 /**
  * Player class representing a game player with unique ID, name, and color
  */
@@ -8,13 +10,17 @@ export class Player {
 	public readonly isBot: boolean;
 	public readonly owner: string;
 
-	public constructor(data: Partial<Player> & { isBot: boolean; owner: string }) {
+	public constructor(data: Partial<Player> & { isBot: boolean }) {
 		this.id = data.id ?? crypto.randomUUID();
 		this.name = data.name ?? predefinedNames[Math.floor(Math.random() * predefinedNames.length)];
 		this.color =
 			data.color ?? predefinedColors[Math.floor(Math.random() * predefinedColors.length)];
 		this.isBot = data.isBot;
-		this.owner = data.owner;
+		this.owner = data.owner ?? UserStore.getState().id!;
+	}
+
+	public isOwned(): boolean {
+		return this.owner === UserStore.getState().id;
 	}
 }
 

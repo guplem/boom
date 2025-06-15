@@ -31,7 +31,6 @@ export default function PlayerForm(): JSX.Element {
 			name: playerName.trim() || undefined,
 			color: playerColor.trim() || undefined,
 			isBot: isBot,
-			owner: 'currentUser',
 		});
 
 		playerContext.addPlayer(newPlayer);

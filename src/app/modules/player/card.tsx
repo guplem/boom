@@ -17,7 +17,7 @@ export default function PlayerCard({ player, removePlayer }: PlayerCardProps): J
 				backgroundColor: player.color,
 			}}
 		>
-			{/* Top section with color, name, and bot indicator */}
+			{/* Top section with ownership indicator, name, and bot indicator */}
 			<div
 				style={{
 					display: 'flex',
@@ -29,6 +29,7 @@ export default function PlayerCard({ player, removePlayer }: PlayerCardProps): J
 					flex: 1,
 				}}
 			>
+				{player.isOwned() && <span>Owned</span>}
 				<span
 					style={{
 						overflow: 'hidden',

@@ -21,8 +21,8 @@ export default function App(): JSX.Element {
 		const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
 		const roomParam: string | null = urlParams.get('room');
 
-		// If there's a room parameter and we're not already in a room, try to join
-		if (roomParam && !room) {
+		// If there's a room parameter, try to join
+		if (roomParam && roomParam.trim() !== '' && roomParam !== room) {
 			const tryJoinFromUrl = async (): Promise<void> => {
 				try {
 					const params: URLSearchParams = new URLSearchParams({ roomName: roomParam });

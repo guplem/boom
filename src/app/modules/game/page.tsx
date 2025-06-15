@@ -1,4 +1,9 @@
-import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/manager';
+import {
+	addPlayer,
+	ensurePlayerInstances,
+	PlayerContext,
+	removePlayer,
+} from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import PlayerPage from '@/app/modules/player/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
@@ -18,7 +23,7 @@ export default function GamePage(): JSX.Element {
 		>
 			<PlayerContext.Provider
 				value={{
-					players,
+					players: ensurePlayerInstances(players), // Because this comes from the network, they are not objects but plain data, so we need to ensure they are instances of Player
 					addPlayer: (player: Player) => addPlayer(setPlayers, player),
 					removePlayer: (id: string) => removePlayer(setPlayers, id),
 				}}
