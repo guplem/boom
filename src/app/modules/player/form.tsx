@@ -72,8 +72,6 @@ export default function PlayerForm(): JSX.Element {
 							height: '20px',
 							backgroundColor: playerColor.trim(),
 							marginLeft: '10px',
-							border: '1px solid #ccc',
-							verticalAlign: 'middle',
 						}}
 					></span>
 				)}

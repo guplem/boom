@@ -5,11 +5,13 @@ import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/man
 import { Player } from '@/app/modules/player/model';
 import PlayerPage from '@/app/modules/player/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
+import { UserStore, UserStoreType } from '@/app/modules/user/store';
 import { useSyncState } from '@robojs/sync';
 import { JSX } from 'react';
 
 export default function GamePage(): JSX.Element {
 	const { room }: RoomStoreType = RoomStore();
+	const { id: userId }: UserStoreType = UserStore();
 
 	const [players, setPlayers] = useSyncState<Player[]>([], [room, 'players']);
 	const [game, setGame] = useSyncState<Game | null>(null, [room, 'game']);
@@ -35,7 +37,16 @@ export default function GamePage(): JSX.Element {
 						removePlayer: (id: string) => removePlayer(setPlayers, id),
 					}}
 				>
-					{game ? <BoardPage /> : <PlayerPage />}
+					{game ? (
+						<BoardPage
+							userPlayerId={
+								players.find((player) => player.owner === userId && !player.isBot)?.id ||
+								'not-found'
+							}
+						/>
+					) : (
+						<PlayerPage />
+					)}
 				</PlayerContext.Provider>
 			</GameContext.Provider>
 		</div>
