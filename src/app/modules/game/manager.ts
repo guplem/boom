@@ -30,12 +30,8 @@ export const startGame = async (
 	players: Player[],
 ): Promise<void> => {
 	setGame((): Game | null => {
-		if (!players || players.length === 0) {
-			console.error('Cannot start game without players');
-			return null;
-		}
 		console.log(`Starting game with players: ${players.map((p) => p.name).join(', ')}`);
-		return new Game({ players });
+		return new Game(players, { initialAccumulatorsCount: 3, handCardsCount: 3 });
 	});
 };
 
