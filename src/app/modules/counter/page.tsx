@@ -1,5 +1,5 @@
-import { CounterContext } from '@/app/modules/counter/context';
 import CounterControls from '@/app/modules/counter/controls';
+import { CounterContext, decrement, increment, setTo } from '@/app/modules/counter/manager';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { useSyncState } from '@robojs/sync';
 import { JSX, MouseEvent } from 'react';
@@ -8,22 +8,6 @@ export default function CounterPage(): JSX.Element {
 	const { room, leave }: RoomStoreType = RoomStore();
 
 	const [count, setCount] = useSyncState<number>(0, [room, 'count']);
-
-	const increment = async (): Promise<void> => {
-		setCount((prevCount: number): number => {
-			const newCount: number = prevCount + 1;
-			console.log(`Incrementing count in room "${room}" from ${prevCount} to ${newCount}`);
-			return newCount;
-		});
-	};
-
-	const decrement = async (): Promise<void> => {
-		setCount((prevCount: number): number => {
-			const newCount: number = prevCount - 1;
-			console.log(`Decrementing count in room "${room}" from ${prevCount} to ${newCount}`);
-			return newCount;
-		});
-	};
 
 	return (
 		<div
@@ -49,7 +33,14 @@ export default function CounterPage(): JSX.Element {
 				<h1>Current count</h1>
 				<p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0' }}>{count}</p>
 				{/* Demonstration of the context API */}
-				<CounterContext.Provider value={{ count, increment, decrement }}>
+				<CounterContext.Provider
+					value={{
+						count,
+						increment: () => increment(setCount),
+						decrement: () => decrement(setCount),
+						setTo: (value: number) => setTo(setCount, value),
+					}}
+				>
 					<CounterControls />
 				</CounterContext.Provider>
 			</div>

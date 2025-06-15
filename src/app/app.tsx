@@ -1,4 +1,4 @@
-import CounterPage from '@/app/modules/counter/page';
+import GamePage from '@/app/modules/game/page';
 import RoomPage from '@/app/modules/room/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { JSX, useEffect } from 'react';
@@ -67,7 +67,7 @@ export default function App(): JSX.Element {
 				minHeight: '100vh',
 			}}
 		>
-			{!room ? <RoomPage /> : <CounterPage />}
+			{!room ? <RoomPage /> : <GamePage />}
 		</div>
 	);
 }
