@@ -64,6 +64,16 @@ export const remainingHp = (accumulators: Accumulator[]): number => {
 	return totalHp;
 };
 
+export const remainingAccumulatorsDefending = (accumulators: Accumulator[]): Accumulator[] => {
+	const defendingAccumulators: Accumulator[] = [];
+	for (const accumulator of remainingAccumulators(accumulators)) {
+		if (accumulator.originalValue > 0) {
+			defendingAccumulators.push(accumulator);
+		}
+	}
+	return defendingAccumulators;
+};
+
 /**
  * Given the index of a remaining accumulator, returns the overall index in the original accumulators array.
  */

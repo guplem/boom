@@ -2,11 +2,15 @@ import PlayerTable from '@/app/modules/board/playerTable';
 import HandCard from '@/app/modules/card/hand';
 import { ActionTypes, GameContext, GameContextType } from '@/app/modules/game/manager';
 import { GamePlayer } from '@/app/modules/game/model';
-import { remainingAccumulators, remainingHp } from '@/app/modules/game/utils';
+import {
+	remainingAccumulators,
+	remainingAccumulatorsDefending,
+	remainingHp,
+} from '@/app/modules/game/utils';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { JSX, MouseEvent, useState } from 'react';
+import React, { JSX, MouseEvent, useState } from 'react';
 
 interface BoardPageParams {
 	/** The id for the player that the user is controlling */
@@ -16,6 +20,7 @@ interface BoardPageParams {
 export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Element {
 	const { leave }: RoomStoreType = RoomStore();
 	const [handSelected, setHandSelected] = useState<number | null>(null);
+	const [boomValue, setBoomValue] = useState<string>('');
 
 	return (
 		<>
@@ -33,6 +38,9 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 					const isThisPlayerTurn: boolean = !!(
 						userGamePlayer && currentPlayerId === userGamePlayer.id
 					);
+					const canBoom: boolean =
+						userGamePlayer?.hand.length === 3 &&
+						userGamePlayer?.hand.reduce((sum: number, value: number) => sum + value, 0) === 0;
 
 					function handleSelectHandCard(handCardIndex: number): void {
 						setHandSelected((prevSelected) => {
@@ -142,9 +150,17 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															margin: '10px',
 														}}
 													>
-														<div>{remainingHp(userGamePlayer.accumulators)} HP</div>
+														<div style={{ textAlign: 'center' }}>
+															<h2>
+																{
+																	remainingAccumulatorsDefending(userGamePlayer.accumulators).length
+																}{' '}
+															</h2>
+															<p>Defenses</p>
+														</div>
 														<div>
-															{remainingAccumulators(userGamePlayer.accumulators).length} Acc
+															<p>{remainingHp(userGamePlayer.accumulators)} HP</p>
+															<p>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</p>
 														</div>
 													</div>
 													<div
@@ -152,8 +168,56 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															display: 'flex',
 															flexDirection: 'column',
 															justifyContent: 'center',
+															gap: '10px',
 														}}
 													>
+														<div
+															style={{
+																display: 'flex',
+																flexDirection: 'row',
+																alignItems: 'center',
+																justifyContent: 'center',
+																gap: '10px',
+															}}
+														>
+															<input
+																style={{ flex: 1 }}
+																type='number'
+																min='1'
+																max='9'
+																value={boomValue}
+																onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+																	const value: string = e.target.value;
+																	if (value === '' || (Number(value) >= 1 && Number(value) <= 9)) {
+																		setBoomValue(value);
+																	}
+																}}
+																placeholder='Target'
+																disabled={!isThisPlayerTurn || !canBoom}
+															/>
+															<button
+																style={{ flex: 1 }}
+																disabled={boomValue === '' || !isThisPlayerTurn || !canBoom}
+																onClick={() => {
+																	const numValue: number = Number(boomValue);
+																	if (numValue >= 1 && numValue <= 9) {
+																		const success: boolean = gameProvider.executeAction(
+																			userGamePlayer.id,
+																			ActionTypes.Boom,
+																			{
+																				targetValue: numValue,
+																			},
+																		);
+																		if (success) {
+																			setBoomValue(''); // Reset input after action
+																		}
+																	}
+																}}
+															>
+																Boom
+															</button>
+														</div>
+
 														<button
 															disabled={handSelected === null || !isThisPlayerTurn}
 															onClick={() => {

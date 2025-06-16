@@ -1,5 +1,5 @@
 import { GamePlayer } from '@/app/modules/game/model';
-import { remainingAccumulators, remainingHp } from '@/app/modules/game/utils';
+import { remainingAccumulatorsDefending } from '@/app/modules/game/utils';
 import { Player } from '@/app/modules/player/model';
 import { isPlayerOwned } from '@/app/modules/player/utils';
 import React, { JSX } from 'react';
@@ -72,8 +72,9 @@ export default function PlayerCard({
 						gap: '4px',
 					}}
 				>
-					<div>{remainingHp(gamePlayer.accumulators)} HP</div>
-					<div>{remainingAccumulators(gamePlayer.accumulators).length} Acc</div>
+					{/* <div>{remainingHp(gamePlayer.accumulators)} HP</div>
+					<div>{remainingAccumulators(gamePlayer.accumulators).length} Acc</div> */}
+					<h2>{remainingAccumulatorsDefending(gamePlayer.accumulators).length}</h2>
 				</div>
 			)}
 		</div>
