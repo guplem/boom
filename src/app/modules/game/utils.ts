@@ -37,6 +37,10 @@ export const getRandomCard = (chances: Record<number, number> = {}): number => {
 export const remainingAccumulators = (accumulators: Accumulator[]): Accumulator[] => {
 	const activeAccumulators: Accumulator[] = [];
 	for (const accumulator of accumulators) {
+		if (accumulator.originalValue === 0) {
+			activeAccumulators.push(accumulator);
+			continue;
+		}
 		let remaining: number = accumulator.originalValue;
 		for (const attack of accumulator.attacks) {
 			remaining -= attack;

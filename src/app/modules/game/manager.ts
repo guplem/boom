@@ -123,6 +123,7 @@ export const executeAction = (
 
 		// Post action success checks
 		if (newGame) {
+			console.log(`Action ${action} executed successfully for player ${playerId}.`);
 			// Mark action as successful
 			actionSuccess = true;
 			// Ensure all players have full hands after action
