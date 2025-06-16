@@ -106,7 +106,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 													{gameProvider.game?.players.map((player) => player.id).join(', ')}
 												</div>
 											)}
-											{isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>}
+											{/* {isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>} */}
 											{userGamePlayer && (
 												<>
 													<div
@@ -128,6 +128,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 																key={index}
 																originalValue={handCard}
 																isSelected={handSelected === index}
+																isPlayerTurn={isThisPlayerTurn}
 															/>
 														))}
 													</div>
@@ -154,6 +155,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 														}}
 													>
 														<button
+															disabled={handSelected === null || !isThisPlayerTurn}
 															onClick={() => {
 																let success: boolean = false;
 																success = gameProvider.executeAction(
@@ -182,13 +184,16 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												display: 'flex',
 												flexDirection: 'column',
 												gap: '10px',
-												padding: '10px',
+												paddingTop: '10px',
+												paddingBottom: '10px',
+												paddingRight: '10px',
 											}}
 										>
 											{gameProvider.game?.players.map((player) => (
 												<PlayerTable
 													isThisPlayerTurn={currentPlayerId === player.id}
 													key={player.id}
+													isUserPlayer={userGamePlayer?.id === player.id}
 													playerId={player.id}
 													gamePlayer={player}
 													canSelectAccumulator={handSelected !== null}

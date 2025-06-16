@@ -133,6 +133,11 @@ export const executeAction = (
 			return prevGame;
 		}
 
+		if (!actionParams) {
+			console.error(`Action parameters cannot be null for action: ${action}`);
+			return prevGame;
+		}
+
 		// Global checks are OK, execute action:
 		switch (action) {
 			case ActionTypes.Attack: {
@@ -184,6 +189,11 @@ const attack = (
 	playerId: string,
 	{ targetPlayerId, sourceHandIndex, targetRemainingAccumulatorIndex }: AttackActionParams,
 ): Game | null => {
+	if (!targetPlayerId || !sourceHandIndex || !targetRemainingAccumulatorIndex) {
+		console.error('Invalid parameters for attack action');
+		return null;
+	}
+
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 	const targetPlayer: GamePlayer | undefined = game.players.find((p) => p.id === targetPlayerId);
@@ -250,6 +260,16 @@ const swap = (
 	playerId: string,
 	{ sourceHandIndex, targetRemainingAccumulatorIndex }: SwapActionParams,
 ): Game | null => {
+	if (
+		sourceHandIndex === null ||
+		sourceHandIndex === undefined ||
+		targetRemainingAccumulatorIndex === null ||
+		targetRemainingAccumulatorIndex === undefined
+	) {
+		console.error('Invalid parameters for swap action');
+		return null;
+	}
+
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 
@@ -299,6 +319,11 @@ const discard = (
 	playerId: string,
 	{ sourceHandIndex }: DiscardActionParams,
 ): Game | null => {
+	if (sourceHandIndex === null || sourceHandIndex === undefined) {
+		console.error('Invalid parameters for discard action');
+		return null;
+	}
+
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 
@@ -319,6 +344,11 @@ const discard = (
 };
 
 const boom = (game: Game, playerId: string, { targetValue }: BoomActionParams): Game | null => {
+	if (targetValue === null || targetValue === undefined) {
+		console.error('Invalid parameters for boom action');
+		return null;
+	}
+
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 

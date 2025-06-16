@@ -12,6 +12,7 @@ interface PlayerTableProps extends React.HTMLAttributes<HTMLDivElement> {
 	canSelectAccumulator: boolean;
 	onSelectAccumulator: (_index: number) => void;
 	isThisPlayerTurn?: boolean;
+	isUserPlayer: boolean;
 }
 
 export default function PlayerTable({
@@ -20,6 +21,7 @@ export default function PlayerTable({
 	canSelectAccumulator,
 	onSelectAccumulator,
 	isThisPlayerTurn,
+	isUserPlayer,
 	style,
 	...props
 }: PlayerTableProps): JSX.Element {
@@ -38,24 +40,50 @@ export default function PlayerTable({
 					return (
 						<div
 							style={{
-								display: 'flex',
-								flexDirection: 'row',
-								alignItems: 'center',
-								gap: '10px',
+								backgroundColor: isUserPlayer ? playerData.color : '',
+								borderTopRightRadius: isUserPlayer ? '10px' : '0',
+								borderBottomRightRadius: isUserPlayer ? '10px' : '0',
 								...style,
 							}}
 							{...props}
 						>
-							{isThisPlayerTurn && <div style={{ color: 'green', fontWeight: 'bold' }}>🟢</div>}
-							<PlayerCard style={{ height: '100px' }} player={playerData} gamePlayer={gamePlayer} />
-							{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
-								<AccumulatorCard
-									onClick={() => onSelectAccumulator(index)}
-									style={{ height: '100px', cursor: canSelectAccumulator ? 'pointer' : 'default' }}
-									key={index}
-									accumulator={accumulator}
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'row',
+									alignItems: 'center',
+									gap: '10px',
+									marginLeft: '10px',
+									backgroundColor: playerData.color || 'var(--container)',
+									padding: '10px',
+									borderTopRightRadius: '10px',
+									borderBottomRightRadius: '10px',
+									borderTopLeftRadius: isUserPlayer ? '0px' : '10px',
+									borderBottomLeftRadius: isUserPlayer ? '0px' : '10px',
+									borderTop: isThisPlayerTurn ? '3px solid black' : 'none',
+									borderRight: isThisPlayerTurn ? '3px solid black' : 'none',
+									borderBottom: isThisPlayerTurn ? '3px solid black' : 'none',
+									borderLeft: isThisPlayerTurn && !isUserPlayer ? '3px solid black' : 'none',
+									...style,
+								}}
+							>
+								<PlayerCard
+									style={{ height: '100px' }}
+									player={playerData}
+									gamePlayer={gamePlayer}
 								/>
-							))}
+								{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
+									<AccumulatorCard
+										onClick={() => onSelectAccumulator(index)}
+										style={{
+											height: '100px',
+											cursor: canSelectAccumulator ? 'pointer' : 'default',
+										}}
+										key={index}
+										accumulator={accumulator}
+									/>
+								))}
+							</div>
 						</div>
 					);
 				}}

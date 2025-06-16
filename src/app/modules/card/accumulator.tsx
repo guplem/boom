@@ -33,10 +33,8 @@ export default function AccumulatorCard({
 			}}
 			{...props}
 		>
-			{remainingHp}
-			{accumulator.attacks.length > 0 && (
-				<div style={{ fontSize: '0.8em', color: 'white' }}>{accumulator.attacks.join(', ')}</div>
-			)}
+			<h1>{remainingHp}</h1>
+			{accumulator.attacks.length > 0 && <div>({accumulator.attacks.join(', ')})</div>}
 		</div>
 	);
 }
