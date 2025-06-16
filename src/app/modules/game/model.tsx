@@ -2,6 +2,7 @@ export interface Game {
 	readonly players: GamePlayer[];
 	readonly handCardsCount: number;
 	turn: number;
+	winnerId?: string | null | undefined; // null if no one won, undefined if game is still ongoing
 }
 
 export interface GamePlayer {

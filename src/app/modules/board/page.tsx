@@ -160,7 +160,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 											if (player.id === userGamePlayer.id) {
 												success = gameProvider.executeAction(player.id, ActionTypes.Swap, {
 													sourceHandIndex: handSelected!,
-													targetAccumulatorIndex: index,
+													targetRemainingAccumulatorIndex: index,
 												});
 											} else {
 												success = gameProvider.executeAction(
@@ -169,7 +169,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 													{
 														targetPlayerId: player.id,
 														sourceHandIndex: handSelected!,
-														targetAccumulatorIndex: index,
+														targetRemainingAccumulatorIndex: index,
 													},
 												);
 											}

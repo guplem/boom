@@ -1,13 +1,13 @@
 import { Accumulator, Game, GamePlayer } from '@/app/modules/game/model';
 import { createAccumulator, createGame } from '@/app/modules/game/setup';
-import { getRandomCard } from '@/app/modules/game/utils';
+import { getIndexOfAccumulator, getRandomCard, remainingHp } from '@/app/modules/game/utils';
 import { Player } from '@/app/modules/player/model';
 import React, { createContext, Dispatch, SetStateAction } from 'react';
 
 export interface GameContextType {
 	game: Game | null; // The current game state, can be null if no game is set
 	startGame: (_players: Player[]) => void;
-	nextTurn: () => void;
+	finishGame: () => void;
 	getCurrentPlayer: (_game: Game) => GamePlayer;
 	executeAction: (
 		_playerId: string,
@@ -29,16 +29,47 @@ export const startGame = async (
 	});
 };
 
-export const nextTurn = async (setGame: Dispatch<SetStateAction<Game | null>>): Promise<void> => {
-	setGame((prevGame: Game | null): Game | null => {
-		if (!prevGame) {
-			console.error('No game to advance turn');
-			return null;
-		}
-
-		prevGame.turn += 1;
-		return prevGame;
+export const finishGame = (setGame: Dispatch<SetStateAction<Game | null>>): void => {
+	setGame((): Game | null => {
+		console.log('Finishing game');
+		return null; // Reset the game state
 	});
+};
+
+/**
+ * Advances the game to the next player with more than 0 HP.
+ * Sets winnerId if only one player remains alive or if no players remain.
+ *
+ * @param game - The current game state
+ * @returns Updated game state with new turn and winnerId
+ */
+const advanceToNextTurn = (game: Game): Game => {
+	const alivePlayers: GamePlayer[] = game.players.filter(
+		(player: GamePlayer) => remainingHp(player.accumulators) > 0,
+	);
+
+	// Check win conditions
+	if (alivePlayers.length === 0) {
+		// No players alive - draw
+		return { ...game, winnerId: null };
+	} else if (alivePlayers.length === 1) {
+		// Only one player alive - winner
+		return { ...game, winnerId: alivePlayers[0].id };
+	}
+
+	// Game continues - find next alive player
+	const maxAttempts: number = game.players.length;
+
+	for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
+		const nextTurn: number = game.turn + attempt;
+		const nextPlayer: GamePlayer = game.players[nextTurn % game.players.length];
+		if (remainingHp(nextPlayer.accumulators) > 0) {
+			return { ...game, turn: nextTurn };
+		}
+	}
+
+	console.error('No players with HP found after maximum attempts. This should not be possible.');
+	return { ...game };
 };
 
 export const getCurrentPlayer = (game: Game): GamePlayer => {
@@ -57,12 +88,12 @@ export enum ActionTypes {
 export interface AttackActionParams {
 	targetPlayerId: string;
 	sourceHandIndex: number;
-	targetAccumulatorIndex: number;
+	targetRemainingAccumulatorIndex: number;
 }
 
 export interface SwapActionParams {
 	sourceHandIndex: number;
-	targetAccumulatorIndex: number;
+	targetRemainingAccumulatorIndex: number;
 }
 
 export interface DiscardActionParams {
@@ -86,9 +117,14 @@ export const executeAction = (
 	setGame((prevGame: Game | null): Game | null => {
 		let newGame: Game | null = null;
 
-		// Ensure game is running
+		// Ensure game exists
 		if (!prevGame) {
 			console.error('No game to execute action');
+			return null;
+		}
+		// Ensure game is running
+		if (prevGame.winnerId !== undefined) {
+			console.error('Game has already ended, cannot execute actions');
 			return null;
 		}
 		// Ensure is player's turn
@@ -146,7 +182,7 @@ export const executeAction = (
 const attack = (
 	game: Game,
 	playerId: string,
-	{ targetPlayerId, sourceHandIndex, targetAccumulatorIndex }: AttackActionParams,
+	{ targetPlayerId, sourceHandIndex, targetRemainingAccumulatorIndex }: AttackActionParams,
 ): Game | null => {
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
@@ -167,14 +203,19 @@ const attack = (
 		return null;
 	}
 
-	if (targetAccumulatorIndex < 0 || targetAccumulatorIndex >= targetPlayer.accumulators.length) {
+	const realAccumulatorIndex: number = getIndexOfAccumulator(
+		targetPlayer.accumulators,
+		targetRemainingAccumulatorIndex,
+	);
+
+	if (realAccumulatorIndex < 0 || realAccumulatorIndex >= targetPlayer.accumulators.length) {
 		console.error('Invalid accumulator index for attack action');
 		return null;
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
 	const targetAccumulator: Accumulator | undefined =
-		targetPlayer.accumulators[targetAccumulatorIndex];
+		targetPlayer.accumulators[realAccumulatorIndex];
 
 	if (!targetAccumulator) {
 		console.error('Target accumulator does not exist');
@@ -199,7 +240,7 @@ const attack = (
 	}
 	targetAccumulator.attacks.push(sourceCard);
 	sourcePlayer.hand[sourceHandIndex] = getRandomCard(); // Replace the used card with a new random card
-	game.turn += 1;
+	game = advanceToNextTurn(game);
 
 	return game;
 };
@@ -207,7 +248,7 @@ const attack = (
 const swap = (
 	game: Game,
 	playerId: string,
-	{ sourceHandIndex, targetAccumulatorIndex }: SwapActionParams,
+	{ sourceHandIndex, targetRemainingAccumulatorIndex }: SwapActionParams,
 ): Game | null => {
 	game = { ...game };
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
@@ -222,14 +263,19 @@ const swap = (
 		return null;
 	}
 
-	if (targetAccumulatorIndex < 0 || targetAccumulatorIndex >= sourcePlayer.accumulators.length) {
+	const realAccumulatorIndex: number = getIndexOfAccumulator(
+		sourcePlayer.accumulators,
+		targetRemainingAccumulatorIndex,
+	);
+
+	if (realAccumulatorIndex < 0 || realAccumulatorIndex >= sourcePlayer.accumulators.length) {
 		console.error('Invalid accumulator index for swap action');
 		return null;
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
 	const targetAccumulator: Accumulator | undefined =
-		sourcePlayer.accumulators[targetAccumulatorIndex];
+		sourcePlayer.accumulators[realAccumulatorIndex];
 
 	if (!targetAccumulator) {
 		console.error('Target accumulator does not exist');
@@ -242,7 +288,7 @@ const swap = (
 	}
 
 	// Swap the card with the accumulator's original value
-	sourcePlayer.accumulators[targetAccumulatorIndex] = createAccumulator(sourceCard);
+	sourcePlayer.accumulators[realAccumulatorIndex] = createAccumulator(sourceCard);
 	sourcePlayer.hand[sourceHandIndex] = targetAccumulator.originalValue;
 
 	return game;
@@ -267,7 +313,7 @@ const discard = (
 	}
 
 	sourcePlayer.hand[sourceHandIndex] = getRandomCard(); // Replace the discarded card with a new random card
-	game.turn += 1;
+	game = advanceToNextTurn(game);
 
 	return game;
 };
@@ -308,7 +354,7 @@ const boom = (game: Game, playerId: string, { targetValue }: BoomActionParams): 
 
 	// Replace all hand cards with new random cards
 	sourcePlayer.hand = sourcePlayer.hand.map(() => getRandomCard());
-	game.turn += 1;
+	game = advanceToNextTurn(game);
 
 	return game;
 };

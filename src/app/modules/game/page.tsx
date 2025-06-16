@@ -5,13 +5,14 @@ import {
 	BoomActionParams,
 	DiscardActionParams,
 	executeAction,
+	finishGame,
 	GameContext,
 	getCurrentPlayer,
-	nextTurn,
 	startGame,
 	SwapActionParams,
 } from '@/app/modules/game/manager';
 import { Game } from '@/app/modules/game/model';
+import GameOverPage from '@/app/modules/gameOver/page';
 import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import PlayerPage from '@/app/modules/player/page';
@@ -37,7 +38,7 @@ export default function GamePage(): JSX.Element {
 				value={{
 					game: game,
 					startGame: (players: Player[]) => startGame(setGame, players),
-					nextTurn: () => nextTurn(setGame),
+					finishGame: () => finishGame(setGame),
 					getCurrentPlayer: (game: Game) => getCurrentPlayer(game),
 					executeAction: (
 						playerId: string,
@@ -58,12 +59,17 @@ export default function GamePage(): JSX.Element {
 					}}
 				>
 					{game ? (
-						<BoardPage
-							userPlayerId={
-								players.find((player) => player.owner === userId && !player.isBot)?.id ||
-								'not-found'
-							}
-						/>
+						// Check if game has ended (has a winnerId defined)
+						game.winnerId !== undefined ? (
+							<GameOverPage />
+						) : (
+							<BoardPage
+								userPlayerId={
+									players.find((player: Player) => player.owner === userId && !player.isBot)?.id ||
+									'not-found'
+								}
+							/>
+						)
 					) : (
 						<PlayerPage />
 					)}

@@ -63,3 +63,14 @@ export const remainingHp = (accumulators: Accumulator[]): number => {
 	}
 	return totalHp;
 };
+
+/**
+ * Given the index of a remaining accumulator, returns the overall index in the original accumulators array.
+ */
+export const getIndexOfAccumulator = (
+	allAccumulators: Accumulator[],
+	remainingAccumulatorIndex: number,
+): number => {
+	const remainingAccumulatorsList: Accumulator[] = remainingAccumulators(allAccumulators);
+	return allAccumulators.indexOf(remainingAccumulatorsList[remainingAccumulatorIndex]);
+};
