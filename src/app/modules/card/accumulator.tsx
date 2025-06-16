@@ -25,7 +25,7 @@ export default function AccumulatorCard({
 				backgroundColor: 'brown',
 				display: 'flex',
 				flexDirection: 'column',
-				justifyContent: 'center',
+				justifyContent: 'space-evenly',
 				alignItems: 'center',
 				textAlign: 'center',
 				borderRadius: '10px',
@@ -34,6 +34,9 @@ export default function AccumulatorCard({
 			{...props}
 		>
 			{remainingHp}
+			{accumulator.attacks.length > 0 && (
+				<div style={{ fontSize: '0.8em', color: 'white' }}>{accumulator.attacks.join(', ')}</div>
+			)}
 		</div>
 	);
 }

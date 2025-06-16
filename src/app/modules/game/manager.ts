@@ -13,7 +13,7 @@ export interface GameContextType {
 		_playerId: string,
 		_action: ActionTypes,
 		_actionParams: AttackActionParams | SwapActionParams | DiscardActionParams | BoomActionParams,
-	) => void;
+	) => boolean;
 }
 
 export const GameContext: React.Context<GameContextType | null> =
@@ -78,14 +78,26 @@ export const executeAction = (
 	playerId: string,
 	action: ActionTypes,
 	actionParams: AttackActionParams | SwapActionParams | DiscardActionParams | BoomActionParams,
-): void => {
+): boolean => {
+	let actionSuccess: boolean = false;
+	console.log(
+		`Executing action: ${action} for player ${playerId} with params: ${JSON.stringify(actionParams)}`,
+	);
 	setGame((prevGame: Game | null): Game | null => {
+		let newGame: Game | null = null;
+
+		// Ensure game is running
 		if (!prevGame) {
 			console.error('No game to execute action');
 			return null;
 		}
+		// Ensure is player's turn
+		if (getCurrentPlayer(prevGame).id !== playerId) {
+			console.error(`It's not player ${playerId}'s turn to act`);
+			return prevGame;
+		}
 
-		let newGame: Game | null = null;
+		// Global checks are OK, execute action:
 		switch (action) {
 			case ActionTypes.Attack: {
 				newGame = attack(prevGame, playerId, actionParams as AttackActionParams);
@@ -109,7 +121,10 @@ export const executeAction = (
 			}
 		}
 
+		// Post action success checks
 		if (newGame) {
+			// Mark action as successful
+			actionSuccess = true;
 			// Ensure all players have full hands after action
 			for (const player of newGame.players) {
 				while (player.hand.length < newGame.handCardsCount) {
@@ -120,8 +135,11 @@ export const executeAction = (
 				}
 			}
 		}
+
 		return newGame || prevGame;
 	});
+
+	return actionSuccess;
 };
 
 const attack = (

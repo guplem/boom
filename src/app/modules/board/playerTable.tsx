@@ -9,11 +9,17 @@ import React, { JSX } from 'react';
 interface PlayerTableProps extends React.HTMLAttributes<HTMLDivElement> {
 	playerId: string;
 	gamePlayer: GamePlayer;
+	canSelectAccumulator: boolean;
+	onSelectAccumulator: (_index: number) => void;
+	isThisPlayerTurn?: boolean;
 }
 
 export default function PlayerTable({
 	playerId,
 	gamePlayer,
+	canSelectAccumulator,
+	onSelectAccumulator,
+	isThisPlayerTurn,
 	style,
 	...props
 }: PlayerTableProps): JSX.Element {
@@ -34,15 +40,18 @@ export default function PlayerTable({
 							style={{
 								display: 'flex',
 								flexDirection: 'row',
+								alignItems: 'center',
 								gap: '10px',
 								...style,
 							}}
 							{...props}
 						>
+							{isThisPlayerTurn && <div style={{ color: 'green', fontWeight: 'bold' }}>🟢</div>}
 							<PlayerCard style={{ height: '100px' }} player={playerData} />
 							{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
 								<AccumulatorCard
-									style={{ height: '100px' }}
+									onClick={() => onSelectAccumulator(index)}
+									style={{ height: '100px', cursor: canSelectAccumulator ? 'pointer' : 'default' }}
 									key={index}
 									accumulator={accumulator}
 								/>

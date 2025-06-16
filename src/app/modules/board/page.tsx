@@ -34,6 +34,11 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 						);
 					}
 
+					const currentPlayerId: string | null = gameProvider.getCurrentPlayer(
+						gameProvider.game!,
+					).id;
+					const isThisPlayerTurn: boolean = currentPlayerId === userGamePlayer.id;
+
 					function handleSelectHandCard(handCardIndex: number): void {
 						setHandSelected((prevSelected) => {
 							if (prevSelected === handCardIndex) {
@@ -68,7 +73,6 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									style={{
 										textAlign: 'center',
 										display: 'block',
-										margin: '10px',
 									}}
 								>
 									<a
@@ -82,6 +86,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 									</a>{' '}
 									{room}
 								</small>{' '}
+								{isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>}
 								<div
 									style={{
 										display: 'flex',
@@ -118,11 +123,15 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 								</div>
 								<div>
 									<button
-										onClick={() =>
-											gameProvider.executeAction(userGamePlayer.id, ActionTypes.Discard, {
+										onClick={() => {
+											let success: boolean = false;
+											success = gameProvider.executeAction(userGamePlayer.id, ActionTypes.Discard, {
 												sourceHandIndex: handSelected!,
-											})
-										}
+											});
+											if (success) {
+												setHandSelected(null); // Reset selection after action
+											}
+										}}
 									>
 										Discard Hand Card
 									</button>
@@ -140,7 +149,35 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 								}}
 							>
 								{gameProvider.game?.players.map((player) => (
-									<PlayerTable key={player.id} playerId={player.id} gamePlayer={player} />
+									<PlayerTable
+										isThisPlayerTurn={currentPlayerId === player.id}
+										key={player.id}
+										playerId={player.id}
+										gamePlayer={player}
+										canSelectAccumulator={handSelected !== null}
+										onSelectAccumulator={(index: number) => {
+											let success: boolean = false;
+											if (player.id === userGamePlayer.id) {
+												success = gameProvider.executeAction(player.id, ActionTypes.Swap, {
+													sourceHandIndex: handSelected!,
+													targetAccumulatorIndex: index,
+												});
+											} else {
+												success = gameProvider.executeAction(
+													userGamePlayer.id,
+													ActionTypes.Attack,
+													{
+														targetPlayerId: player.id,
+														sourceHandIndex: handSelected!,
+														targetAccumulatorIndex: index,
+													},
+												);
+											}
+											if (success) {
+												setHandSelected(null); // Reset selection after action
+											}
+										}}
+									/>
 								))}
 							</div>
 						</div>
