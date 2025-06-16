@@ -17,26 +17,30 @@ export function createPlayer(config: PlayerConfig): Player {
 }
 
 export const predefinedColors: string[] = [
-	'#FF0000', // red
-	'#0000FF', // blue
-	'#008000', // green
-	'#FFFF00', // yellow
-	'#800080', // purple
-	'#FFA500', // orange
-	'#FFC0CB', // pink
-	'#00FFFF', // cyan
-	'#FF00FF', // magenta
-	'#00FF00', // lime
-	'#4B0082', // indigo
-	'#008080', // teal
-	'#A52A2A', // brown
-	'#000080', // navy
-	'#800000', // maroon
-	'#808000', // olive
-	'#C0C0C0', // silver
-	'#FFD700', // gold
-	'#FF7F50', // coral
-	'#DC143C', // crimson
+	// Warm earth tones (browns, oranges)
+	// '#714E2D',
+	'#A38D4E',
+	'#A38B67',
+	// '#D8944C',
+	'#DC9E54',
+	// '#F6DAB7',
+	// Neutral warm tones (beiges, tans)
+	// '#E5D2A4',
+	'#C3C5A9',
+	// '#F6E5C5',
+	// '#FFF1D3',
+	// Cool dark tones (greys, dark greens)
+	// '#616D66',
+	// '#4A6C68',
+	// Cool medium tones (greens, teals)
+	// '#719488',
+	'#7BA5A5',
+	'#A8B6A9',
+	// Cool light tones (blues, light greens)
+	'#92B8BE',
+	'#85C6E0',
+	'#B7CCC4',
+	'#D4DFD3',
 ];
 
 export const predefinedNames: string[] = [

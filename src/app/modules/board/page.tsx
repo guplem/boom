@@ -24,20 +24,11 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 					}
 					const userGamePlayer: GamePlayer | null =
 						gameProvider.game?.players.find((player) => player.id === userPlayerId) || null;
-					if (!userGamePlayer) {
-						return (
-							<div>
-								Unknown Controlled player: {userPlayerId}. <br /> All (
-								{gameProvider.game?.players.length}) players:{' '}
-								{gameProvider.game?.players.map((player) => player.id).join(', ')}
-							</div>
-						);
-					}
 
 					const currentPlayerId: string | null = gameProvider.getCurrentPlayer(
 						gameProvider.game!,
 					).id;
-					const isThisPlayerTurn: boolean = currentPlayerId === userGamePlayer.id;
+					const isThisPlayerTurn: boolean = userGamePlayer && currentPlayerId === userGamePlayer.id;
 
 					function handleSelectHandCard(handCardIndex: number): void {
 						setHandSelected((prevSelected) => {
@@ -83,59 +74,83 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 										}}
 									>
 										Leave Room
-									</a>{' '}
-									{room}
-								</small>{' '}
-								{isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>}
-								<div
-									style={{
-										display: 'flex',
-										flexDirection: 'column',
-										justifyContent: 'center',
-										gap: '10px',
-										minHeight: 0,
-									}}
-								>
-									{userGamePlayer.hand.map((handCard, index) => (
-										<HandCard
-											onClick={() => handleSelectHandCard(index)}
-											style={{
-												cursor: 'pointer',
-											}}
-											key={index}
-											originalValue={handCard}
-											isSelected={handSelected === index}
-										/>
-									))}
-								</div>
-								<div
-									style={{
-										display: 'flex',
-										flexDirection: 'row',
-										justifyContent: 'space-evenly',
-										alignItems: 'center',
-										gap: '10px',
-										margin: '10px',
-									}}
-								>
-									<div>{remainingHp(userGamePlayer.accumulators)} HP</div>
-									<div>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</div>
-								</div>
-								<div>
-									<button
-										onClick={() => {
-											let success: boolean = false;
-											success = gameProvider.executeAction(userGamePlayer.id, ActionTypes.Discard, {
-												sourceHandIndex: handSelected!,
-											});
-											if (success) {
-												setHandSelected(null); // Reset selection after action
-											}
+									</a>
+									{' - '}
+									<a
+										href='#' // With this, the link will visually look like a link, but it won't redirect to anything
+										onClick={(e: MouseEvent<HTMLAnchorElement>): void => {
+											e.preventDefault();
+											gameProvider.finishGame();
 										}}
 									>
-										Discard Hand Card
-									</button>
-								</div>
+										Finish Game
+									</a>{' '}
+								</small>{' '}
+								{!userGamePlayer && (
+									<div>
+										Unknown Controlled player: {userPlayerId}. <br /> All (
+										{gameProvider.game?.players.length}) players:{' '}
+										{gameProvider.game?.players.map((player) => player.id).join(', ')}
+									</div>
+								)}
+								{isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>}
+								{userGamePlayer && (
+									<>
+										<div
+											style={{
+												display: 'flex',
+												flexDirection: 'column',
+												justifyContent: 'center',
+												gap: '10px',
+												minHeight: 0,
+											}}
+										>
+											{userGamePlayer.hand.map((handCard, index) => (
+												<HandCard
+													onClick={() => handleSelectHandCard(index)}
+													style={{
+														cursor: 'pointer',
+													}}
+													key={index}
+													originalValue={handCard}
+													isSelected={handSelected === index}
+												/>
+											))}
+										</div>
+										<div
+											style={{
+												display: 'flex',
+												flexDirection: 'row',
+												justifyContent: 'space-evenly',
+												alignItems: 'center',
+												gap: '10px',
+												margin: '10px',
+											}}
+										>
+											<div>{remainingHp(userGamePlayer.accumulators)} HP</div>
+											<div>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</div>
+										</div>
+										<div>
+											<button
+												onClick={() => {
+													let success: boolean = false;
+													success = gameProvider.executeAction(
+														userGamePlayer.id,
+														ActionTypes.Discard,
+														{
+															sourceHandIndex: handSelected!,
+														},
+													);
+													if (success) {
+														setHandSelected(null); // Reset selection after action
+													}
+												}}
+											>
+												Discard Hand Card
+											</button>
+										</div>
+									</>
+								)}
 							</div>
 
 							{/* ======= PLAYERS BOARD ======= */}
@@ -156,6 +171,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 										gamePlayer={player}
 										canSelectAccumulator={handSelected !== null}
 										onSelectAccumulator={(index: number) => {
+											if (!userGamePlayer) return;
 											let success: boolean = false;
 											if (player.id === userGamePlayer.id) {
 												success = gameProvider.executeAction(player.id, ActionTypes.Swap, {
