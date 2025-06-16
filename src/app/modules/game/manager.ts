@@ -189,7 +189,13 @@ const attack = (
 	playerId: string,
 	{ targetPlayerId, sourceHandIndex, targetRemainingAccumulatorIndex }: AttackActionParams,
 ): Game | null => {
-	if (!targetPlayerId || !sourceHandIndex || !targetRemainingAccumulatorIndex) {
+	if (
+		!targetPlayerId ||
+		sourceHandIndex === null ||
+		sourceHandIndex === undefined ||
+		targetRemainingAccumulatorIndex === null ||
+		targetRemainingAccumulatorIndex === undefined
+	) {
 		console.error('Invalid parameters for attack action');
 		return null;
 	}
