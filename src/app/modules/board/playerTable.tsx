@@ -68,6 +68,7 @@ export default function PlayerTable({
 								}}
 							>
 								<PlayerCard
+									showOwnedIndicator={!isUserPlayer}
 									style={{ height: '100px' }}
 									player={playerData}
 									gamePlayer={gamePlayer}
