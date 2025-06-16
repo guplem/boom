@@ -22,7 +22,7 @@ export default function AccumulatorCard({
 		<div
 			style={{
 				aspectRatio: '1 / 1',
-				backgroundColor: 'brown',
+				backgroundColor: 'var(--container)',
 				display: 'flex',
 				flexDirection: 'column',
 				justifyContent: 'space-evenly',

@@ -15,7 +15,7 @@ export default function HandCard({
 		<div
 			style={{
 				aspectRatio: '1 / 1',
-				backgroundColor: isSelected ? 'lightblue' : 'brown',
+				backgroundColor: 'var(--container)',
 				display: 'flex',
 				flexDirection: 'column',
 				justifyContent: 'center',
@@ -23,6 +23,7 @@ export default function HandCard({
 				textAlign: 'center',
 				borderRadius: '10px',
 				minHeight: 0,
+				border: isSelected ? '2px solid blue' : 'none',
 				...style, // Merge provided styles with default styles
 			}}
 			{...props}
