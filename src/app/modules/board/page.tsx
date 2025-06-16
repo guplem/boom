@@ -12,7 +12,7 @@ interface BoardPageParams {
 }
 
 export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Element {
-	const { room, leave }: RoomStoreType = RoomStore();
+	const { leave }: RoomStoreType = RoomStore();
 	const [handSelected, setHandSelected] = useState<number | null>(null);
 
 	return (
@@ -28,7 +28,9 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 					const currentPlayerId: string | null = gameProvider.getCurrentPlayer(
 						gameProvider.game!,
 					).id;
-					const isThisPlayerTurn: boolean = userGamePlayer && currentPlayerId === userGamePlayer.id;
+					const isThisPlayerTurn: boolean = !!(
+						userGamePlayer && currentPlayerId === userGamePlayer.id
+					);
 
 					function handleSelectHandCard(handCardIndex: number): void {
 						setHandSelected((prevSelected) => {
