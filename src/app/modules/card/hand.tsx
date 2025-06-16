@@ -31,7 +31,7 @@ export default function HandCard({
 			}}
 			{...props}
 		>
-			<h1>{originalValue}</h1>
+			<h1 style={{ fontSize: '4r}}>{originalValue}</h1>
 		</div>
 	);
 }

@@ -1,7 +1,31 @@
-/* Google Fonts - Knewave for headers */
-.knewave-regular {
-  font-family: "Knewave", system-ui;
+/* Google Fonts - Atma for headers */
+.atma-light {
+  font-family: "Atma", system-ui;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.atma-regular {
+  font-family: "Atma", system-ui;
   font-weight: 400;
+  font-style: normal;
+}
+
+.atma-medium {
+  font-family: "Atma", system-ui;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.atma-semibold {
+  font-family: "Atma", system-ui;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.atma-bold {
+  font-family: "Atma", system-ui;
+  font-weight: 700;
   font-style: normal;
 }
 
@@ -20,11 +44,11 @@
   font-style: normal;
 }
 
-/* Apply Knewave to all heading elements */
+/* Apply Atma to all heading elements */
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-family: "Knewave", system-ui;
-  font-weight: 400;
+  font-family: "Atma", system-ui;
+  font-weight: 600;
   font-style: normal;
 }
 
