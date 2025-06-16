@@ -1,3 +1,5 @@
+import { GamePlayer } from '@/app/modules/game/model';
+import { remainingAccumulators, remainingHp } from '@/app/modules/game/utils';
 import { Player } from '@/app/modules/player/model';
 import { isPlayerOwned } from '@/app/modules/player/utils';
 import React, { JSX } from 'react';
@@ -5,11 +7,13 @@ import React, { JSX } from 'react';
 interface PlayerCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	player: Player;
 	removePlayer?: (_id: string) => void | undefined; // Optional, if you want to handle player removal
+	gamePlayer?: GamePlayer | undefined; // Optional, if you want to display game player info
 }
 
 export default function PlayerCard({
 	player,
-	removePlayer,
+	removePlayer: onRemovePlayer,
+	gamePlayer,
 	style,
 	...props
 }: PlayerCardProps): JSX.Element {
@@ -52,10 +56,25 @@ export default function PlayerCard({
 			</div>
 
 			{/* Remove button at the bottom */}
-			{removePlayer && (
-				<button onClick={() => removePlayer(player.id)} title={`Remove player ${player.name}`}>
+			{onRemovePlayer && (
+				<button onClick={() => onRemovePlayer(player.id)} title={`Remove player ${player.name}`}>
 					Remove
 				</button>
+			)}
+
+			{/* Optional: Display game player info if available */}
+			{gamePlayer && (
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-evenly',
+						gap: '4px',
+					}}
+				>
+					<div>{remainingHp(gamePlayer.accumulators)} HP</div>
+					<div>{remainingAccumulators(gamePlayer.accumulators).length} Acc</div>
+				</div>
 			)}
 		</div>
 	);

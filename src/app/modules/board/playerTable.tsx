@@ -47,7 +47,7 @@ export default function PlayerTable({
 							{...props}
 						>
 							{isThisPlayerTurn && <div style={{ color: 'green', fontWeight: 'bold' }}>🟢</div>}
-							<PlayerCard style={{ height: '100px' }} player={playerData} />
+							<PlayerCard style={{ height: '100px' }} player={playerData} gamePlayer={gamePlayer} />
 							{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
 								<AccumulatorCard
 									onClick={() => onSelectAccumulator(index)}
