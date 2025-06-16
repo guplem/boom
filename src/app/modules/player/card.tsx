@@ -32,6 +32,7 @@ export default function PlayerCard({
 				aspectRatio: '1 / 1',
 				backgroundColor: player.color,
 				alignItems: 'center',
+				padding: !gamePlayer ? '10px' : '0',
 				...style, // Merge provided styles with default styles
 			}}
 			onMouseEnter={() => setIsHovered(true)}
@@ -73,11 +74,11 @@ export default function PlayerCard({
 				}}
 			>
 				{/* Show CPU and ownership indicators only on hover and if there's content */}
-				{isHovered && hasHoverContent && (
+				{(!gamePlayer || (isHovered && hasHoverContent)) && (
 					<p style={{ textAlign: 'center' }}>
 						{player.isBot && <span>CPU</span>}
 						<br />
-						{showOwnedIndicator && isPlayerOwned(player) && <span>(Hosted)</span>}
+						{showOwnedIndicator && isPlayerOwned(player) && <span>(Owned)</span>}
 					</p>
 				)}
 
