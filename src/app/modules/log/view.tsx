@@ -19,6 +19,7 @@ interface ProcessedLogEntry {
 	player: string;
 	playerColor?: string;
 	details: string;
+	isUserTargeted?: boolean; // New property to indicate if user was targeted
 }
 
 /**
@@ -27,6 +28,7 @@ interface ProcessedLogEntry {
 interface GameLogProps {
 	history: HistoryElement[];
 	currentPlayerId?: string;
+	userPlayerId?: string;
 }
 
 /**
@@ -37,7 +39,11 @@ interface GroupedLogEntries {
 	entries: ProcessedLogEntry[];
 }
 
-export const GameLog: React.FC<GameLogProps> = ({ history, currentPlayerId }: GameLogProps) => {
+export const GameLog: React.FC<GameLogProps> = ({
+	history,
+	currentPlayerId,
+	userPlayerId,
+}: GameLogProps) => {
 	return (
 		<PlayerContext.Consumer>
 			{(playerProvider: PlayerContextType | null) => {
@@ -96,6 +102,7 @@ export const GameLog: React.FC<GameLogProps> = ({ history, currentPlayerId }: Ga
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `${actionText} ${targetInfo.name}'s accumulator with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
+								isUserTargeted: data.targetPlayerId === userPlayerId, // Check if user was targeted
 							};
 						}
 
@@ -250,7 +257,34 @@ export const GameLog: React.FC<GameLogProps> = ({ history, currentPlayerId }: Ga
 														>
 															<div className='log-entry__content'>
 																<div className='log-entry__details'>
-																	<span className='log-entry__description'> {entry.details}</span>
+																	<div className='log-entry__description'> {entry.details}</div>
+																	{entry.isUserTargeted && (
+																		<div
+																			style={{
+																				display: 'flex',
+																				flexDirection: 'column',
+																				alignItems: 'center',
+																				marginTop: '8px',
+																			}}
+																		>
+																			<div
+																				style={{
+																					backgroundColor: '#ff6b6b',
+																					color: 'white',
+																					padding: '2px 6px',
+																					borderRadius: '4px',
+																					fontSize: '0.75em',
+																					fontWeight: 'bold',
+																					marginRight: '8px',
+																					display: 'inline-block',
+																					textAlign: 'center',
+																				}}
+																				title='You were targeted in this attack'
+																			>
+																				⚠️ ATTACKED! ⚠️
+																			</div>
+																		</div>
+																	)}
 																</div>
 															</div>
 														</div>

@@ -310,6 +310,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 											<GameLog
 												history={gameProvider.game?.history || []}
 												currentPlayerId={currentPlayerId || undefined}
+												userPlayerId={userPlayerId}
 											/>
 										</div>
 									</div>
