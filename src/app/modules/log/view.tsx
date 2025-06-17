@@ -27,9 +27,7 @@ interface ProcessedLogEntry {
  */
 interface GameLogProps {
 	history: HistoryElement[];
-	maxEntries?: number;
 	isLoading?: boolean;
-	onClear?: () => void;
 }
 
 /**
@@ -47,12 +45,7 @@ interface GroupedLogEntries {
  * @param isLoading - Whether the log is currently loading
  * @param onClear - Callback function to clear the log
  */
-export const GameLog: React.FC<GameLogProps> = ({
-	history,
-	maxEntries = 50,
-	isLoading = false,
-	onClear,
-}: GameLogProps) => {
+export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: GameLogProps) => {
 	return (
 		<PlayerContext.Consumer>
 			{(playerProvider: PlayerContextType | null) => {
@@ -91,11 +84,12 @@ export const GameLog: React.FC<GameLogProps> = ({
 								name: string;
 								color?: string;
 							} = getPlayerInfo(data.targetPlayerId);
-							const gainedExtraAccumulator: string = data.obtainedExtraAccumulator
-								? ' and gained an extra accumulator!'
-								: '';
+							const gainedExtraAccumulator: string =
+								data.obtainedExtraAccumulator != null
+									? ` and gained an extra accumulator with value ${data.obtainedExtraAccumulator}`
+									: '';
 							const remainingHp: number = data.targetAccumulatorValue - data.sourceHandValue;
-							const actionText: string = remainingHp <= 0 ? 'destroyed' : 'attacked';
+							const actionText: string = remainingHp <= 0 ? 'Destroyed' : 'Attacked';
 							const remainingHpMessage: string =
 								remainingHp > 0 ? ` (remaining HP: ${remainingHp})` : '';
 							return {
@@ -104,7 +98,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Attack',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `${playerInfo.name} ${actionText} ${targetInfo.name} with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
+								details: `${actionText} ${targetInfo.name}'s accumulator with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
 								type: 'warning',
 							};
 						}
@@ -117,7 +111,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Swap',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `${playerInfo.name} replaced an accumulator with value ${data.targetAccumulatorValue} with a card of value ${data.sourceHandValue}`,
+								details: `Replaced an accumulator with value ${data.targetAccumulatorValue} with a card of value ${data.sourceHandValue}`,
 								type: 'info',
 							};
 						}
@@ -129,7 +123,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Discard',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `${playerInfo.name} discarded a card`,
+								details: `Discarded a card`,
 								type: 'info',
 							};
 						}
@@ -146,7 +140,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Boom',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `${playerInfo.name} boomed the ${data.targetValue} and destroyed ${data.accumulatorsDestroyedQuantity} ${accumulatorText}`,
+								details: `Boomed the ${data.targetValue} and destroyed ${data.accumulatorsDestroyedQuantity} ${accumulatorText}`,
 								type: successType,
 							};
 						}
@@ -158,7 +152,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Unknown',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `${playerInfo.name} performed an unknown action`,
+								details: `Performed an unknown action`,
 								type: 'info',
 							};
 					}
@@ -167,8 +161,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 				// Process and sort entries (newest first) and limit to maxEntries
 				const processedEntries: ProcessedLogEntry[] = history
 					.map((element: HistoryElement, index: number) => processHistoryElement(element, index))
-					.reverse()
-					.slice(0, maxEntries);
+					.reverse();
 
 				/**
 				 * Group entries by turn number
@@ -224,47 +217,42 @@ export const GameLog: React.FC<GameLogProps> = ({
 
 				return (
 					<div className='game-log'>
-						<div className='game-log__header'>
-							<h3>Game Log</h3>
-							{onClear && history.length > 0 && (
-								<button
-									className='game-log__clear-btn'
-									onClick={onClear}
-									type='button'
-									aria-label='Clear game log'
-								>
-									Clear Log
-								</button>
-							)}
-						</div>
-
 						<div className='game-log__content'>
 							{groupedEntries.length === 0 ? (
 								<div className='game-log__empty'>
-									<p>No game history available.</p>
+									<h3>Game Log</h3>
+									<p>Start playing to see the game history.</p>
 								</div>
 							) : (
 								<div className='game-log__list' role='log' aria-label='Game history'>
-									{groupedEntries.map((group: GroupedLogEntries) => (
-										<div key={`turn-${group.turn + 1}`} className='game-log__turn-group'>
-											<h4 className='game-log__turn-header'>Turn {group.turn + 1}</h4>
-											<div className='game-log__turn-entries'>
-												{group.entries.map((entry: ProcessedLogEntry) => (
-													<div
-														key={entry.id}
-														role='listitem'
-														style={getPlayerBackgroundStyle(entry.playerColor)}
-													>
-														<div className='log-entry__content'>
-															<div className='log-entry__details'>
-																<span className='log-entry__description'> {entry.details}</span>
+									{groupedEntries.map((group: GroupedLogEntries) => {
+										// Get player name from the first entry in the turn (since all entries in a turn belong to the same player)
+										const turnPlayerName: string =
+											group.entries.length > 0 ? group.entries[0].player : 'Unknown Player';
+
+										return (
+											<div key={`turn-${group.turn + 1}`} className='game-log__turn-group'>
+												<h4 className='game-log__turn-header'>
+													Turn {group.turn + 1}: {turnPlayerName}
+												</h4>
+												<div className='game-log__turn-entries'>
+													{group.entries.map((entry: ProcessedLogEntry) => (
+														<div
+															key={entry.id}
+															role='listitem'
+															style={getPlayerBackgroundStyle(entry.playerColor)}
+														>
+															<div className='log-entry__content'>
+																<div className='log-entry__details'>
+																	<span className='log-entry__description'> {entry.details}</span>
+																</div>
 															</div>
 														</div>
-													</div>
-												))}
+													))}
+												</div>
 											</div>
-										</div>
-									))}
+										);
+									})}
 								</div>
 							)}
 						</div>

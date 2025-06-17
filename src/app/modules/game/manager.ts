@@ -260,12 +260,14 @@ const attack = (
 		targetPlayerId: targetPlayerId,
 		sourceHandValue: sourceCard,
 		targetAccumulatorValue: targetAccumulatorRemainingHealth,
-		obtainedExtraAccumulator: obtainedExtraAccumulator,
+		obtainedExtraAccumulator: null,
 	};
 
 	// PERFORM THE ACTION
 	if (obtainedExtraAccumulator) {
-		sourcePlayer.accumulators.push(createAccumulator(getRandomCard())); // Add a new accumulator
+		const randomCard: number = getRandomCard();
+		sourcePlayer.accumulators.push(createAccumulator(randomCard)); // Add a new accumulator
+		historyEntry.obtainedExtraAccumulator = randomCard;
 	}
 	targetAccumulator.attacks.push(sourceCard);
 	sourcePlayer.hand[sourceHandIndex] = getRandomCard(); // Replace the used card with a new random card

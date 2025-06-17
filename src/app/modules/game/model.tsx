@@ -70,7 +70,7 @@ export interface AttackActionHistory {
 	targetPlayerId: string;
 	sourceHandValue: number;
 	targetAccumulatorValue: number;
-	obtainedExtraAccumulator: boolean;
+	obtainedExtraAccumulator: number | null;
 }
 
 export interface SwapActionHistory {
