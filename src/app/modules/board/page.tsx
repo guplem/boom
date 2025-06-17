@@ -126,6 +126,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															gap: '10px',
 															minHeight: 0,
 															padding: '10px',
+															overflow: 'auto',
 														}}
 													>
 														{userGamePlayer.hand.map((handCard, index) => (
@@ -253,6 +254,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												paddingTop: '10px',
 												paddingBottom: '10px',
 												paddingRight: '10px',
+												overflow: 'auto',
 											}}
 										>
 											{gameProvider.game?.players.map((player) => (
@@ -302,6 +304,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												flexDirection: 'column',
 												justifyContent: 'space-between',
 												padding: '10px',
+												overflow: 'auto',
 											}}
 										>
 											<GameLog history={gameProvider.game?.history || []} />

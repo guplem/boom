@@ -70,6 +70,7 @@ export interface AttackActionHistory {
 	targetPlayerId: string;
 	sourceHandValue: number;
 	targetAccumulatorValue: number;
+	obtainedExtraAccumulator: boolean;
 }
 
 export interface SwapActionHistory {
@@ -77,9 +78,8 @@ export interface SwapActionHistory {
 	targetAccumulatorValue: number;
 }
 
-export interface DiscardActionHistory {
-	sourceHandValue: number;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface DiscardActionHistory {}
 
 export interface BoomActionHistory {
 	targetValue: number;

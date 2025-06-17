@@ -2,7 +2,6 @@ import {
 	ActionTypes,
 	AttackActionHistory,
 	BoomActionHistory,
-	DiscardActionHistory,
 	HistoryElement,
 	SwapActionHistory,
 } from '@/app/modules/game/model';
@@ -88,14 +87,24 @@ export const GameLog: React.FC<GameLogProps> = ({
 					switch (element.action) {
 						case ActionTypes.Attack: {
 							const data: AttackActionHistory = element.data as AttackActionHistory;
-							const targetInfo = getPlayerInfo(data.targetPlayerId);
+							const targetInfo: {
+								name: string;
+								color?: string;
+							} = getPlayerInfo(data.targetPlayerId);
+							const gainedExtraAccumulator: string = data.obtainedExtraAccumulator
+								? ' and gained an extra accumulator!'
+								: '';
+							const remainingHp: number = data.targetAccumulatorValue - data.sourceHandValue;
+							const actionText: string = remainingHp <= 0 ? 'destroyed' : 'attacked';
+							const remainingHpMessage: string =
+								remainingHp > 0 ? ` (remaining HP: ${remainingHp})` : '';
 							return {
 								id: baseId,
 								turn: element.turn,
 								action: 'Attack',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `attacked ${targetInfo.name} with card ${data.sourceHandValue} against accumulator ${data.targetAccumulatorValue}`,
+								details: `${playerInfo.name} ${actionText} ${targetInfo.name} with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
 								type: 'warning',
 							};
 						}
@@ -108,20 +117,19 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Swap',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `swapped hand card ${data.sourceHandValue} with accumulator ${data.targetAccumulatorValue}`,
+								details: `${playerInfo.name} replaced an accumulator with value ${data.targetAccumulatorValue} with a card of value ${data.sourceHandValue}`,
 								type: 'info',
 							};
 						}
 
 						case ActionTypes.Discard: {
-							const data: DiscardActionHistory = element.data as DiscardActionHistory;
 							return {
 								id: baseId,
 								turn: element.turn,
 								action: 'Discard',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `discarded hand card with value ${data.sourceHandValue}`,
+								details: `${playerInfo.name} discarded a card`,
 								type: 'info',
 							};
 						}
@@ -130,13 +138,15 @@ export const GameLog: React.FC<GameLogProps> = ({
 							const data: BoomActionHistory = element.data as BoomActionHistory;
 							const successType: 'success' | 'error' =
 								data.accumulatorsDestroyedQuantity > 0 ? 'success' : 'error';
+							const accumulatorText: string =
+								data.accumulatorsDestroyedQuantity === 1 ? 'accumulator' : 'accumulators';
 							return {
 								id: baseId,
 								turn: element.turn,
 								action: 'Boom',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: `targeted value ${data.targetValue}, destroyed ${data.accumulatorsDestroyedQuantity} accumulator(s)`,
+								details: `${playerInfo.name} boomed the ${data.targetValue} and destroyed ${data.accumulatorsDestroyedQuantity} ${accumulatorText}`,
 								type: successType,
 							};
 						}
@@ -148,15 +158,16 @@ export const GameLog: React.FC<GameLogProps> = ({
 								action: 'Unknown',
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
-								details: 'performed an unknown action',
+								details: `${playerInfo.name} performed an unknown action`,
 								type: 'info',
 							};
 					}
 				};
 
-				// Process and sort entries (oldest first) and limit to maxEntries
+				// Process and sort entries (newest first) and limit to maxEntries
 				const processedEntries: ProcessedLogEntry[] = history
 					.map((element: HistoryElement, index: number) => processHistoryElement(element, index))
+					.reverse()
 					.slice(0, maxEntries);
 
 				/**
@@ -174,27 +185,10 @@ export const GameLog: React.FC<GameLogProps> = ({
 
 					return Array.from(grouped.entries())
 						.map(([turn, entries]: [number, ProcessedLogEntry[]]) => ({ turn, entries }))
-						.sort((a: GroupedLogEntries, b: GroupedLogEntries) => a.turn - b.turn);
+						.sort((a: GroupedLogEntries, b: GroupedLogEntries) => b.turn - a.turn);
 				};
 
 				const groupedEntries: GroupedLogEntries[] = groupEntriesByTurn(processedEntries);
-
-				/**
-				 * Get CSS class based on log entry type
-				 */
-				const getEntryTypeClass = (type: ProcessedLogEntry['type']): string => {
-					const baseClass: string = 'log-entry';
-					switch (type) {
-						case 'error':
-							return `${baseClass} log-entry--error`;
-						case 'warning':
-							return `${baseClass} log-entry--warning`;
-						case 'success':
-							return `${baseClass} log-entry--success`;
-						default:
-							return `${baseClass} log-entry--info`;
-					}
-				};
 
 				/**
 				 * Generate background style for log entry based on player color
@@ -252,23 +246,18 @@ export const GameLog: React.FC<GameLogProps> = ({
 							) : (
 								<div className='game-log__list' role='log' aria-label='Game history'>
 									{groupedEntries.map((group: GroupedLogEntries) => (
-										<div key={`turn-${group.turn}`} className='game-log__turn-group'>
-											<h4 className='game-log__turn-header'>Turn {group.turn}</h4>
+										<div key={`turn-${group.turn + 1}`} className='game-log__turn-group'>
+											<h4 className='game-log__turn-header'>Turn {group.turn + 1}</h4>
 											<div className='game-log__turn-entries'>
 												{group.entries.map((entry: ProcessedLogEntry) => (
 													<div
 														key={entry.id}
-														className={getEntryTypeClass(entry.type)}
 														role='listitem'
 														style={getPlayerBackgroundStyle(entry.playerColor)}
 													>
 														<div className='log-entry__content'>
 															<div className='log-entry__details'>
-																<span className='log-entry__action'>{entry.action}</span>
-
-																<span className='log-entry__player'> by {entry.player}</span>
-
-																<span className='log-entry__description'>- {entry.details}</span>
+																<span className='log-entry__description'> {entry.details}</span>
 															</div>
 														</div>
 													</div>
@@ -285,6 +274,3 @@ export const GameLog: React.FC<GameLogProps> = ({
 		</PlayerContext.Consumer>
 	);
 };
-
-export default GameLog;
-export type { GameLogProps, GroupedLogEntries, ProcessedLogEntry };

@@ -252,15 +252,19 @@ const attack = (
 		return { newGame: null, historyData: null };
 	}
 
+	const obtainedExtraAccumulator: boolean =
+		targetAccumulator.originalValue === sourceCard && targetAccumulator.attacks.length === 0;
+
 	// STORE STATE IN HISTORY before performing the action
 	const historyEntry: AttackActionHistory = {
 		targetPlayerId: targetPlayerId,
 		sourceHandValue: sourceCard,
 		targetAccumulatorValue: targetAccumulatorRemainingHealth,
+		obtainedExtraAccumulator: obtainedExtraAccumulator,
 	};
 
 	// PERFORM THE ACTION
-	if (targetAccumulator.originalValue === sourceCard && targetAccumulator.attacks.length === 0) {
+	if (obtainedExtraAccumulator) {
 		sourcePlayer.accumulators.push(createAccumulator(getRandomCard())); // Add a new accumulator
 	}
 	targetAccumulator.attacks.push(sourceCard);
