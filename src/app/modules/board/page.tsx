@@ -7,6 +7,7 @@ import {
 	remainingAccumulatorsDefending,
 	remainingHp,
 } from '@/app/modules/game/utils';
+import { GameLog } from '@/app/modules/log/view';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
@@ -289,6 +290,21 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 													}}
 												/>
 											))}
+										</div>
+
+										{/* ======= GAME LOG ======= */}
+										<div
+											style={{
+												flex: 2,
+												minWidth: '200px',
+												backgroundColor: 'var(--container)',
+												display: 'flex',
+												flexDirection: 'column',
+												justifyContent: 'space-between',
+												padding: '10px',
+											}}
+										>
+											<GameLog history={gameProvider.game?.history || []} />
 										</div>
 									</div>
 								);
