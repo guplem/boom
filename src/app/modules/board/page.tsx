@@ -307,7 +307,10 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												overflow: 'auto',
 											}}
 										>
-											<GameLog history={gameProvider.game?.history || []} />
+											<GameLog
+												history={gameProvider.game?.history || []}
+												currentPlayerId={currentPlayerId || undefined}
+											/>
 										</div>
 									</div>
 								);

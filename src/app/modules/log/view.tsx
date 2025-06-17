@@ -26,6 +26,7 @@ interface ProcessedLogEntry {
  */
 interface GameLogProps {
 	history: HistoryElement[];
+	currentPlayerId?: string;
 }
 
 /**
@@ -36,7 +37,7 @@ interface GroupedLogEntries {
 	entries: ProcessedLogEntry[];
 }
 
-export const GameLog: React.FC<GameLogProps> = ({ history }: GameLogProps) => {
+export const GameLog: React.FC<GameLogProps> = ({ history, currentPlayerId }: GameLogProps) => {
 	return (
 		<PlayerContext.Consumer>
 			{(playerProvider: PlayerContextType | null) => {
@@ -54,6 +55,11 @@ export const GameLog: React.FC<GameLogProps> = ({ history }: GameLogProps) => {
 						color: player?.color,
 					};
 				};
+
+				// Get current player info for display
+				const currentPlayerInfo: { name: string; color?: string } | null = currentPlayerId
+					? getPlayerInfo(currentPlayerId)
+					: null;
 
 				/**
 				 * Convert HistoryElement to ProcessedLogEntry for display
@@ -190,9 +196,37 @@ export const GameLog: React.FC<GameLogProps> = ({ history }: GameLogProps) => {
 				return (
 					<div className='game-log'>
 						<div className='game-log__content'>
+							{/* Current player turn display */}
+							{currentPlayerInfo && (
+								<div
+									className='game-log__current-turn'
+									style={{
+										padding: '12px',
+										marginBottom: '16px',
+										backgroundColor: currentPlayerInfo.color
+											? `${currentPlayerInfo.color}20`
+											: 'var(--container)',
+										border: currentPlayerInfo.color
+											? `2px solid ${currentPlayerInfo.color}`
+											: '2px solid #ccc',
+										borderRadius: '8px',
+										textAlign: 'center',
+										fontWeight: 'bold',
+									}}
+								>
+									<h3
+										style={{
+											margin: 0,
+											// color: currentPlayerInfo.color || 'inherit',
+										}}
+									>
+										{currentPlayerInfo.name}'s Turn
+									</h3>
+								</div>
+							)}
+
 							{groupedEntries.length === 0 ? (
 								<div className='game-log__empty'>
-									<h3>Game Log</h3>
 									<p>Start playing to see the game history.</p>
 								</div>
 							) : (

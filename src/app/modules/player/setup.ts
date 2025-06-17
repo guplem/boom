@@ -19,7 +19,7 @@ export function createPlayer(config: PlayerConfig): Player {
 export const predefinedColors: string[] = [
 	// Warm earth tones (browns, oranges)
 	// '#714E2D',
-	'#A38D4E',
+	// '#A38D4E',
 	'#A38B67',
 	// '#D8944C',
 	'#DC9E54',
@@ -37,10 +37,10 @@ export const predefinedColors: string[] = [
 	'#7BA5A5',
 	'#A8B6A9',
 	// Cool light tones (blues, light greens)
-	'#92B8BE',
+	// '#92B8BE',
 	'#85C6E0',
-	'#B7CCC4',
-	'#D4DFD3',
+	// '#B7CCC4',
+	// '#D4DFD3',
 ];
 
 export const predefinedNames: string[] = [
