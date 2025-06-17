@@ -19,7 +19,6 @@ interface ProcessedLogEntry {
 	player: string;
 	playerColor?: string;
 	details: string;
-	type: 'info' | 'warning' | 'error' | 'success';
 }
 
 /**
@@ -27,7 +26,6 @@ interface ProcessedLogEntry {
  */
 interface GameLogProps {
 	history: HistoryElement[];
-	isLoading?: boolean;
 }
 
 /**
@@ -38,14 +36,7 @@ interface GroupedLogEntries {
 	entries: ProcessedLogEntry[];
 }
 
-/**
- * GameLog component that displays a chronological list of game events
- * @param history - Array of history elements from the game
- * @param maxEntries - Maximum number of entries to show (default: 50)
- * @param isLoading - Whether the log is currently loading
- * @param onClear - Callback function to clear the log
- */
-export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: GameLogProps) => {
+export const GameLog: React.FC<GameLogProps> = ({ history }: GameLogProps) => {
 	return (
 		<PlayerContext.Consumer>
 			{(playerProvider: PlayerContextType | null) => {
@@ -99,7 +90,6 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `${actionText} ${targetInfo.name}'s accumulator with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
-								type: 'warning',
 							};
 						}
 
@@ -112,7 +102,6 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Replaced an accumulator with value ${data.targetAccumulatorValue} with a card of value ${data.sourceHandValue}`,
-								type: 'info',
 							};
 						}
 
@@ -124,14 +113,12 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Discarded a card`,
-								type: 'info',
 							};
 						}
 
 						case ActionTypes.Boom: {
 							const data: BoomActionHistory = element.data as BoomActionHistory;
-							const successType: 'success' | 'error' =
-								data.accumulatorsDestroyedQuantity > 0 ? 'success' : 'error';
+
 							const accumulatorText: string =
 								data.accumulatorsDestroyedQuantity === 1 ? 'accumulator' : 'accumulators';
 							return {
@@ -141,7 +128,6 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Boomed the ${data.targetValue} and destroyed ${data.accumulatorsDestroyedQuantity} ${accumulatorText}`,
-								type: successType,
 							};
 						}
 
@@ -153,7 +139,6 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Performed an unknown action`,
-								type: 'info',
 							};
 					}
 				};
@@ -201,19 +186,6 @@ export const GameLog: React.FC<GameLogProps> = ({ history, isLoading = false }: 
 						boxShadow: `0 1px 3px ${playerColor}20`, // Subtle shadow with player color
 					};
 				};
-
-				if (isLoading) {
-					return (
-						<div className='game-log game-log--loading'>
-							<div className='game-log__header'>
-								<h3>Game Log</h3>
-							</div>
-							<div className='game-log__content'>
-								<p>Loading game history...</p>
-							</div>
-						</div>
-					);
-				}
 
 				return (
 					<div className='game-log'>
