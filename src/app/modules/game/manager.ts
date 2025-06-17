@@ -4,10 +4,13 @@ import {
 	ActionTypes,
 	AttackActionHistory,
 	AttackActionParams,
+	BoomActionHistory,
 	BoomActionParams,
+	DiscardActionHistory,
 	DiscardActionParams,
 	Game,
 	GamePlayer,
+	SwapActionHistory,
 	SwapActionParams,
 } from '@/app/modules/game/model';
 import { createAccumulator, createGame } from '@/app/modules/game/setup';
@@ -114,28 +117,32 @@ export const executeAction = (
 			return prevGame;
 		}
 
-		let newGame: Game | null = null;
-		let historyData: AttackActionHistory | null = null;
+		let result: {
+			newGame: Game | null;
+			historyData:
+				| AttackActionHistory
+				| SwapActionHistory
+				| DiscardActionHistory
+				| BoomActionHistory
+				| null;
+		} | null = null;
 
 		// Global checks are OK, execute action:
 		switch (actionConfig.action) {
 			case ActionTypes.Attack: {
-				// eslint-disable-next-line @typescript-eslint/typedef
-				const result = attack({ ...prevGame }, playerId, actionConfig.params as AttackActionParams);
-				newGame = result.newGame;
-				historyData = result.historyData;
+				result = attack({ ...prevGame }, playerId, actionConfig.params as AttackActionParams);
 				break;
 			}
 			case ActionTypes.Swap: {
-				newGame = swap({ ...prevGame }, playerId, actionConfig.params as SwapActionParams);
+				result = swap({ ...prevGame }, playerId, actionConfig.params as SwapActionParams);
 				break;
 			}
 			case ActionTypes.Discard: {
-				newGame = discard({ ...prevGame }, playerId, actionConfig.params as DiscardActionParams);
+				result = discard({ ...prevGame }, playerId, actionConfig.params as DiscardActionParams);
 				break;
 			}
 			case ActionTypes.Boom: {
-				newGame = boom({ ...prevGame }, playerId, actionConfig.params as BoomActionParams);
+				result = boom({ ...prevGame }, playerId, actionConfig.params as BoomActionParams);
 				break;
 			}
 			default: {
@@ -145,27 +152,27 @@ export const executeAction = (
 		}
 
 		// Post action success checks
-		if (newGame) {
+		if (result?.newGame) {
 			console.log(`Action ${actionConfig.action} executed successfully for player ${playerId}.`);
 			// Mark action as successful
 			actionSuccess = true;
 			// Ensure all players have full hands after action
-			for (const player of newGame.players) {
-				while (player.hand.length < newGame.handCardsCount) {
+			for (const player of result.newGame.players) {
+				while (player.hand.length < result.newGame.handCardsCount) {
 					console.warn(
-						`Player ${player.id} has ${player.hand.length} cards, which is less than ${newGame.handCardsCount}. This happened after action ${actionConfig.action}. Adding a random card.`,
+						`Player ${player.id} has ${player.hand.length} cards, which is less than ${result.newGame.handCardsCount}. This happened after action ${actionConfig.action}. Adding a random card.`,
 					);
 					player.hand.push(getRandomCard());
 				}
 			}
 
 			// Register action in history
-			if (historyData)
-				newGame.history.push({
+			if (result.historyData)
+				result.newGame.history.push({
 					turn: prevGame.turn,
 					action: actionConfig.action,
 					sourcePlayerId: playerId,
-					data: historyData,
+					data: result.historyData,
 				});
 			else
 				console.error(
@@ -173,7 +180,7 @@ export const executeAction = (
 				);
 		}
 
-		return newGame || prevGame;
+		return result?.newGame || prevGame;
 	});
 
 	return actionSuccess;
@@ -238,10 +245,8 @@ const attack = (
 		return { newGame: null, historyData: null };
 	}
 
-	const targetAccumulatorRemainingHealth: number = targetAccumulator.attacks.reduce(
-		(remaining, attack) => remaining - attack,
-		targetAccumulator.originalValue,
-	);
+	const targetAccumulatorRemainingHealth: number = remainingHp([targetAccumulator]);
+
 	if (targetAccumulatorRemainingHealth < sourceCard) {
 		console.error("Cannot decrease an accumulator's value below zero");
 		return { newGame: null, historyData: null };
@@ -269,7 +274,7 @@ const swap = (
 	game: Game,
 	playerId: string,
 	{ sourceHandIndex, targetRemainingAccumulatorIndex }: SwapActionParams,
-): Game | null => {
+): { newGame: Game | null; historyData: SwapActionHistory | null } => {
 	if (
 		sourceHandIndex === null ||
 		sourceHandIndex === undefined ||
@@ -277,7 +282,7 @@ const swap = (
 		targetRemainingAccumulatorIndex === undefined
 	) {
 		console.error('Invalid parameters for swap action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	game = { ...game };
@@ -285,12 +290,12 @@ const swap = (
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for swap action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	if (sourceHandIndex < 0 || sourceHandIndex >= sourcePlayer.hand.length) {
 		console.error('Invalid hand index for swap action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	const realAccumulatorIndex: number = getIndexOfAccumulator(
@@ -300,7 +305,7 @@ const swap = (
 
 	if (realAccumulatorIndex < 0 || realAccumulatorIndex >= sourcePlayer.accumulators.length) {
 		console.error('Invalid accumulator index for swap action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
@@ -309,29 +314,35 @@ const swap = (
 
 	if (!targetAccumulator) {
 		console.error('Target accumulator does not exist');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	if (targetAccumulator.attacks.length > 0) {
 		console.error('Cannot swap with an accumulator that has attacks');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
-	// Swap the card with the accumulator's original value
+	// STORE STATE IN HISTORY before performing the action
+	const historyEntry: SwapActionHistory = {
+		sourceHandValue: sourceCard,
+		targetAccumulatorValue: targetAccumulator.originalValue,
+	};
+
+	// PERFORM THE ACTION
 	sourcePlayer.accumulators[realAccumulatorIndex] = createAccumulator(sourceCard);
 	sourcePlayer.hand[sourceHandIndex] = targetAccumulator.originalValue;
 
-	return game;
+	return { newGame: game, historyData: historyEntry };
 };
 
 const discard = (
 	game: Game,
 	playerId: string,
 	{ sourceHandIndex }: DiscardActionParams,
-): Game | null => {
+): { newGame: Game | null; historyData: DiscardActionHistory | null } => {
 	if (sourceHandIndex === null || sourceHandIndex === undefined) {
 		console.error('Invalid parameters for discard action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	game = { ...game };
@@ -339,24 +350,36 @@ const discard = (
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for discard action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	if (sourceHandIndex < 0 || sourceHandIndex >= sourcePlayer.hand.length) {
 		console.error('Invalid hand index for discard action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
-	sourcePlayer.hand[sourceHandIndex] = getRandomCard(); // Replace the discarded card with a new random card
+	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
+
+	// STORE STATE IN HISTORY before performing the action
+	const historyEntry: DiscardActionHistory = {
+		sourceHandValue: sourceCard,
+	};
+
+	// PERFORM THE ACTION
+	sourcePlayer.hand[sourceHandIndex] = getRandomCard();
 	game = advanceToNextTurn(game);
 
-	return game;
+	return { newGame: game, historyData: historyEntry };
 };
 
-const boom = (game: Game, playerId: string, { targetValue }: BoomActionParams): Game | null => {
+const boom = (
+	game: Game,
+	playerId: string,
+	{ targetValue }: BoomActionParams,
+): { newGame: Game | null; historyData: BoomActionHistory | null } => {
 	if (targetValue === null || targetValue === undefined) {
 		console.error('Invalid parameters for boom action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	game = { ...game };
@@ -364,37 +387,44 @@ const boom = (game: Game, playerId: string, { targetValue }: BoomActionParams): 
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for boom action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	if (targetValue <= 0) {
 		console.error('Invalid target value for boom action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
 	if (!sourcePlayer.hand.every((card: number) => card === 0)) {
 		console.error('Player must have all hand cards with value 0 to execute boom action');
-		return null;
+		return { newGame: null, historyData: null };
 	}
 
-	// Loop through all players and their accumulators to find matching target values
+	let accumulatorsDestroyed: number = 0;
+
+	// PERFORM THE ACTION and count destroyed accumulators
 	for (const player of game.players) {
 		for (let accIndex: number = 0; accIndex < player.accumulators.length; accIndex++) {
 			const accumulator: Accumulator = player.accumulators[accIndex];
-			const currentValue: number =
-				accumulator.originalValue -
-				accumulator.attacks.reduce((sum: number, attack: number) => sum + attack, 0);
+			const currentValue: number = remainingHp([accumulator]);
 
 			// If the accumulator's current value matches the target value, destroy it
 			if (currentValue === targetValue) {
-				player.accumulators[accIndex].attacks.push(targetValue); // Add the target value as an attack to destroy it
+				player.accumulators[accIndex].attacks.push(targetValue);
+				accumulatorsDestroyed++;
 			}
 		}
 	}
+
+	// STORE STATE IN HISTORY after performing the action to capture results
+	const historyEntry: BoomActionHistory = {
+		targetValue: targetValue,
+		accumulatorsDestroyedQuantity: accumulatorsDestroyed,
+	};
 
 	// Replace all hand cards with new random cards
 	sourcePlayer.hand = sourcePlayer.hand.map(() => getRandomCard());
 	game = advanceToNextTurn(game);
 
-	return game;
+	return { newGame: game, historyData: historyEntry };
 };
