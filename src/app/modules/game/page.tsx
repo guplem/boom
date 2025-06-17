@@ -1,17 +1,12 @@
 import BoardPage from '@/app/modules/board/page';
 import {
-	ActionTypes,
-	AttackActionParams,
-	BoomActionParams,
-	DiscardActionParams,
 	executeAction,
 	finishGame,
 	GameContext,
 	getCurrentPlayer,
 	startGame,
-	SwapActionParams,
 } from '@/app/modules/game/manager';
-import { Game } from '@/app/modules/game/model';
+import { ActionConfig, Game } from '@/app/modules/game/model';
 import GameOverPage from '@/app/modules/gameOver/page';
 import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
@@ -40,15 +35,8 @@ export default function GamePage(): JSX.Element {
 					startGame: (players: Player[]) => startGame(setGame, players),
 					finishGame: () => finishGame(setGame),
 					getCurrentPlayer: (game: Game) => getCurrentPlayer(game),
-					executeAction: (
-						playerId: string,
-						action: ActionTypes,
-						actionParams:
-							| AttackActionParams
-							| SwapActionParams
-							| DiscardActionParams
-							| BoomActionParams,
-					) => executeAction(setGame, playerId, action, actionParams),
+					executeAction: (playerId: string, actionDefinition: ActionConfig) =>
+						executeAction(setGame, playerId, actionDefinition),
 				}}
 			>
 				<PlayerContext.Provider

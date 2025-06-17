@@ -1,7 +1,7 @@
 import PlayerTable from '@/app/modules/board/playerTable';
 import HandCard from '@/app/modules/card/hand';
-import { ActionTypes, GameContext, GameContextType } from '@/app/modules/game/manager';
-import { GamePlayer } from '@/app/modules/game/model';
+import { GameContext, GameContextType } from '@/app/modules/game/manager';
+import { ActionTypes, GamePlayer } from '@/app/modules/game/model';
 import {
 	remainingAccumulators,
 	remainingAccumulatorsDefending,
@@ -203,9 +203,11 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 																	if (numValue >= 1 && numValue <= 9) {
 																		const success: boolean = gameProvider.executeAction(
 																			userGamePlayer.id,
-																			ActionTypes.Boom,
 																			{
-																				targetValue: numValue,
+																				action: ActionTypes.Boom,
+																				params: {
+																					targetValue: numValue,
+																				},
 																			},
 																		);
 																		if (success) {
@@ -222,13 +224,12 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															disabled={handSelected === null || !isThisPlayerTurn}
 															onClick={() => {
 																let success: boolean = false;
-																success = gameProvider.executeAction(
-																	userGamePlayer.id,
-																	ActionTypes.Discard,
-																	{
+																success = gameProvider.executeAction(userGamePlayer.id, {
+																	action: ActionTypes.Discard,
+																	params: {
 																		sourceHandIndex: handSelected!,
 																	},
-																);
+																});
 																if (success) {
 																	setHandSelected(null); // Reset selection after action
 																}
@@ -265,20 +266,22 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 														if (!userGamePlayer) return;
 														let success: boolean = false;
 														if (player.id === userGamePlayer.id) {
-															success = gameProvider.executeAction(player.id, ActionTypes.Swap, {
-																sourceHandIndex: handSelected!,
-																targetRemainingAccumulatorIndex: index,
+															success = gameProvider.executeAction(player.id, {
+																action: ActionTypes.Swap,
+																params: {
+																	sourceHandIndex: handSelected!,
+																	targetRemainingAccumulatorIndex: index,
+																},
 															});
 														} else {
-															success = gameProvider.executeAction(
-																userGamePlayer.id,
-																ActionTypes.Attack,
-																{
+															success = gameProvider.executeAction(userGamePlayer.id, {
+																action: ActionTypes.Attack,
+																params: {
 																	targetPlayerId: player.id,
 																	sourceHandIndex: handSelected!,
 																	targetRemainingAccumulatorIndex: index,
 																},
-															);
+															});
 														}
 														if (success) {
 															setHandSelected(null); // Reset selection after action

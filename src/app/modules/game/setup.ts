@@ -26,6 +26,7 @@ export function createGame(players: Player[], gameConfig: GameConfig = {}): Game
 		turn: 0,
 		handCardsCount: gameConfig.handCardsCount ?? defaultHandCardsCount,
 		winnerId: undefined,
+		history: [],
 	};
 }
 
