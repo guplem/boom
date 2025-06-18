@@ -240,6 +240,13 @@ const attack = (
 		return { newGame: null, historyData: null };
 	}
 
+	if (targetAccumulator.attacks.length > 0 && sourceCard == 0) {
+		console.error(
+			'Cannot attack an accumulator that has already been attacked with a card of value 0, it would not change anything',
+		);
+		return { newGame: null, historyData: null };
+	}
+
 	if (targetAccumulator.originalValue == 0) {
 		console.error('Cannot attack an accumulator with original value 0');
 		return { newGame: null, historyData: null };
