@@ -61,7 +61,6 @@ export default function RoomPage(): JSX.Element {
 				alt='Logo'
 				style={{
 					maxWidth: '250px',
-					flexDirection: 'column',
 					marginBottom: '20px',
 				}}
 			/>

@@ -198,7 +198,12 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 																disabled={!isThisPlayerTurn || !canBoom}
 															/>
 															<button
-																style={{ flex: 1 }}
+																style={{
+																	flex: 1,
+																	flexDirection: 'column',
+																	display: 'flex',
+																	alignItems: 'center',
+																}}
 																disabled={boomValue === '' || !isThisPlayerTurn || !canBoom}
 																onClick={() => {
 																	const numValue: number = Number(boomValue);
@@ -218,7 +223,15 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 																	}
 																}}
 															>
-																Boom
+																<img
+																	src='/boom-text.png'
+																	alt='Boom Action'
+																	style={{
+																		opacity:
+																			boomValue === '' || !isThisPlayerTurn || !canBoom ? 0.5 : 1,
+																		maxHeight: '25px',
+																	}}
+																/>
 															</button>
 														</div>
 
