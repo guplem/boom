@@ -1,7 +1,7 @@
 import RoomCreator from '@/app/modules/room/creator';
 import RoomPicker from '@/app/modules/room/picker';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { JSX, useState } from 'react';
+import { JSX, MouseEvent, useState } from 'react';
 
 export default function RoomPage(): JSX.Element {
 	const [joiningRoom, setJoiningRoom] = useState<boolean>(true);
@@ -41,6 +41,30 @@ export default function RoomPage(): JSX.Element {
 						Leave Room
 					</button>
 				</div>
+				{/* Help and Leave Room at Bottom */}
+				<small
+					style={{
+						marginTop: '15px',
+						textAlign: 'center',
+						display: 'block',
+						padding: '20px',
+					}}
+				>
+					<a
+						href='#'
+						onClick={(e: MouseEvent<HTMLAnchorElement>): void => {
+							e.preventDefault();
+							leave();
+						}}
+					>
+						Leave Room
+					</a>{' '}
+					{room}
+					{' - '}
+					<a href='/help' target='_blank' rel='noopener noreferrer'>
+						Help
+					</a>{' '}
+				</small>
 			</div>
 		);
 	}
@@ -89,6 +113,24 @@ export default function RoomPage(): JSX.Element {
 			>
 				Regenerate User ID
 			</button> */}
+			{/* Help at Bottom */}
+			<small
+				style={{
+					marginTop: '15px',
+					textAlign: 'center',
+					display: 'block',
+					padding: '20px',
+				}}
+			>
+				<a
+					href='/help'
+					target='_blank'
+					rel='noopener noreferrer'
+					style={{ textDecoration: 'none' }}
+				>
+					Help
+				</a>{' '}
+			</small>
 		</div>
 	);
 }

@@ -95,7 +95,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 														leave();
 													}}
 												>
-													Leave Room
+													Leave
 												</a>
 												{' - '}
 												<a
@@ -107,6 +107,10 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												>
 													Finish Game
 												</a>{' '}
+												{' - '}
+												<a href='/help' target='_blank' rel='noopener noreferrer'>
+													Help
+												</a>
 											</small>{' '}
 											{!userGamePlayer && (
 												<div>
@@ -152,13 +156,20 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															margin: '10px',
 														}}
 													>
-														<div style={{ textAlign: 'center' }}>
+														<div
+															style={{
+																textAlign: 'center',
+																display: 'flex',
+																flexDirection: 'column',
+																alignItems: 'center',
+															}}
+														>
 															<h2>
 																{
 																	remainingAccumulatorsDefending(userGamePlayer.accumulators).length
 																}{' '}
 															</h2>
-															<p>Defenses</p>
+															<div>Defenses</div>
 														</div>
 														<div>
 															<p>{remainingHp(userGamePlayer.accumulators)} HP</p>

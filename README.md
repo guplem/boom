@@ -37,6 +37,7 @@ That's it! 🎉
 **📖 Full Rules**: 
 - [Spanish Rules](./rules/Physical%20Version/ES.md) 
 - [English Rules](./rules/Physical%20Version/EN.md)
+- [Digital Game Help Page](/help) _(in-game rules for the web version)_
 
 ## 🛠️ Prerequisites for Development
 

@@ -1,4 +1,5 @@
 import GamePage from '@/app/modules/game/page';
+import HelpPage from '@/app/modules/help/page';
 import RoomPage from '@/app/modules/room/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { UserStore, UserStoreType } from '@/app/modules/user/store';
@@ -18,6 +19,11 @@ export default function App(): JSX.Element {
 
 	// Handle room URL parameters on app initialization
 	useEffect((): void => {
+		// Prevent this logic from running on the help page
+		if (window.location.pathname === '/help') {
+			return;
+		}
+
 		const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
 		const roomParam: string | null = urlParams.get('room');
 
@@ -55,6 +61,10 @@ export default function App(): JSX.Element {
 
 	// Update URL when room changes
 	useEffect((): void => {
+		// Prevent this logic from running on the help page
+		if (window.location.pathname === '/help') {
+			return;
+		}
 		const newUrl: URL = new URL(window.location.href);
 
 		if (room) {
@@ -68,6 +78,14 @@ export default function App(): JSX.Element {
 		window.history.replaceState({}, '', newUrl.toString());
 	}, [room]);
 
+	const renderContent = (): JSX.Element => {
+		if (window.location.pathname === '/help') {
+			return <HelpPage />;
+		}
+
+		return !room ? <RoomPage /> : <GamePage />;
+	};
+
 	return (
 		<div
 			className='noisyBackground'
@@ -77,7 +95,7 @@ export default function App(): JSX.Element {
 				minHeight: '100vh',
 			}}
 		>
-			{!room ? <RoomPage /> : <GamePage />}
+			{renderContent()}
 		</div>
 	);
 }
