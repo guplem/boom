@@ -33,6 +33,7 @@ export default function PlayerCard({
 				backgroundColor: player.color,
 				alignItems: 'center',
 				padding: !gamePlayer ? '10px' : '0',
+				borderRadius: '10px',
 				...style, // Merge provided styles with default styles
 			}}
 			onMouseEnter={() => setIsHovered(true)}
