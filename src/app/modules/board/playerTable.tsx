@@ -64,6 +64,7 @@ export default function PlayerTable({
 									borderRight: isThisPlayerTurn ? '3px solid black' : 'none',
 									borderBottom: isThisPlayerTurn ? '3px solid black' : 'none',
 									borderLeft: isThisPlayerTurn && !isUserPlayer ? '3px solid black' : 'none',
+									overflow: 'visible', // <-- Add this line
 									...style,
 								}}
 							>

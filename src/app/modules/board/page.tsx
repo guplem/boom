@@ -126,7 +126,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 															gap: '10px',
 															minHeight: 0,
 															padding: '10px',
-															overflow: 'auto',
+															overflow: 'visible',
 														}}
 													>
 														{userGamePlayer.hand.map((handCard, index) => (
