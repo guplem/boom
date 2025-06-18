@@ -99,12 +99,12 @@ export default function PlayerForm(): JSX.Element {
 					>
 						{!playerColor.trim() || !isValidHexColor(playerColor.trim()) ? '?' : ''}
 					</span>
-					{playerColor.trim() && !isValidHexColor(playerColor.trim()) && (
-						<span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
-							Invalid hex color format
-						</span>
-					)}
 				</div>
+				{playerColor.trim() && !isValidHexColor(playerColor.trim()) && (
+					<div style={{ color: 'red', marginLeft: '0', fontSize: '12px', marginTop: '2px' }}>
+						Invalid hex color format
+					</div>
+				)}
 			</div>
 			<button
 				type='submit'

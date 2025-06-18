@@ -13,20 +13,26 @@ export default function HandCard({
 	isPlayerTurn,
 	...props
 }: GameCardProps): JSX.Element {
+	const classNames: string = [
+		'hand-card',
+		isSelected ? 'selected' : '',
+		!isPlayerTurn ? 'disabled' : '',
+		props.className ?? '',
+	]
+		.join(' ')
+		.trim();
+
 	return (
 		<div
+			className={classNames}
 			style={{
 				aspectRatio: '1 / 1',
-				backgroundColor: 'var(--container)',
 				display: 'flex',
 				flexDirection: 'column',
 				justifyContent: 'center',
 				alignItems: 'center',
 				textAlign: 'center',
-				borderRadius: '10px',
 				minHeight: 0,
-				border: isSelected ? '2px solid blue' : 'none',
-				opacity: isPlayerTurn ? 1 : 0.55,
 				...style, // Merge provided styles with default styles
 			}}
 			{...props}
