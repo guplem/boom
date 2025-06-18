@@ -105,22 +105,16 @@ export default function PlayerForm(): JSX.Element {
 						</span>
 					)}
 				</div>
-
-				{/* <div>
-					<label htmlFor='isBot'>
-						<input
-							type='checkbox'
-							id='isBot'
-							checked={isBot}
-							onChange={(e) => setIsBot(e.target.checked)}
-						/>
-						Is Bot
-					</label>
-				</div> */}
-				<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-					<button type='submit'>Add Player</button>
-				</div>
 			</div>
+			<button
+				type='submit'
+				style={{
+					width: '100%',
+					marginTop: '10px',
+				}}
+			>
+				Add Player
+			</button>
 		</form>
 	);
 }
