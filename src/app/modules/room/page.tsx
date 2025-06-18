@@ -1,7 +1,6 @@
 import RoomCreator from '@/app/modules/room/creator';
 import RoomPicker from '@/app/modules/room/picker';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { UserStore } from '@/app/modules/user/store';
 import { JSX, useState } from 'react';
 
 export default function RoomPage(): JSX.Element {
@@ -57,6 +56,15 @@ export default function RoomPage(): JSX.Element {
 				flexDirection: 'column',
 			}}
 		>
+			<img
+				src='/logo.png'
+				alt='Logo'
+				style={{
+					maxWidth: '250px',
+					flexDirection: 'column',
+					marginBottom: '20px',
+				}}
+			/>
 			<div
 				// The centered div (element)
 				style={{
@@ -76,7 +84,7 @@ export default function RoomPage(): JSX.Element {
 				</div>
 				<div style={{ marginTop: '10px' }}>{joiningRoom ? <RoomPicker /> : <RoomCreator />}</div>
 			</div>
-			<p>User ID: {UserStore.getState().id}</p>
+			{/* <p>User ID: {UserStore.getState().id}</p> */}
 			{/* <button
 				onClick={(): void => {
 					UserStore.getState().setId();

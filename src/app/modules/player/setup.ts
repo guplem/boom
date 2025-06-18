@@ -16,32 +16,40 @@ export function createPlayer(config: PlayerConfig): Player {
 	};
 }
 
-export const predefinedColors: string[] = [
-	// Warm earth tones (browns, oranges)
-	// '#714E2D',
-	// '#A38D4E',
+export const predefinedPlayerColors: string[] = [
 	'#A38B67',
-	// '#D8944C',
-	'#DC9E54',
-	// '#F6DAB7',
-	// Neutral warm tones (beiges, tans)
-	// '#E5D2A4',
-	'#C3C5A9',
-	// '#F6E5C5',
-	// '#FFF1D3',
-	// Cool dark tones (greys, dark greens)
-	// '#616D66',
-	// '#4A6C68',
-	// Cool medium tones (greens, teals)
-	// '#719488',
-	'#7BA5A5',
-	'#A8B6A9',
-	// Cool light tones (blues, light greens)
-	// '#92B8BE',
+	'#f2a55f',
+	// '#7BA5A5', // Don't like it much...
+	// '#A8B6A9', // Don't like it much...
 	'#85C6E0',
-	// '#B7CCC4',
-	// '#D4DFD3',
+	'#7db593',
 ];
+
+// ORIGINAL LIST
+// Warm earth tones (browns, oranges)
+// '#714E2D',
+// '#A38D4E',
+// '#A38B67',
+// '#D8944C',
+// '#DC9E54',
+// '#F6DAB7',
+// Neutral warm tones (beiges, tans)
+// '#E5D2A4',
+// '#C3C5A9',
+// '#F6E5C5',
+// '#FFF1D3',
+// Cool dark tones (greys, dark greens)
+// '#616D66',
+// '#4A6C68',
+// Cool medium tones (greens, teals)
+// '#719488',
+// '#7BA5A5',
+// '#A8B6A9',
+// Cool light tones (blues, light greens)
+// '#92B8BE',
+// '#85C6E0',
+// '#B7CCC4',
+// '#D4DFD3',
 
 export const predefinedNames: string[] = [
 	'Igordo',
@@ -89,5 +97,5 @@ function getRandomName(): string {
  * @returns A random color from the predefined colors array
  */
 function getRandomColor(): string {
-	return predefinedColors[Math.floor(Math.random() * predefinedColors.length)];
+	return predefinedPlayerColors[Math.floor(Math.random() * predefinedPlayerColors.length)];
 }

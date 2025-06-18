@@ -45,7 +45,7 @@ export default function PlayerForm(): JSX.Element {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div>
-				<label htmlFor='playerName'>Player Name:</label>
+				<label htmlFor='playerName'>Player Name: </label>
 				<input
 					type='text'
 					id='playerName'
@@ -56,7 +56,7 @@ export default function PlayerForm(): JSX.Element {
 			</div>
 
 			<div>
-				<label htmlFor='playerColor'>Color:</label>
+				<label htmlFor='playerColor'>Color: </label>
 				<input
 					type='text'
 					id='playerColor'
