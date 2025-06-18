@@ -44,56 +44,71 @@ export default function PlayerForm(): JSX.Element {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div>
-				<label htmlFor='playerName'>Player Name: </label>
-				<input
-					type='text'
-					id='playerName'
-					value={playerName}
-					onChange={(e) => setPlayerName(e.target.value)}
-					placeholder='Leave empty for random name'
-				/>
-			</div>
-
-			<div>
-				<label htmlFor='playerColor'>Color: </label>
-				<input
-					type='text'
-					id='playerColor'
-					value={playerColor}
-					onChange={(e) => setPlayerColor(e.target.value)}
-					placeholder='Leave empty for random color'
-				/>
-				{playerColor && isValidHexColor(playerColor.trim()) && (
-					<span
-						style={{
-							display: 'inline-block',
-							width: '20px',
-							height: '20px',
-							backgroundColor: playerColor.trim(),
-							marginLeft: '10px',
-						}}
-					></span>
-				)}
-				{playerColor.trim() && !isValidHexColor(playerColor.trim()) && (
-					<span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
-						Invalid hex color format
-					</span>
-				)}
-			</div>
-
-			<div>
-				<label htmlFor='isBot'>
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					gap: '10px',
+				}}
+			>
+				<div>
+					<label htmlFor='playerName'>Player Name: </label>
 					<input
-						type='checkbox'
-						id='isBot'
-						checked={isBot}
-						onChange={(e) => setIsBot(e.target.checked)}
+						type='text'
+						id='playerName'
+						value={playerName}
+						onChange={(e) => setPlayerName(e.target.value)}
+						placeholder='Leave empty for random name'
 					/>
-					Is Bot
-				</label>
+				</div>
+
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<label htmlFor='playerColor' style={{ marginRight: '4px' }}>
+						Color:{' '}
+					</label>
+					<input
+						type='text'
+						id='playerColor'
+						value={playerColor}
+						onChange={(e) => setPlayerColor(e.target.value)}
+						placeholder='Leave empty for random color'
+						style={{ verticalAlign: 'middle' }}
+					/>
+					{playerColor && isValidHexColor(playerColor.trim()) && (
+						<span
+							style={{
+								display: 'inline-block',
+								width: '20px',
+								height: '20px',
+								backgroundColor: playerColor.trim(),
+								marginLeft: '10px',
+								borderRadius: '5px', // fixed typo here
+								verticalAlign: 'middle',
+							}}
+						></span>
+					)}
+					{playerColor.trim() && !isValidHexColor(playerColor.trim()) && (
+						<span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
+							Invalid hex color format
+						</span>
+					)}
+				</div>
+
+				{/* <div>
+					<label htmlFor='isBot'>
+						<input
+							type='checkbox'
+							id='isBot'
+							checked={isBot}
+							onChange={(e) => setIsBot(e.target.checked)}
+						/>
+						Is Bot
+					</label>
+				</div> */}
+				<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+					<button type='submit'>Add Player</button>
+				</div>
 			</div>
-			<button type='submit'>Add Player</button>
 		</form>
 	);
 }
