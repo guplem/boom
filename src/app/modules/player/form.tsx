@@ -74,19 +74,31 @@ export default function PlayerForm(): JSX.Element {
 						placeholder='Leave empty for random color'
 						style={{ verticalAlign: 'middle' }}
 					/>
-					{playerColor && isValidHexColor(playerColor.trim()) && (
-						<span
-							style={{
-								display: 'inline-block',
-								width: '20px',
-								height: '20px',
-								backgroundColor: playerColor.trim(),
-								marginLeft: '10px',
-								borderRadius: '5px', // fixed typo here
-								verticalAlign: 'middle',
-							}}
-						></span>
-					)}
+					<span
+						style={{
+							width: '20px',
+							height: '20px',
+							backgroundColor:
+								playerColor && isValidHexColor(playerColor.trim())
+									? playerColor.trim()
+									: 'transparent',
+							marginLeft: '10px',
+							borderRadius: '5px',
+							verticalAlign: 'middle',
+							border:
+								playerColor && isValidHexColor(playerColor.trim())
+									? ''
+									: '1px solid var(--border, #719488)',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							// fontWeight: 'bold',
+							fontSize: '11px',
+							color: '#719488',
+						}}
+					>
+						{!playerColor.trim() || !isValidHexColor(playerColor.trim()) ? '?' : ''}
+					</span>
 					{playerColor.trim() && !isValidHexColor(playerColor.trim()) && (
 						<span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
 							Invalid hex color format
