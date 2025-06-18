@@ -75,7 +75,9 @@ export default function PlayerTable({
 								/>
 								{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
 									<AccumulatorCard
-										onClick={canSelectAccumulator ? () => onSelectAccumulator(index) : undefined}
+										onClick={
+											canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined
+										}
 										style={{
 											height: '100px',
 											// cursor is now handled by CSS class
