@@ -84,7 +84,7 @@ export default function PlayerCard({
 				)}
 
 				{/* Remove button at the bottom */}
-				{onRemovePlayer && (
+				{onRemovePlayer && isPlayerOwned(player) && (
 					<button onClick={() => onRemovePlayer(player.id)} title={`Remove player ${player.name}`}>
 						Remove
 					</button>
