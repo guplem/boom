@@ -82,8 +82,7 @@ export default function HelpPage(): JSX.Element {
 					</li>
 					<li>
 						<strong>Rules:</strong> You can only swap with accumulators that have not been attacked
-						yet. This is an optional first step in your turn, but if you do it, you cannot perform
-						any other action.
+						yet. This action ends your turn.
 					</li>
 				</ul>
 
@@ -94,9 +93,9 @@ export default function HelpPage(): JSX.Element {
 						an opponent's accumulator card on the board.
 					</li>
 					<li>
-						<strong>Rules:</strong> The value of your attacking card cannot be higher than the
-						accumulator's current HP. You cannot attack accumulators with an original value of 0
-						(face cards). The attack happens automatically.
+						<strong>Rules:</strong> The value of your attacking card must be less than or equal to
+						the accumulator's current HP (you cannot reduce HP below zero). You cannot attack
+						accumulators with an original value of 0 (face cards).
 					</li>
 					<li>
 						<strong>Extra Life:</strong> If you destroy an accumulator with a single attack, and
@@ -128,8 +127,8 @@ export default function HelpPage(): JSX.Element {
 
 				<h2>🔚 End of Turn</h2>
 				<p>
-					After you perform an action, the game automatically handles drawing cards for you to
-					replenish your hand, and play passes to the next player.
+					After you perform an action, the game automatically draws new cards to replenish your
+					hand, and play passes to the next player.
 				</p>
 
 				<h2>🚨 End of Game</h2>
