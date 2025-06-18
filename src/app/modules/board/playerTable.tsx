@@ -41,52 +41,64 @@ export default function PlayerTable({
 						<div
 							style={{
 								backgroundColor: isUserPlayer ? playerData.color : '',
-								borderTopRightRadius: isUserPlayer ? '10px' : '0',
-								borderBottomRightRadius: isUserPlayer ? '10px' : '0',
+								borderTopRightRadius: isUserPlayer ? '12px' : '0',
+								borderBottomRightRadius: isUserPlayer ? '12px' : '0',
 								...style,
 							}}
 							{...props}
 						>
 							<div
 								style={{
-									display: 'flex',
-									flexDirection: 'row',
-									alignItems: 'center',
-									gap: '10px',
 									marginLeft: '10px',
-									backgroundColor: playerData.color || 'var(--container)',
-									padding: '10px',
-									borderTopRightRadius: '10px',
-									borderBottomRightRadius: '10px',
-									borderTopLeftRadius: isUserPlayer ? '0px' : '10px',
-									borderBottomLeftRadius: isUserPlayer ? '0px' : '10px',
-									borderTop: isThisPlayerTurn ? '3px solid black' : 'none',
-									borderRight: isThisPlayerTurn ? '3px solid black' : 'none',
-									borderBottom: isThisPlayerTurn ? '3px solid black' : 'none',
-									borderLeft: isThisPlayerTurn && !isUserPlayer ? '3px solid black' : 'none',
-									overflow: 'visible', // <-- Add this line
-									...style,
+									padding: '3px',
+									background: !isThisPlayerTurn
+										? ''
+										: isUserPlayer
+											? 'linear-gradient(to left, #3d4749, transparent)'
+											: ' #3d4749',
+									borderRadius: '12px',
 								}}
 							>
-								<PlayerCard
-									showOwnedIndicator={!isUserPlayer}
-									style={{ height: '100px' }}
-									player={playerData}
-									gamePlayer={gamePlayer}
-								/>
-								{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
-									<AccumulatorCard
-										onClick={
-											canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined
-										}
-										style={{
-											height: '100px',
-											// cursor is now handled by CSS class
-										}}
-										key={index}
-										accumulator={accumulator}
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'row',
+										alignItems: 'center',
+										gap: '10px',
+										backgroundColor: playerData.color || 'var(--container)',
+										padding: '10px',
+										borderTopRightRadius: '10px',
+										borderBottomRightRadius: '10px',
+										borderTopLeftRadius: isUserPlayer ? '0px' : '10px',
+										borderBottomLeftRadius: isUserPlayer ? '0px' : '10px',
+										// borderTop: isThisPlayerTurn ? '3px solid black' : 'none',
+										// borderRight: isThisPlayerTurn ? '3px solid black' : 'none',
+										// borderBottom: isThisPlayerTurn ? '3px solid black' : 'none',
+										// borderLeft: isThisPlayerTurn && !isUserPlayer ? '3px solid black' : 'none',
+										overflow: 'visible', // <-- Add this line
+										...style,
+									}}
+								>
+									<PlayerCard
+										showOwnedIndicator={!isUserPlayer}
+										style={{ height: '100px' }}
+										player={playerData}
+										gamePlayer={gamePlayer}
 									/>
-								))}
+									{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
+										<AccumulatorCard
+											onClick={
+												canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined
+											}
+											style={{
+												height: '100px',
+												// cursor is now handled by CSS class
+											}}
+											key={index}
+											accumulator={accumulator}
+										/>
+									))}
+								</div>
 							</div>
 						</div>
 					);
