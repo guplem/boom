@@ -75,10 +75,10 @@ export default function PlayerTable({
 								/>
 								{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
 									<AccumulatorCard
-										onClick={() => onSelectAccumulator(index)}
+										onClick={canSelectAccumulator ? () => onSelectAccumulator(index) : undefined}
 										style={{
 											height: '100px',
-											cursor: canSelectAccumulator ? 'pointer' : 'default',
+											// cursor is now handled by CSS class
 										}}
 										key={index}
 										accumulator={accumulator}

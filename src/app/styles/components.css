@@ -84,3 +84,36 @@ input {
   box-shadow: none;
   opacity: 0.55;
 }
+
+.accumulator-card {
+  font-family: "Playwrite DE Grund", cursive;
+  border-radius: 10px;
+  border: 2px solid #3d4749;
+  box-shadow: 0 4px 12px 0 rgba(61, 71, 73, 0.18), 0 1.5px 0 0 #2a2f30;
+  transition: box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s, border 0.12s;
+  background-color: var(--container);
+  cursor: default;
+}
+
+.accumulator-card.clickable {
+  cursor: pointer;
+}
+
+.accumulator-card.clickable:hover {
+  box-shadow: 0 8px 24px 0 rgba(61, 71, 73, 0.28), 0 2px 0 0 #2a2f30;
+  transform: translateY(-1px) scale(1.01);
+}
+
+.accumulator-card.clickable:active {
+  box-shadow: 0 2px 6px 0 rgba(61, 71, 73, 0.12), 0 0.5px 0 0 #2a2f30;
+  transform: translateY(0.5px) scale(0.99);
+}
+
+/* Optional: subtle highlight when selected, if needed in the future */
+/* 
+.accumulator-card.selected {
+  border: 5px solid #3d4749;
+  background-color: #F6E5C5;
+  animation: hand-card-selected-pulse 0.7s;
+}
+*/

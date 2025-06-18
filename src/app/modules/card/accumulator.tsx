@@ -8,6 +8,7 @@ interface GameCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export default function AccumulatorCard({
 	accumulator,
 	style,
+	onClick,
 	...props
 }: GameCardProps): JSX.Element {
 	let remainingHp: number = accumulator.originalValue;
@@ -18,8 +19,19 @@ export default function AccumulatorCard({
 		remainingHp = 0;
 	}
 
+	const isClickable: boolean = typeof onClick === 'function' && !props['aria-disabled'];
+
+	const classNames: string = [
+		'accumulator-card',
+		isClickable ? 'clickable' : '',
+		props.className ?? '',
+	]
+		.join(' ')
+		.trim();
+
 	return (
 		<div
+			className={classNames}
 			style={{
 				aspectRatio: '1 / 1',
 				backgroundColor: 'var(--container)',
@@ -31,6 +43,7 @@ export default function AccumulatorCard({
 				borderRadius: '10px',
 				...style, // Merge provided styles with default styles
 			}}
+			onClick={onClick}
 			{...props}
 		>
 			<h1>{remainingHp}</h1>
