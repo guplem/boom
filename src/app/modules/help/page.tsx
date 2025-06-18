@@ -39,16 +39,16 @@ export default function HelpPage(): JSX.Element {
 				<h2>🔢 Card Values</h2>
 				<ul>
 					<li>
-						<strong>A (Ace) to 10:</strong> Have a value from 1 to 10.
-					</li>
-					<li>
-						<strong>J, Q, K (Face Cards):</strong> Have a value of 0. These are special cards used
-						for the "Boom" action.
+						<strong>0 to 10:</strong> Cards have a value from 0 to 10.
 					</li>
 				</ul>
 				<p>
 					A card's value represents its attack strength when played from your hand, or the maximum
 					life an accumulator can hold when on the board.
+				</p>
+				<p>
+					Cards with a value of 0 are special cards (representing face cards like J, Q, K) and are
+					required for the "Boom" action.
 				</p>
 
 				<h2>🕹️ Game Interface</h2>
@@ -108,9 +108,9 @@ export default function HelpPage(): JSX.Element {
 				<h3>3. Boom</h3>
 				<ul>
 					<li>
-						<strong>How to do it:</strong> You can only use Boom if you have 3 face cards (J, Q, K)
-						in your hand. Enter a number from 1-9 in the input field in your control panel and click
-						the "Boom" button.
+						<strong>How to do it:</strong> You can only use Boom if your entire hand consists of
+						cards with value 0 (special cards). Enter a number from 1-9 in the input field in your
+						control panel and click the "Boom" button.
 					</li>
 					<li>
 						<strong>Effect:</strong> All accumulators on the board (including your own!) with a
