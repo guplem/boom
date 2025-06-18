@@ -1,7 +1,11 @@
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
-import { ChangeEvent, FormEvent, JSX, useState } from 'react';
+import React, { ChangeEvent, FormEvent, JSX, useState } from 'react';
 
-export default function RoomPicker(): JSX.Element {
+export type RoomPickerProps = {
+	onSwitchToCreator: () => void;
+};
+
+export default function RoomPicker({ onSwitchToCreator }: RoomPickerProps): JSX.Element {
 	const { join }: RoomStoreType = RoomStore();
 
 	// state for the text field
@@ -39,12 +43,44 @@ export default function RoomPicker(): JSX.Element {
 						setRoomFieldValue(event.target.value)
 					}
 					autoFocus
+					placeholder='Enter room name'
 				/>
 			</div>
 			<button type='submit' disabled={roomFieldValue === ''}>
 				Join
 			</button>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
+			<div style={{ marginTop: '10px', textAlign: 'center' }}>
+				<hr
+					style={{
+						width: '30px',
+						height: '3px',
+						background: 'var(--border, #719488)',
+						opacity: 0.5,
+						border: 'none',
+						borderRadius: '5px',
+					}}
+				/>
+				<span
+					style={{
+						color: 'var(--accent)',
+						cursor: 'pointer',
+						textDecoration: 'none',
+					}}
+					onMouseOver={(e: React.MouseEvent<HTMLSpanElement>): void => {
+						(e.target as HTMLSpanElement).style.textDecoration = 'underline';
+					}}
+					onMouseOut={(e: React.MouseEvent<HTMLSpanElement>): void => {
+						(e.target as HTMLSpanElement).style.textDecoration = 'none';
+					}}
+					onClick={onSwitchToCreator}
+					tabIndex={0}
+					role='button'
+					aria-label='Switch to create room'
+				>
+					Create a room instead
+				</span>
+			</div>
 		</form>
 	);
 }

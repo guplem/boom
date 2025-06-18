@@ -4,7 +4,7 @@ import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { JSX, useState } from 'react';
 
 export default function RoomPage(): JSX.Element {
-	const [joiningRoom, setJoiningRoom] = useState(true);
+	const [joiningRoom, setJoiningRoom] = useState<boolean>(true);
 
 	const { room, leave }: RoomStoreType = RoomStore();
 
@@ -45,7 +45,7 @@ export default function RoomPage(): JSX.Element {
 		);
 	}
 
-	// Show the room picker form
+	// Show the room picker or creator form, passing toggle handler as prop
 	return (
 		<div
 			// Div (container) that centers its child at its center
@@ -73,15 +73,13 @@ export default function RoomPage(): JSX.Element {
 				}}
 			>
 				<h1>Room Menu</h1>
-				<div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-					<button disabled={joiningRoom} onClick={() => setJoiningRoom(true)}>
-						Join
-					</button>
-					<button disabled={!joiningRoom} onClick={() => setJoiningRoom(false)}>
-						Create
-					</button>
+				<div style={{ marginTop: '10px' }}>
+					{joiningRoom ? (
+						<RoomPicker onSwitchToCreator={(): void => setJoiningRoom(false)} />
+					) : (
+						<RoomCreator onSwitchToPicker={(): void => setJoiningRoom(true)} />
+					)}
 				</div>
-				<div style={{ marginTop: '10px' }}>{joiningRoom ? <RoomPicker /> : <RoomCreator />}</div>
 			</div>
 			{/* <p>User ID: {UserStore.getState().id}</p> */}
 			{/* <button
