@@ -15,11 +15,11 @@ import React from 'react';
 interface ProcessedLogEntry {
 	id: string;
 	turn: number;
-	action: string;
+	action: ActionTypes | undefined;
 	player: string;
 	playerColor?: string;
 	details: string;
-	isUserTargeted?: boolean; // New property to indicate if user was targeted
+	isUserAttacked?: boolean;
 }
 
 /**
@@ -98,11 +98,11 @@ export const GameLog: React.FC<GameLogProps> = ({
 							return {
 								id: baseId,
 								turn: element.turn,
-								action: 'Attack',
+								action: ActionTypes.Attack,
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `${actionText} ${targetInfo.name}'s accumulator with a ${data.sourceHandValue} on an accumulator with value ${data.targetAccumulatorValue}${gainedExtraAccumulator}${remainingHpMessage}`,
-								isUserTargeted: data.targetPlayerId === userPlayerId, // Check if user was targeted
+								isUserAttacked: data.targetPlayerId === userPlayerId, // Check if user was targeted
 							};
 						}
 
@@ -111,7 +111,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 							return {
 								id: baseId,
 								turn: element.turn,
-								action: 'Swap',
+								action: ActionTypes.Swap,
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Replaced an accumulator with value ${data.targetAccumulatorValue} with a card of value ${data.sourceHandValue}`,
@@ -122,7 +122,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 							return {
 								id: baseId,
 								turn: element.turn,
-								action: 'Discard',
+								action: ActionTypes.Discard,
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Discarded a card`,
@@ -137,7 +137,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 							return {
 								id: baseId,
 								turn: element.turn,
-								action: 'Boom',
+								action: ActionTypes.Boom,
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Boomed the ${data.targetValue} and destroyed ${data.accumulatorsDestroyedQuantity} ${accumulatorText}`,
@@ -148,7 +148,7 @@ export const GameLog: React.FC<GameLogProps> = ({
 							return {
 								id: baseId,
 								turn: element.turn,
-								action: 'Unknown',
+								action: undefined,
 								player: playerInfo.name,
 								playerColor: playerInfo.color,
 								details: `Performed an unknown action`,
@@ -257,34 +257,36 @@ export const GameLog: React.FC<GameLogProps> = ({
 														>
 															<div className='log-entry__content'>
 																<div className='log-entry__details'>
-																	<div className='log-entry__description'> {entry.details}</div>
-																	{entry.isUserTargeted && (
+																	{entry.action == ActionTypes.Boom && (
 																		<div
 																			style={{
-																				display: 'flex',
 																				flexDirection: 'column',
+																				display: 'flex',
 																				alignItems: 'center',
-																				marginTop: '8px',
+																				marginBottom: '6px',
 																			}}
 																		>
-																			<div
+																			<img
+																				src='/boom-text.png'
+																				alt='Boom Action'
 																				style={{
-																					backgroundColor: '#ff6b6b',
-																					color: 'white',
-																					padding: '2px 6px',
-																					borderRadius: '4px',
-																					fontSize: '0.75em',
-																					fontWeight: 'bold',
-																					marginRight: '8px',
-																					display: 'inline-block',
-																					textAlign: 'center',
+																					maxHeight: '50px',
 																				}}
-																				title='You were targeted in this attack'
-																			>
-																				⚠️ ATTACKED! ⚠️
-																			</div>
+																			/>
 																		</div>
 																	)}
+																	{entry.isUserAttacked && (
+																		<span>
+																			<img
+																				src='/favicon.png'
+																				alt='Boom Action'
+																				style={{
+																					maxHeight: '17px',
+																				}}
+																			/>
+																		</span>
+																	)}
+																	<span className='log-entry__description'> {entry.details}</span>
 																</div>
 															</div>
 														</div>
