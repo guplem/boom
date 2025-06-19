@@ -24,6 +24,18 @@ export default function HelpPage(): JSX.Element {
 					textAlign: 'justify',
 				}}
 			>
+				{/* Top right buttons: Physical Game Rules and Close Tab */}
+				<div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+					<button
+						style={{ marginRight: 12 }}
+						aria-label='Open physical game rules'
+						onClick={(): void => {
+							window.open('/help/physical', '_blank', 'noopener');
+						}}
+					>
+						📖 Rules to play physically
+					</button>
+				</div>
 				<h1>🎴 How to Play Boom</h1>
 				<p>
 					Welcome to the digital version of Boom! Here’s everything you need to know to play the
@@ -173,9 +185,6 @@ export default function HelpPage(): JSX.Element {
 					accumulators' HP is equal to 0 at the end of their turn. This means you can be eliminated
 					even if you still have accumulators on the board with value 0.
 				</p>
-				<div style={{ textAlign: 'center', marginTop: '20px' }}>
-					<button onClick={(): void => window.close()}>Close Tab</button>
-				</div>
 			</div>
 		</div>
 	);

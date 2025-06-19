@@ -1,5 +1,6 @@
 import App from '@/app/app';
 import HelpPage from '@/app/modules/help/page';
+import HelpPagePhysical from '@/app/modules/help/pagePhysical';
 import '@/app/styles/colors.css';
 import '@/app/styles/components.css';
 import '@/app/styles/flex.css';
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
 	{
 		path: '/help',
 		element: <HelpPage />,
+	},
+	{
+		path: '/help/physical',
+		element: <HelpPagePhysical />,
 	},
 ]);
 
