@@ -4,8 +4,6 @@ A real-time multiplayer web implementation of the **Boom** card game, built with
 
 > **Boom** is a strategic card game where players eliminate opponents by destroying their life storage cards. The last player standing wins!
 
-> **⚠️ Development Status**: This is currently a skeleton implementation being built up progressively. Core multiplayer functionality and game mechanics are being developed incrementally.
-
 ## 🚀 TL;DR - Quick Start for Non-Programmers
 
 Want to just run the game? Here's the fastest way:
