@@ -1,3 +1,4 @@
+import { strategiesList } from '@/app/modules/ai/strategies';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { createPlayer } from '@/app/modules/player/setup';
@@ -5,7 +6,7 @@ import { FormEvent, JSX, useContext, useState } from 'react';
 
 export default function PlayerCreationForm(): JSX.Element {
 	const [playerName, setPlayerName] = useState<string>('');
-	const [isBot, setIsBot] = useState<boolean>(false);
+	const [aiStrategy, setAiStrategy] = useState<string>('human');
 	const [playerColor, setPlayerColor] = useState<string>('');
 	const playerContext: PlayerContextType | null = useContext(PlayerContext);
 
@@ -31,14 +32,14 @@ export default function PlayerCreationForm(): JSX.Element {
 		const newPlayer: Player = createPlayer({
 			name: playerName.trim() || undefined,
 			color: playerColor.trim() || undefined,
-			isBot: isBot,
+			aiStrategy: aiStrategy === 'human' ? null : aiStrategy,
 		});
 
 		playerContext.addPlayer(newPlayer);
 
 		// Reset form
 		setPlayerName('');
-		setIsBot(false);
+		setAiStrategy('human');
 		setPlayerColor('');
 	};
 
@@ -105,6 +106,40 @@ export default function PlayerCreationForm(): JSX.Element {
 						Invalid hex color format
 					</div>
 				)}
+
+				<div>
+					<label htmlFor='aiStrategy'>AI Strategy: </label>
+					<select
+						id='aiStrategy'
+						value={aiStrategy}
+						onChange={(e): void => setAiStrategy(e.target.value)}
+					>
+						<option value='human'>Human</option>
+						{strategiesList.map((strategy) => (
+							<option key={strategy.name} value={strategy.name}>
+								{strategy.name}
+							</option>
+						))}
+					</select>
+					{/* Show description for selected AI strategy, if not human */}
+					{aiStrategy !== 'human' && (
+						<div
+							style={{
+								fontSize: '12px',
+								color: '#719488',
+								marginTop: '4px',
+								maxWidth: '300px', // Prevents the box from growing too wide
+								wordBreak: 'break-word', // Ensures long words/lines break
+								whiteSpace: 'pre-line', // Preserves line breaks if present
+							}}
+						>
+							{
+								strategiesList.find((strategy): boolean => strategy.name === aiStrategy)
+									?.description
+							}
+						</div>
+					)}
+				</div>
 			</div>
 			<button
 				type='submit'

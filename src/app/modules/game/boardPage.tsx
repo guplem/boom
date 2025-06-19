@@ -3,11 +3,7 @@ import { GameLogPanel } from '@/app/modules/game/logPanel';
 import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import { ActionTypes, GamePlayer } from '@/app/modules/game/model';
 import GamePlayerZone from '@/app/modules/game/playerZone';
-import {
-	remainingAccumulators,
-	remainingAccumulatorsDefending,
-	remainingHp,
-} from '@/app/modules/game/utils';
+import { remainingAccumulatorsDefending, remainingHp } from '@/app/modules/game/utils';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
@@ -173,7 +169,7 @@ export default function GameBoardPage({ userPlayerId }: BoardPageParams): JSX.El
 														</div>
 														<div>
 															<p>{remainingHp(userGamePlayer.accumulators)} HP</p>
-															<p>{remainingAccumulators(userGamePlayer.accumulators).length} Acc</p>
+															<p>{userGamePlayer.accumulators.length} Acc</p>
 														</div>
 													</div>
 													<div
@@ -297,7 +293,7 @@ export default function GameBoardPage({ userPlayerId }: BoardPageParams): JSX.El
 																action: ActionTypes.Swap,
 																params: {
 																	sourceHandIndex: handSelected!,
-																	targetRemainingAccumulatorIndex: index,
+																	targetAccumulatorIndex: index,
 																},
 															});
 														} else {
@@ -306,7 +302,7 @@ export default function GameBoardPage({ userPlayerId }: BoardPageParams): JSX.El
 																params: {
 																	targetPlayerId: player.id,
 																	sourceHandIndex: handSelected!,
-																	targetRemainingAccumulatorIndex: index,
+																	targetAccumulatorIndex: index,
 																},
 															});
 														}

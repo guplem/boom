@@ -1,4 +1,4 @@
-import { Accumulator } from '@/app/modules/game/model';
+import { Accumulator, Game, GamePlayer } from '@/app/modules/game/model';
 
 /**
  * Generates a random card number (0-9) based on weighted probabilities.
@@ -34,27 +34,41 @@ export const getRandomCard = (chances: Record<number, number> = {}): number => {
 	return cardsPool[Math.floor(Math.random() * cardsPool.length)];
 };
 
-export const remainingAccumulators = (accumulators: Accumulator[]): Accumulator[] => {
-	const activeAccumulators: Accumulator[] = [];
-	for (const accumulator of accumulators) {
-		if (accumulator.originalValue === 0) {
-			activeAccumulators.push(accumulator);
-			continue;
-		}
-		let remaining: number = accumulator.originalValue;
-		for (const attack of accumulator.attacks) {
-			remaining -= attack;
-		}
-		if (remaining > 0) {
-			activeAccumulators.push(accumulator);
-		}
-	}
-	return activeAccumulators;
-};
+/**
+ * Filters the active accumulators from the given list.
+ * An accumulator is considered active if it has not been fully depleted by attacks.
+ * If an accumulator's original value is 0, it is considered active since it cannot be attacked.
+ *
+ * @param accumulators - The list of accumulators to filter
+ * @returns A list of active accumulators
+ */
+// export const remainingAccumulators = (accumulators: Accumulator[]): Accumulator[] => {
+// 	const activeAccumulators: Accumulator[] = [];
+// 	for (const accumulator of accumulators) {
+// 		if (accumulator.originalValue === 0) {
+// 			activeAccumulators.push(accumulator);
+// 			continue;
+// 		}
+// 		let remaining: number = accumulator.originalValue;
+// 		for (const attack of accumulator.attacks) {
+// 			remaining -= attack;
+// 		}
+// 		if (remaining > 0) {
+// 			activeAccumulators.push(accumulator);
+// 		}
+// 	}
+// 	return activeAccumulators;
+// };
 
+/**
+ * Calculates the remaining HP of all active accumulators.
+ *
+ * @param accumulators - The list of accumulators to calculate remaining HP from.
+ * @returns The total remaining HP of all active accumulators.
+ */
 export const remainingHp = (accumulators: Accumulator[]): number => {
 	let totalHp: number = 0;
-	for (const accumulator of remainingAccumulators(accumulators)) {
+	for (const accumulator of accumulators) {
 		let remaining: number = accumulator.originalValue;
 		for (const attack of accumulator.attacks) {
 			remaining -= attack;
@@ -64,9 +78,16 @@ export const remainingHp = (accumulators: Accumulator[]): number => {
 	return totalHp;
 };
 
+/**
+ * Filters the remaining accumulators that are defending (i.e., have a positive original value).
+ * This is useful for identifying which accumulators can still defend against attacks.
+ *
+ * @param accumulators - The list of accumulators to filter.
+ * @returns A list of defending accumulators.
+ */
 export const remainingAccumulatorsDefending = (accumulators: Accumulator[]): Accumulator[] => {
 	const defendingAccumulators: Accumulator[] = [];
-	for (const accumulator of remainingAccumulators(accumulators)) {
+	for (const accumulator of accumulators) {
 		if (accumulator.originalValue > 0) {
 			defendingAccumulators.push(accumulator);
 		}
@@ -75,12 +96,36 @@ export const remainingAccumulatorsDefending = (accumulators: Accumulator[]): Acc
 };
 
 /**
- * Given the index of a remaining accumulator, returns the overall index in the original accumulators array.
+ * Given the index of a remaining accumulator (an accumulator that has not been fully depleted), returns the overall index of that accumulator in the original accumulators array (including those that have been fully depleted).
+ *
+ * @param allAccumulators - The complete list of accumulators, including those that have been fully depleted.
+ * @param remainingAccumulatorIndex - The index of the accumulator in the filtered list of remaining accumulators.
+ * @returns The index of the specified remaining accumulator in the original list of accumulators.
  */
-export const getIndexOfAccumulator = (
-	allAccumulators: Accumulator[],
-	remainingAccumulatorIndex: number,
-): number => {
-	const remainingAccumulatorsList: Accumulator[] = remainingAccumulators(allAccumulators);
-	return allAccumulators.indexOf(remainingAccumulatorsList[remainingAccumulatorIndex]);
+// export const getIndexOfAccumulator = (
+// 	allAccumulators: Accumulator[],
+// 	remainingAccumulatorIndex: number,
+// ): number => {
+// 	const remainingAccumulatorsList: Accumulator[] = remainingAccumulators(allAccumulators);
+// 	return allAccumulators.indexOf(remainingAccumulatorsList[remainingAccumulatorIndex]);
+// };
+
+/**
+ * Clones the current game state.
+ *
+ * @param gameState - The current game state to clone.
+ * @returns A deep clone of the game state.
+ */
+export const cloneGameState = (gameState: Game): Game => {
+	return JSON.parse(JSON.stringify(gameState));
+};
+
+/**
+ * Retrieves the current player based on the game's turn.
+ *
+ * @param game - The current game state.
+ * @returns The player whose turn it currently is.
+ */
+export const getCurrentPlayer = (game: Game): GamePlayer => {
+	return game.players[game.turn % game.players.length];
 };

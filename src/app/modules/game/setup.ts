@@ -27,6 +27,7 @@ export function createGame(players: Player[], gameConfig: GameConfig = {}): Game
 		handCardsCount: gameConfig.handCardsCount ?? defaultHandCardsCount,
 		winnerId: undefined,
 		history: [],
+		aiDelay: gameConfig.aiDelay ?? 1000,
 	};
 }
 

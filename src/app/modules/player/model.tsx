@@ -5,7 +5,7 @@ export interface Player {
 	readonly id: string;
 	readonly name: string;
 	readonly color: string;
-	readonly isBot: boolean;
+	readonly aiStrategy: string | null;
 	readonly owner: string;
 }
 
@@ -13,6 +13,6 @@ export interface PlayerConfig {
 	id?: string;
 	name?: string;
 	color?: string;
-	isBot: boolean;
+	aiStrategy?: string | null;
 	owner?: string;
 }

@@ -1,6 +1,7 @@
 export interface Game {
 	readonly players: GamePlayer[];
 	readonly handCardsCount: number;
+	readonly aiDelay: number; // Delay in milliseconds for AI players to make their move
 	turn: number;
 	winnerId?: string | null | undefined; // null if no one won, undefined if game is still ongoing
 	history: HistoryElement[];
@@ -20,6 +21,7 @@ export interface Accumulator {
 export interface GameConfig {
 	initialAccumulatorsCount?: number;
 	handCardsCount?: number;
+	aiDelay?: number;
 }
 
 /// === ACTIONS === ///
@@ -41,12 +43,12 @@ export enum ActionTypes {
 export interface AttackActionParams {
 	targetPlayerId: string;
 	sourceHandIndex: number;
-	targetRemainingAccumulatorIndex: number;
+	targetAccumulatorIndex: number;
 }
 
 export interface SwapActionParams {
 	sourceHandIndex: number;
-	targetRemainingAccumulatorIndex: number;
+	targetAccumulatorIndex: number;
 }
 
 export interface DiscardActionParams {

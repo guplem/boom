@@ -1,20 +1,16 @@
+import { executeAiStrategy } from '@/app/modules/ai/manager';
 import GameBoardPage from '@/app/modules/game/boardPage';
-import {
-	executeAction,
-	finishGame,
-	GameContext,
-	getCurrentPlayer,
-	startGame,
-} from '@/app/modules/game/manager';
+import { executeAction, finishGame, GameContext, startGame } from '@/app/modules/game/manager';
 import { ActionConfig, Game } from '@/app/modules/game/model';
 import GameOverPage from '@/app/modules/game/overPage';
+import { getCurrentPlayer } from '@/app/modules/game/utils';
 import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import PlayerPage from '@/app/modules/player/page';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
 import { UserStore, UserStoreType } from '@/app/modules/user/store';
 import { useSyncState } from '@robojs/sync';
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 
 export default function GamePage(): JSX.Element {
 	const { room }: RoomStoreType = RoomStore();
@@ -22,6 +18,15 @@ export default function GamePage(): JSX.Element {
 
 	const [players, setPlayers] = useSyncState<Player[]>([], [room, 'players']);
 	const [game, setGame] = useSyncState<Game | null>(null, [room, 'game']);
+
+	useEffect((): void => {
+		if (!game || !userId) {
+			return;
+		}
+		console.log('Received game update');
+		executeAiStrategy(userId, game, players, setGame);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [game]);
 
 	return (
 		<div
@@ -36,7 +41,7 @@ export default function GamePage(): JSX.Element {
 					finishGame: () => finishGame(setGame),
 					getCurrentPlayer: (game: Game) => getCurrentPlayer(game),
 					executeAction: (playerId: string, actionDefinition: ActionConfig) =>
-						executeAction(setGame, playerId, actionDefinition),
+						executeAction(game, setGame, playerId, actionDefinition),
 				}}
 			>
 				<PlayerContext.Provider
@@ -53,8 +58,8 @@ export default function GamePage(): JSX.Element {
 						) : (
 							<GameBoardPage
 								userPlayerId={
-									players.find((player: Player) => player.owner === userId && !player.isBot)?.id ||
-									'not-found'
+									players.find((player: Player) => player.owner === userId && !player.aiStrategy)
+										?.id || 'not-found'
 								}
 							/>
 						)

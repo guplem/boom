@@ -14,7 +14,12 @@ import {
 	SwapActionParams,
 } from '@/app/modules/game/model';
 import { createAccumulator, createGame } from '@/app/modules/game/setup';
-import { getIndexOfAccumulator, getRandomCard, remainingHp } from '@/app/modules/game/utils';
+import {
+	cloneGameState,
+	getCurrentPlayer,
+	getRandomCard,
+	remainingHp,
+} from '@/app/modules/game/utils';
 import { Player } from '@/app/modules/player/model';
 import React, { createContext, Dispatch, SetStateAction } from 'react';
 
@@ -79,14 +84,11 @@ const advanceToNextTurn = (game: Game): Game => {
 	}
 
 	console.error('No players with HP found after maximum attempts. This should not be possible.');
-	return { ...game };
-};
-
-export const getCurrentPlayer = (game: Game): GamePlayer => {
-	return game.players[game.turn % game.players.length];
+	return game;
 };
 
 export const executeAction = (
+	game: Game | null,
 	setGame: Dispatch<SetStateAction<Game | null>>,
 	playerId: string,
 	actionConfig: ActionConfig,
@@ -95,168 +97,208 @@ export const executeAction = (
 	console.log(
 		`Executing action: ${actionConfig.action} for player ${playerId} with params: ${JSON.stringify(actionConfig.params)}`,
 	);
-	setGame((prevGame: Game | null): Game | null => {
-		// Ensure game exists
-		if (!prevGame) {
-			console.error('No game to execute action');
-			return null;
-		}
 
-		// Ensure game is running
-		if (prevGame.winnerId !== undefined) {
-			console.error('Game has already ended, cannot execute actions');
-			return null;
-		} // Ensure is player's turn
-		if (getCurrentPlayer(prevGame).id !== playerId) {
-			console.error(`It's not player ${playerId}'s turn to act`);
-			return prevGame;
-		}
-
-		if (!actionConfig.params) {
-			console.error(`Action parameters cannot be null for action: ${actionConfig.action}`);
-			return prevGame;
-		}
-
-		let result: {
-			newGame: Game | null;
-			historyData:
-				| AttackActionHistory
-				| SwapActionHistory
-				| DiscardActionHistory
-				| BoomActionHistory
-				| null;
-		} | null = null;
-
-		// Global checks are OK, execute action:
-		switch (actionConfig.action) {
-			case ActionTypes.Attack: {
-				result = attack({ ...prevGame }, playerId, actionConfig.params as AttackActionParams);
-				break;
-			}
-			case ActionTypes.Swap: {
-				result = swap({ ...prevGame }, playerId, actionConfig.params as SwapActionParams);
-				break;
-			}
-			case ActionTypes.Discard: {
-				result = discard({ ...prevGame }, playerId, actionConfig.params as DiscardActionParams);
-				break;
-			}
-			case ActionTypes.Boom: {
-				result = boom({ ...prevGame }, playerId, actionConfig.params as BoomActionParams);
-				break;
-			}
-			default: {
-				console.error(`Unknown action type: ${actionConfig.action}`);
-				break;
-			}
-		}
-
-		// Post action success checks
-		if (result?.newGame) {
-			console.log(`Action ${actionConfig.action} executed successfully for player ${playerId}.`);
-			// Mark action as successful
-			actionSuccess = true;
-			// Ensure all players have full hands after action
-			for (const player of result.newGame.players) {
-				while (player.hand.length < result.newGame.handCardsCount) {
-					console.warn(
-						`Player ${player.id} has ${player.hand.length} cards, which is less than ${result.newGame.handCardsCount}. This happened after action ${actionConfig.action}. Adding a random card.`,
-					);
-					player.hand.push(getRandomCard());
-				}
-			}
-
-			// Register action in history
-			if (result.historyData)
-				result.newGame.history.push({
-					turn: prevGame.turn,
-					action: actionConfig.action,
-					sourcePlayerId: playerId,
-					data: result.historyData,
-				});
-			else
+	// First try to get the next game state evolving from the provided game state
+	// This way no "update" will be shared accross all clients if the action is not valid
+	if (getNextGameState(game, playerId, actionConfig)) {
+		// If a next game state can be obtained, then do the actual state update
+		setGame((prevGame: Game | null): Game | null => {
+			// Use the "prevGame" to ensure we are working with the latest state and regenerate the next game state
+			const nextGame: Game | null = getNextGameState(prevGame, playerId, actionConfig);
+			if (nextGame) {
+				actionSuccess = true;
+				console.log(`Action ${actionConfig.action} executed successfully.`);
+			} else {
 				console.error(
-					`No history data available for action ${actionConfig.action} executed by player ${playerId}.`,
+					`Action ${actionConfig.action} failed for player ${playerId} even after successful pre-validation.`,
 				);
-		}
-
-		return result?.newGame || prevGame;
-	});
+			}
+			return nextGame || prevGame;
+		});
+	}
 
 	return actionSuccess;
+};
+
+const getNextGameState = (
+	game: Game | null,
+	playerId: string,
+	actionConfig: ActionConfig,
+): Game | null => {
+	// Ensure game exists
+	if (!game) {
+		console.error('No game to execute action');
+		return null;
+	}
+
+	// Ensure game is running
+	if (game.winnerId !== undefined) {
+		console.error('Game has already ended, cannot execute actions');
+		return null;
+	}
+	// Ensure is player's turn
+	if (getCurrentPlayer(game).id !== playerId) {
+		console.error(`It's not player ${playerId}'s turn to act`);
+		return null;
+	}
+
+	if (!actionConfig.params) {
+		console.error(`Action parameters cannot be null for action: ${actionConfig.action}`);
+		return null;
+	}
+
+	let result: {
+		newGame: Game | null;
+		newHistoryData:
+			| AttackActionHistory
+			| SwapActionHistory
+			| DiscardActionHistory
+			| BoomActionHistory
+			| null;
+	} | null = null;
+
+	game = cloneGameState(game);
+
+	// Global checks are OK, execute action:
+	switch (actionConfig.action) {
+		case ActionTypes.Attack: {
+			result = attack(game, playerId, actionConfig.params as AttackActionParams);
+			break;
+		}
+		case ActionTypes.Swap: {
+			result = swap(game, playerId, actionConfig.params as SwapActionParams);
+			break;
+		}
+		case ActionTypes.Discard: {
+			result = discard(game, playerId, actionConfig.params as DiscardActionParams);
+			break;
+		}
+		case ActionTypes.Boom: {
+			result = boom(game, playerId, actionConfig.params as BoomActionParams);
+			break;
+		}
+		default: {
+			console.error(`Unknown action type: ${actionConfig.action}`);
+			break;
+		}
+	}
+
+	// Post action success checks
+	if (result?.newGame) {
+		// console.log(`Action ${actionConfig.action} executed successfully for player ${playerId}.`);
+
+		for (const player of result.newGame.players) {
+			// Ensure all players have full hands after action
+			while (player.hand.length < result.newGame.handCardsCount) {
+				console.warn(
+					`Player ${player.id} has ${player.hand.length} cards, which is less than ${result.newGame.handCardsCount}. This happened after action ${actionConfig.action}. Adding a random card.`,
+				);
+				player.hand.push(getRandomCard());
+			}
+
+			// Ensure no depleted accumulators remain
+			const indexToRemove: number[] = [];
+			for (let i: number = 0; i < player.accumulators.length; i++) {
+				const accumulator: Accumulator = player.accumulators[i];
+				const hp: number = remainingHp([accumulator]);
+				if (hp <= 0 && accumulator.originalValue > 0) {
+					console.log(`Removing depleted accumulator from player's ${player.id} accumulators.`);
+					indexToRemove.push(i);
+				}
+			}
+			for (let i: number = indexToRemove.length - 1; i >= 0; i--) {
+				player.accumulators.splice(indexToRemove[i], 1);
+			}
+		}
+
+		// Register action in history
+		if (result.newHistoryData)
+			result.newGame.history.push({
+				turn: game.turn,
+				action: actionConfig.action,
+				sourcePlayerId: playerId,
+				data: result.newHistoryData,
+			});
+		else
+			console.error(
+				`No history data available for action ${actionConfig.action} executed by player ${playerId}.`,
+			);
+	}
+
+	return result?.newGame ?? null;
 };
 
 const attack = (
 	game: Game,
 	playerId: string,
-	{ targetPlayerId, sourceHandIndex, targetRemainingAccumulatorIndex }: AttackActionParams,
-): { newGame: Game | null; historyData: AttackActionHistory | null } => {
+	{ targetPlayerId, sourceHandIndex, targetAccumulatorIndex }: AttackActionParams,
+): { newGame: Game | null; newHistoryData: AttackActionHistory | null } | null => {
 	if (
 		!targetPlayerId ||
 		sourceHandIndex === null ||
 		sourceHandIndex === undefined ||
-		targetRemainingAccumulatorIndex === null ||
-		targetRemainingAccumulatorIndex === undefined
+		targetAccumulatorIndex === null ||
+		targetAccumulatorIndex === undefined
 	) {
 		console.error('Invalid parameters for attack action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	game = { ...game };
+	game = game;
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 	const targetPlayer: GamePlayer | undefined = game.players.find((p) => p.id === targetPlayerId);
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for attack action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (!targetPlayer) {
 		console.error('Invalid target player for attack action');
-		return { newGame: null, historyData: null };
+		return null;
+	}
+
+	if (sourcePlayer.id === targetPlayerId) {
+		console.error('Cannot attack yourself');
+		return null;
 	}
 
 	if (sourceHandIndex < 0 || sourceHandIndex >= sourcePlayer.hand.length) {
 		console.error('Invalid hand index for attack action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	const realAccumulatorIndex: number = getIndexOfAccumulator(
-		targetPlayer.accumulators,
-		targetRemainingAccumulatorIndex,
-	);
-
-	if (realAccumulatorIndex < 0 || realAccumulatorIndex >= targetPlayer.accumulators.length) {
+	if (targetAccumulatorIndex < 0 || targetAccumulatorIndex >= targetPlayer.accumulators.length) {
 		console.error('Invalid accumulator index for attack action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
 	const targetAccumulator: Accumulator | undefined =
-		targetPlayer.accumulators[realAccumulatorIndex];
+		targetPlayer.accumulators[targetAccumulatorIndex];
 
 	if (!targetAccumulator) {
 		console.error('Target accumulator does not exist');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (targetAccumulator.attacks.length > 0 && sourceCard == 0) {
 		console.error(
 			'Cannot attack an accumulator that has already been attacked with a card of value 0, it would not change anything',
 		);
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (targetAccumulator.originalValue == 0) {
 		console.error('Cannot attack an accumulator with original value 0');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	const targetAccumulatorRemainingHealth: number = remainingHp([targetAccumulator]);
 
 	if (targetAccumulatorRemainingHealth < sourceCard) {
 		console.error("Cannot decrease an accumulator's value below zero");
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	const obtainedExtraAccumulator: boolean =
@@ -280,59 +322,54 @@ const attack = (
 	sourcePlayer.hand[sourceHandIndex] = getRandomCard(); // Replace the used card with a new random card
 	game = advanceToNextTurn(game);
 
-	return { newGame: game, historyData: historyEntry };
+	return { newGame: game, newHistoryData: historyEntry };
 };
 
 const swap = (
 	game: Game,
 	playerId: string,
-	{ sourceHandIndex, targetRemainingAccumulatorIndex }: SwapActionParams,
-): { newGame: Game | null; historyData: SwapActionHistory | null } => {
+	{ sourceHandIndex, targetAccumulatorIndex }: SwapActionParams,
+): { newGame: Game | null; newHistoryData: SwapActionHistory | null } | null => {
 	if (
 		sourceHandIndex === null ||
 		sourceHandIndex === undefined ||
-		targetRemainingAccumulatorIndex === null ||
-		targetRemainingAccumulatorIndex === undefined
+		targetAccumulatorIndex === null ||
+		targetAccumulatorIndex === undefined
 	) {
 		console.error('Invalid parameters for swap action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	game = { ...game };
+	game = game;
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for swap action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (sourceHandIndex < 0 || sourceHandIndex >= sourcePlayer.hand.length) {
 		console.error('Invalid hand index for swap action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	const realAccumulatorIndex: number = getIndexOfAccumulator(
-		sourcePlayer.accumulators,
-		targetRemainingAccumulatorIndex,
-	);
-
-	if (realAccumulatorIndex < 0 || realAccumulatorIndex >= sourcePlayer.accumulators.length) {
+	if (targetAccumulatorIndex < 0 || targetAccumulatorIndex >= sourcePlayer.accumulators.length) {
 		console.error('Invalid accumulator index for swap action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
 	const targetAccumulator: Accumulator | undefined =
-		sourcePlayer.accumulators[realAccumulatorIndex];
+		sourcePlayer.accumulators[targetAccumulatorIndex];
 
 	if (!targetAccumulator) {
 		console.error('Target accumulator does not exist');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (targetAccumulator.attacks.length > 0) {
 		console.error('Cannot swap with an accumulator that has attacks');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	// STORE STATE IN HISTORY before performing the action
@@ -342,33 +379,33 @@ const swap = (
 	};
 
 	// PERFORM THE ACTION
-	sourcePlayer.accumulators[realAccumulatorIndex] = createAccumulator(sourceCard);
+	sourcePlayer.accumulators[targetAccumulatorIndex] = createAccumulator(sourceCard);
 	sourcePlayer.hand[sourceHandIndex] = targetAccumulator.originalValue;
 
-	return { newGame: game, historyData: historyEntry };
+	return { newGame: game, newHistoryData: historyEntry };
 };
 
 const discard = (
 	game: Game,
 	playerId: string,
 	{ sourceHandIndex }: DiscardActionParams,
-): { newGame: Game | null; historyData: DiscardActionHistory | null } => {
+): { newGame: Game | null; newHistoryData: DiscardActionHistory | null } | null => {
 	if (sourceHandIndex === null || sourceHandIndex === undefined) {
 		console.error('Invalid parameters for discard action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	game = { ...game };
+	game = game;
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for discard action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (sourceHandIndex < 0 || sourceHandIndex >= sourcePlayer.hand.length) {
 		console.error('Invalid hand index for discard action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	const sourceCard: number = sourcePlayer.hand[sourceHandIndex];
@@ -382,35 +419,35 @@ const discard = (
 	sourcePlayer.hand[sourceHandIndex] = getRandomCard();
 	game = advanceToNextTurn(game);
 
-	return { newGame: game, historyData: historyEntry };
+	return { newGame: game, newHistoryData: historyEntry };
 };
 
 const boom = (
 	game: Game,
 	playerId: string,
 	{ targetValue }: BoomActionParams,
-): { newGame: Game | null; historyData: BoomActionHistory | null } => {
+): { newGame: Game | null; newHistoryData: BoomActionHistory | null } | null => {
 	if (targetValue === null || targetValue === undefined) {
 		console.error('Invalid parameters for boom action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
-	game = { ...game };
+	game = game;
 	const sourcePlayer: GamePlayer | undefined = game.players.find((p) => p.id === playerId);
 
 	if (!sourcePlayer) {
 		console.error('Invalid source player for boom action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (targetValue <= 0) {
 		console.error('Invalid target value for boom action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	if (!sourcePlayer.hand.every((card: number) => card === 0)) {
 		console.error('Player must have all hand cards with value 0 to execute boom action');
-		return { newGame: null, historyData: null };
+		return null;
 	}
 
 	let accumulatorsDestroyed: number = 0;
@@ -439,5 +476,5 @@ const boom = (
 	sourcePlayer.hand = sourcePlayer.hand.map(() => getRandomCard());
 	game = advanceToNextTurn(game);
 
-	return { newGame: game, historyData: historyEntry };
+	return { newGame: game, newHistoryData: historyEntry };
 };

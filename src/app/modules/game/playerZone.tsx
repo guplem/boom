@@ -1,6 +1,5 @@
 import GameAccumulatorCard from '@/app/modules/game/accumulatorCard';
 import { GamePlayer } from '@/app/modules/game/model';
-import { remainingAccumulators } from '@/app/modules/game/utils';
 import PlayerCard from '@/app/modules/player/card';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
@@ -85,7 +84,7 @@ export default function GamePlayerZone({
 										player={playerData}
 										gamePlayer={gamePlayer}
 									/>
-									{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
+									{gamePlayer.accumulators.map((accumulator, index) => (
 										<GameAccumulatorCard
 											onClick={
 												canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined

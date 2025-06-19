@@ -14,7 +14,7 @@ export const PlayerContext: React.Context<PlayerContextType | null> =
  * Checks if a user already owns a non-bot player
  */
 export const userOwnsNonBotPlayer = (players: Player[], userId: string): boolean => {
-	return players.some((player: Player): boolean => player.owner === userId && !player.isBot);
+	return players.some((player: Player): boolean => player.owner === userId && !player.aiStrategy);
 };
 
 /**
@@ -26,7 +26,7 @@ export const validatePlayerAddition = (
 	newPlayer: Player,
 ): { isValid: boolean; error?: string } => {
 	// Allow adding bot players without restriction
-	if (newPlayer.isBot) {
+	if (newPlayer.aiStrategy) {
 		return { isValid: true };
 	}
 

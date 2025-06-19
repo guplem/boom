@@ -22,7 +22,8 @@ export default function PlayerCard({
 	const [isHovered, setIsHovered] = useState<boolean>(false);
 
 	// Determine if there's content to show in the hover section
-	const hasHoverContent: boolean = player.isBot || (showOwnedIndicator && isPlayerOwned(player));
+	const hasHoverContent: boolean =
+		!!player.aiStrategy || (showOwnedIndicator && isPlayerOwned(player));
 
 	return (
 		<div
@@ -77,7 +78,7 @@ export default function PlayerCard({
 				{/* Show CPU and ownership indicators only on hover and if there's content */}
 				{(!gamePlayer || (isHovered && hasHoverContent)) && (
 					<p style={{ textAlign: 'center' }}>
-						{player.isBot && <span>CPU</span>}
+						{player.aiStrategy && <span>{player.aiStrategy}</span>}
 						<br />
 						{showOwnedIndicator && isPlayerOwned(player) && <span>(Owned)</span>}
 					</p>
