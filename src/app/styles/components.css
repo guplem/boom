@@ -37,12 +37,70 @@ input {
   border-radius: 10px;
   border: 2px solid #3d4749;
   padding: 5px;
+  /* Make input visually similar to select/button */
+  box-shadow: 0 4px 12px 0 rgba(61, 71, 73, 0.18), 0 1.5px 0 0 #2a2f30;
+  transition: box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s;
+  outline: none;
+}
+
+input:focus {
+  box-shadow: 0 8px 24px 0 rgba(61, 71, 73, 0.28), 0 2px 0 0 #2a2f30;
+}
+
+input:hover:not(:disabled) {
+  box-shadow: 0 8px 24px 0 rgba(61, 71, 73, 0.28), 0 2px 0 0 #2a2f30;
+  transform: translateY(-1px) scale(1.01);
+}
+
+input:active:not(:disabled) {
+  box-shadow: 0 2px 6px 0 rgba(61, 71, 73, 0.12), 0 0.5px 0 0 #2a2f30;
+  transform: translateY(0.5px) scale(0.99);
 }
 
 input:disabled {
   cursor: default;
   box-shadow: none;
   opacity: 0.7;
+}
+
+select {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  border-radius: 10px;
+  border: 2px solid #3d4749;
+  padding: 5px;
+  background-color: #fff;
+  color: inherit;
+  box-shadow: 0 4px 12px 0 rgba(61, 71, 73, 0.18), 0 1.5px 0 0 #2a2f30;
+  transition: box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus {
+  box-shadow: 0 8px 24px 0 rgba(61, 71, 73, 0.28), 0 2px 0 0 #2a2f30;
+}
+
+select:hover:not(:disabled) {
+  box-shadow: 0 8px 24px 0 rgba(61, 71, 73, 0.28), 0 2px 0 0 #2a2f30;
+  transform: translateY(-1px) scale(1.01);
+}
+
+select:active:not(:disabled) {
+  box-shadow: 0 2px 6px 0 rgba(61, 71, 73, 0.12), 0 0.5px 0 0 #2a2f30;
+  transform: translateY(0.5px) scale(0.99);
+}
+
+select:disabled {
+  cursor: default;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+option {
+  cursor: pointer;
 }
 
 .hand-card {

@@ -69,13 +69,13 @@ function EnglishRules(): JSX.Element {
 				</li>
 			</ul>
 			<p>Each card should exist in multiple copies (ideally at least 4, one per suit).</p>
-			<hr />
+			
 			<h2>🎯 Objective of the Game</h2>
 			<p>
 				The goal is to be the <strong>last player standing</strong>, eliminating others by
 				destroying all their <strong>accumulator cards</strong>.
 			</p>
-			<hr />
+			
 			<h2>🧩 Setup</h2>
 			<ol>
 				<li>
@@ -103,7 +103,7 @@ function EnglishRules(): JSX.Element {
 					</ul>
 				</li>
 			</ol>
-			<hr />
+			
 			<h2>🔢 Card Values</h2>
 			<table style={{ width: '100%', marginBottom: 8 }}>
 				<thead>
@@ -137,7 +137,7 @@ function EnglishRules(): JSX.Element {
 					<strong>cannot be attacked</strong>.
 				</li>
 			</ul>
-			<hr />
+			
 			<h2>🔄 Game Turn</h2>
 			<p>
 				Each turn consists of three phases, where the player can perform{' '}
@@ -251,7 +251,7 @@ function EnglishRules(): JSX.Element {
 					</ul>
 				</li>
 			</ol>
-			<hr />
+			
 			<h2>🚨 End of Game</h2>
 			<ul>
 				<li>
@@ -264,7 +264,7 @@ function EnglishRules(): JSX.Element {
 				</li>
 				<li>If all players are eliminated simultaneously, the game ends in a draw.</li>
 			</ul>
-			<hr />
+			
 			<h2>🔁 Additional Rules</h2>
 			<ul>
 				<li>
@@ -297,13 +297,13 @@ function SpanishRules(): JSX.Element {
 				</li>
 			</ul>
 			<p>Cada carta debe existir en varias copias (idealmente al menos 4, una por cada palo).</p>
-			<hr />
+			
 			<h2>🎯 Objetivo del Juego</h2>
 			<p>
 				El objetivo es ser el <strong>último jugador en pie</strong>, eliminando a los demás al
 				destruir todos sus <strong>acumuladores</strong>.
 			</p>
-			<hr />
+			
 			<h2>🧩 Preparación</h2>
 			<ol>
 				<li>
@@ -331,7 +331,7 @@ function SpanishRules(): JSX.Element {
 					</ul>
 				</li>
 			</ol>
-			<hr />
+			
 			<h2>🔢 Valores de las Cartas</h2>
 			<table style={{ width: '100%', marginBottom: 8 }}>
 				<thead>
@@ -365,7 +365,7 @@ function SpanishRules(): JSX.Element {
 					<strong>no pueden ser atacadas</strong>.
 				</li>
 			</ul>
-			<hr />
+			
 			<h2>🔄 Turno de Juego</h2>
 			<p>
 				Cada turno se compone de tres fases, donde el jugador puede realizar{' '}
@@ -482,7 +482,7 @@ function SpanishRules(): JSX.Element {
 					</ul>
 				</li>
 			</ol>
-			<hr />
+			
 			<h2>🚨 Fin del Juego</h2>
 			<ul>
 				<li>
@@ -499,7 +499,7 @@ function SpanishRules(): JSX.Element {
 					empate.
 				</li>
 			</ul>
-			<hr />
+			
 			<h2>🔁 Reglas Adicionales</h2>
 			<ul>
 				<li>

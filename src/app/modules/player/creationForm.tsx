@@ -108,7 +108,7 @@ export default function PlayerCreationForm(): JSX.Element {
 				)}
 
 				<div>
-					<label htmlFor='aiStrategy'>AI Strategy: </label>
+					<label htmlFor='aiStrategy'>Strategy: </label>
 					<select
 						id='aiStrategy'
 						value={aiStrategy}

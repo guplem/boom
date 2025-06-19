@@ -108,13 +108,13 @@ export default function GameBoardPage({ userPlayerId }: BoardPageParams): JSX.El
 													Help
 												</a>
 											</small>{' '}
-											{!userGamePlayer && (
+											{/* {!userGamePlayer && (
 												<div>
 													Unknown Controlled player: {userPlayerId}. <br /> All (
 													{gameProvider.game?.players.length}) players:{' '}
 													{gameProvider.game?.players.map((player) => player.id).join(', ')}
 												</div>
-											)}
+											)} */}
 											{/* {isThisPlayerTurn && <div style={{ textAlign: 'center' }}>Your Turn</div>} */}
 											{userGamePlayer && (
 												<>
