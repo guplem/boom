@@ -100,6 +100,8 @@ select:disabled {
 }
 
 option {
+  /* Note: Most browsers ignore cursor styles on <option> elements for security/accessibility reasons.
+     The pointer cursor will only show on the <select> dropdown itself, not on the options list. */
   cursor: pointer;
 }
 
