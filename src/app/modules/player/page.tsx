@@ -111,13 +111,12 @@ export default function PlayerPage(): JSX.Element {
 									leave();
 								}}
 							>
-								Leave Room
-							</a>{' '}
-							{room}
+								Leave Room "{room}"
+							</a>
 							{' - '}
 							<a href='/help' target='_blank' rel='noopener noreferrer'>
 								Help
-							</a>{' '}
+							</a>
 						</small>
 					</div>
 				);

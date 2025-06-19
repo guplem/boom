@@ -13,7 +13,7 @@
 
 	## 🎯 Objective of the Game
 
-	The goal is to be the **last player standing**, eliminating others by destroying all their **life storage cards**.
+	The goal is to be the **last player standing**, eliminating others by destroying all their **accumulator cards**.
 
 	------
 
@@ -27,9 +27,9 @@
 
 		- **3 cards in hand** (randomly drawn).
 
-		- **3 cards on the board**, in front of the player, which act as **life storage cards**.
+		- **3 cards on the board**, in front of the player, which act as **accumulators**.
 
-			> The initial value of each storage card is the value of the corresponding card.
+			> The initial value of each accumulator is the value of the corresponding card.
 
 			> If all 3 cards are face cards, they must be redrawn.
 
@@ -54,15 +54,15 @@
 
 	### 1. **Swap**
 
-	- You may exchange **one card from your hand** with **one of your board cards** (life storage).
+	- You may exchange **one card from your hand** with **one of your board cards** (accumulator).
 
 	- **Important**:
 
 		> Swapping is optional.
 
-		> You cannot swap a storage card that has been attacked (i.e., one with another card on top).
+		> You cannot swap an accumulator that has been attacked (i.e., one with another card on top).
 
-		> The (initial) value of the storage becomes that of the new card, and the old card moves to your hand and can be used for attacking, Boom, discarding, or swapping again in future turns.
+		> The (initial) value of the accumulator becomes that of the new card, and the old card moves to your hand and can be used for attacking, Boom, discarding, or swapping again in future turns.
 
 	------
 
@@ -75,25 +75,25 @@
 	- **Selection**:
 
 		- Choose **one card from your hand**.
-		- Select **a life storage card of an opponent** that is **not a face card**, since face cards cannot be attacked.
+		- Select **an accumulator of an opponent** that is **not a face card**, since face cards cannot be attacked.
 
 	- **Numerical Restriction**:
 
-		> The attacking card **must not exceed** the current value (or remaining life) of the storage. That is, the subtraction cannot result in a negative number.
+		> The attacking card **must not exceed** the current value (or remaining life) of the accumulator. That is, the subtraction cannot result in a negative number.
 
 	- **Executing the Attack**:
 
-		1. Place the attacking card on top of the opponent's storage card.
-		2. Subtract the value of the attacking card from the current value of the storage card to get the new value.
-		3. If, after the attack, the storage reaches **0**, it is removed from the board along with the attacking card and any others stacked on top.
+		1. Place the attacking card on top of the opponent's accumulator.
+		2. Subtract the value of the attacking card from the current value of the accumulator to get the new value.
+		3. If, after the attack, the accumulator reaches **0**, it is removed from the board along with the attacking card and any others stacked on top.
 
-	- **Gaining Extra Lives**:
+	- **Gaining Extra Accumulators**:
 
-		- If the **original value** of the storage (the card’s own value) is **exactly equal** to the attacking card’s value, and the storage is destroyed in a single blow, you gain an **extra life**.
+		- If the **original value** of the accumulator (the card’s own value) is **exactly equal** to the attacking card’s value, and the accumulator is destroyed in a single blow, you gain an **extra accumulator**.
 
-		- **Extra Life Procedure**:
+		- **Extra Accumulator Procedure**:
 
-			> Take a card from the deck and place it on the board as a new life storage. After this, at the end of the action, draw one card from the deck to refill your hand.
+			> Take a card from the deck and place it on the board as a new accumulator. After this, at the end of the action, draw one card from the deck to refill your hand.
 
 	#### c) **Boom**
 
@@ -104,7 +104,7 @@
 	- Execution:
 
 		1. Declare a number from **1 to 10** (e.g., “Boom on 2”).
-		2. All **life storage cards** on the board with exactly that value are eliminated immediately (including any stacked cards). This applies to both opponents' and your own storage cards if applicable.
+		2. All **accumulators** on the board with exactly that value are eliminated immediately (including any stacked cards). This applies to both opponents' and your own accumulators if applicable.
 		3. The 3 face cards used for Boom are discarded to the pile.
 
 		> Boom cannot be used on face cards.
@@ -123,7 +123,7 @@
 		- If you **discarded** 1 to 3 cards, draw the same number from the deck to return to 3 cards in hand.
 		- If you **attacked**, draw **1 card**.
 		- If you performed a **Boom**, draw **3 cards**.
-		- *Exception (extra life)*: When you gain an extra life after an exact attack, the card used for the extra life is placed directly on the board, and you then draw 1 card from the deck to refill your hand.
+		- *Exception (extra accumulator)*: When you gain an extra accumulator after an exact attack, the card used for the extra accumulator is placed directly on the board, and you then draw 1 card from the deck to refill your hand.
 	- Once you've drawn cards, your turn ends and play passes to the next player.
 
 	------
@@ -131,9 +131,9 @@
 	## 🚨 End of Game
 
 	- **Elimination**:
-		- A player is eliminated when **all their board cards have been destroyed** or when the **sum of their life storage values is 0** (e.g., only face cards remain).
+		- A player is eliminated when **all their board cards have been destroyed** or when the **sum of their accumulator values is 0** (e.g., only face cards remain).
 	- **Victory**:
-		- The **winner** is the last player with at least one life storage card holding life.
+		- The **winner** is the last player with at least one accumulator holding life.
 	- If **all players are eliminated simultaneously**, the game ends in a **draw**.
 
 	------

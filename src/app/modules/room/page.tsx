@@ -129,7 +129,16 @@ export default function RoomPage(): JSX.Element {
 					style={{ textDecoration: 'none' }}
 				>
 					Help
-				</a>{' '}
+				</a>
+				{' - '}
+				<a
+					href='https://github.com/guplem/boom'
+					target='_blank'
+					rel='noopener noreferrer'
+					style={{ textDecoration: 'none' }}
+				>
+					GitHub
+				</a>
 			</small>
 		</div>
 	);
