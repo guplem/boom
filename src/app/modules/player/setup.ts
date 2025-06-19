@@ -1,4 +1,5 @@
 import { Player, PlayerConfig } from '@/app/modules/player/model';
+import { getRandomColor, getRandomName } from '@/app/modules/player/utils';
 import { UserStore } from '@/app/modules/user/store';
 
 /**
@@ -16,14 +17,7 @@ export function createPlayer(config: PlayerConfig): Player {
 	};
 }
 
-export const predefinedPlayerColors: string[] = [
-	'#A38B67',
-	'#f2a55f',
-	// '#7BA5A5', // Don't like it much...
-	// '#A8B6A9', // Don't like it much...
-	'#85C6E0',
-	'#7db593',
-];
+export const predefinedPlayerColors: string[] = ['#A38B67', '#f2a55f', '#85C6E0', '#7db593'];
 
 // ORIGINAL LIST
 // Warm earth tones (browns, oranges)
@@ -33,19 +27,15 @@ export const predefinedPlayerColors: string[] = [
 // '#D8944C',
 // '#DC9E54',
 // '#F6DAB7',
-// Neutral warm tones (beiges, tans)
 // '#E5D2A4',
 // '#C3C5A9',
 // '#F6E5C5',
 // '#FFF1D3',
-// Cool dark tones (greys, dark greens)
 // '#616D66',
 // '#4A6C68',
-// Cool medium tones (greens, teals)
 // '#719488',
 // '#7BA5A5',
 // '#A8B6A9',
-// Cool light tones (blues, light greens)
 // '#92B8BE',
 // '#85C6E0',
 // '#B7CCC4',
@@ -83,19 +73,3 @@ export const predefinedNames: string[] = [
 	'Parker',
 	'Reese',
 ];
-
-/**
- * Utility function to get a random predefined name.
- * @returns A random name from the predefined names array
- */
-function getRandomName(): string {
-	return predefinedNames[Math.floor(Math.random() * predefinedNames.length)];
-}
-
-/**
- * Utility function to get a random predefined color.
- * @returns A random color from the predefined colors array
- */
-function getRandomColor(): string {
-	return predefinedPlayerColors[Math.floor(Math.random() * predefinedPlayerColors.length)];
-}

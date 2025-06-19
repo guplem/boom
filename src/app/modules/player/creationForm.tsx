@@ -3,7 +3,7 @@ import { Player } from '@/app/modules/player/model';
 import { createPlayer } from '@/app/modules/player/setup';
 import { FormEvent, JSX, useContext, useState } from 'react';
 
-export default function PlayerForm(): JSX.Element {
+export default function PlayerCreationForm(): JSX.Element {
 	const [playerName, setPlayerName] = useState<string>('');
 	const [isBot, setIsBot] = useState<boolean>(false);
 	const [playerColor, setPlayerColor] = useState<string>('');

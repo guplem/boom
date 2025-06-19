@@ -68,20 +68,5 @@ export default function App(): JSX.Element {
 		window.history.replaceState({}, '', newUrl.toString());
 	}, [room]);
 
-	const renderContent = (): JSX.Element => {
-		return !room ? <RoomPage /> : <GamePage />;
-	};
-
-	return (
-		<div
-			className='noisyBackground'
-			style={{
-				backgroundColor: 'var(--background-for-noise)',
-				overflow: 'auto',
-				minHeight: '100vh',
-			}}
-		>
-			{renderContent()}
-		</div>
-	);
+	return !room ? <RoomPage /> : <GamePage />;
 }

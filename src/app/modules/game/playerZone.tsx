@@ -1,4 +1,4 @@
-import AccumulatorCard from '@/app/modules/card/accumulator';
+import GameAccumulatorCard from '@/app/modules/game/accumulatorCard';
 import { GamePlayer } from '@/app/modules/game/model';
 import { remainingAccumulators } from '@/app/modules/game/utils';
 import PlayerCard from '@/app/modules/player/card';
@@ -6,7 +6,7 @@ import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import React, { JSX } from 'react';
 
-interface PlayerTableProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GamePlayerZoneProps extends React.HTMLAttributes<HTMLDivElement> {
 	playerId: string;
 	gamePlayer: GamePlayer;
 	canSelectAccumulator: boolean;
@@ -15,7 +15,7 @@ interface PlayerTableProps extends React.HTMLAttributes<HTMLDivElement> {
 	isUserPlayer: boolean;
 }
 
-export default function PlayerTable({
+export default function GamePlayerZone({
 	playerId,
 	gamePlayer,
 	canSelectAccumulator,
@@ -24,7 +24,7 @@ export default function PlayerTable({
 	isUserPlayer,
 	style,
 	...props
-}: PlayerTableProps): JSX.Element {
+}: GamePlayerZoneProps): JSX.Element {
 	return (
 		<>
 			<PlayerContext.Consumer>
@@ -86,7 +86,7 @@ export default function PlayerTable({
 										gamePlayer={gamePlayer}
 									/>
 									{remainingAccumulators(gamePlayer.accumulators).map((accumulator, index) => (
-										<AccumulatorCard
+										<GameAccumulatorCard
 											onClick={
 												canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined
 											}

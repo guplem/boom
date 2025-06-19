@@ -1,13 +1,13 @@
-import PlayerTable from '@/app/modules/board/playerTable';
-import HandCard from '@/app/modules/card/hand';
+import GameHandCard from '@/app/modules/game/handCard';
+import { GameLogPanel } from '@/app/modules/game/logPanel';
 import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import { ActionTypes, GamePlayer } from '@/app/modules/game/model';
+import GamePlayerZone from '@/app/modules/game/playerZone';
 import {
 	remainingAccumulators,
 	remainingAccumulatorsDefending,
 	remainingHp,
 } from '@/app/modules/game/utils';
-import { GameLog } from '@/app/modules/log/view';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
@@ -18,7 +18,7 @@ interface BoardPageParams {
 	userPlayerId: string;
 }
 
-export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Element {
+export default function GameBoardPage({ userPlayerId }: BoardPageParams): JSX.Element {
 	const { leave }: RoomStoreType = RoomStore();
 	const [handSelected, setHandSelected] = useState<number | null>(null);
 	const [boomValue, setBoomValue] = useState<string>('');
@@ -134,7 +134,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 														}}
 													>
 														{userGamePlayer.hand.map((handCard, index) => (
-															<HandCard
+															<GameHandCard
 																onClick={() => handleSelectHandCard(index)}
 																style={{
 																	cursor: 'pointer',
@@ -282,7 +282,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 											}}
 										>
 											{gameProvider.game?.players.map((player) => (
-												<PlayerTable
+												<GamePlayerZone
 													isThisPlayerTurn={currentPlayerId === player.id}
 													key={player.id}
 													isUserPlayer={userGamePlayer?.id === player.id}
@@ -331,7 +331,7 @@ export default function BoardPage({ userPlayerId }: BoardPageParams): JSX.Elemen
 												overflow: 'auto',
 											}}
 										>
-											<GameLog
+											<GameLogPanel
 												history={gameProvider.game?.history || []}
 												currentPlayerId={currentPlayerId || undefined}
 												userPlayerId={userPlayerId}

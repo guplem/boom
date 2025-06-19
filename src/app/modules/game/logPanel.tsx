@@ -39,7 +39,7 @@ interface GroupedLogEntries {
 	entries: ProcessedLogEntry[];
 }
 
-export const GameLog: React.FC<GameLogProps> = ({
+export const GameLogPanel: React.FC<GameLogProps> = ({
 	history,
 	currentPlayerId,
 	userPlayerId,

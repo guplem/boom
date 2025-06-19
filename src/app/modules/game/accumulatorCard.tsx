@@ -1,16 +1,16 @@
 import { Accumulator } from '@/app/modules/game/model';
 import React, { JSX } from 'react';
 
-interface GameCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GameAccumulatorCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	accumulator: Accumulator;
 }
 
-export default function AccumulatorCard({
+export default function GameAccumulatorCard({
 	accumulator,
 	style,
 	onClick,
 	...props
-}: GameCardProps): JSX.Element {
+}: GameAccumulatorCardProps): JSX.Element {
 	let remainingHp: number = accumulator.originalValue;
 	for (const attack of accumulator.attacks) {
 		remainingHp -= attack;

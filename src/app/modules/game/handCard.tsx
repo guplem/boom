@@ -1,18 +1,18 @@
 import React, { JSX } from 'react';
 
-interface GameCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GameHandCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	originalValue: number;
 	isSelected: boolean;
 	isPlayerTurn: boolean;
 }
 
-export default function HandCard({
+export default function GameHandCard({
 	originalValue,
 	style,
 	isSelected,
 	isPlayerTurn,
 	...props
-}: GameCardProps): JSX.Element {
+}: GameHandCardProps): JSX.Element {
 	const classNames: string = [
 		'hand-card',
 		isSelected ? 'selected' : '',

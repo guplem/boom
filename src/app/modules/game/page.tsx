@@ -1,4 +1,4 @@
-import BoardPage from '@/app/modules/board/page';
+import GameBoardPage from '@/app/modules/game/boardPage';
 import {
 	executeAction,
 	finishGame,
@@ -7,7 +7,7 @@ import {
 	startGame,
 } from '@/app/modules/game/manager';
 import { ActionConfig, Game } from '@/app/modules/game/model';
-import GameOverPage from '@/app/modules/gameOver/page';
+import GameOverPage from '@/app/modules/game/overPage';
 import { addPlayer, PlayerContext, removePlayer } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import PlayerPage from '@/app/modules/player/page';
@@ -51,7 +51,7 @@ export default function GamePage(): JSX.Element {
 						game.winnerId !== undefined ? (
 							<GameOverPage />
 						) : (
-							<BoardPage
+							<GameBoardPage
 								userPlayerId={
 									players.find((player: Player) => player.owner === userId && !player.isBot)?.id ||
 									'not-found'

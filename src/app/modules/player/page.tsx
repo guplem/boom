@@ -1,6 +1,6 @@
 import { GameContext, GameContextType } from '@/app/modules/game/manager';
 import PlayerCard from '@/app/modules/player/card';
-import PlayerForm from '@/app/modules/player/form';
+import PlayerCreationForm from '@/app/modules/player/creationForm';
 import { PlayerContext, PlayerContextType } from '@/app/modules/player/manager';
 import { Player } from '@/app/modules/player/model';
 import { RoomStore, RoomStoreType } from '@/app/modules/room/store';
@@ -41,7 +41,7 @@ export default function PlayerPage(): JSX.Element {
 										margin: '20px',
 									}}
 								>
-									<PlayerForm />
+									<PlayerCreationForm />
 								</div>
 							</div>
 
