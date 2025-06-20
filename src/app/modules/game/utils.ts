@@ -35,36 +35,11 @@ export const getRandomCard = (chances: Record<number, number> = {}): number => {
 };
 
 /**
- * Filters the active accumulators from the given list.
- * An accumulator is considered active if it has not been fully depleted by attacks.
- * If an accumulator's original value is 0, it is considered active since it cannot be attacked.
+ * Calculates the total remaining HP (life points) for a set of accumulators (life storage cards).
+ * Used to determine if a player is still alive.
  *
- * @param accumulators - The list of accumulators to filter
- * @returns A list of active accumulators
- */
-// export const remainingAccumulators = (accumulators: Accumulator[]): Accumulator[] => {
-// 	const activeAccumulators: Accumulator[] = [];
-// 	for (const accumulator of accumulators) {
-// 		if (accumulator.originalValue === 0) {
-// 			activeAccumulators.push(accumulator);
-// 			continue;
-// 		}
-// 		let remaining: number = accumulator.originalValue;
-// 		for (const attack of accumulator.attacks) {
-// 			remaining -= attack;
-// 		}
-// 		if (remaining > 0) {
-// 			activeAccumulators.push(accumulator);
-// 		}
-// 	}
-// 	return activeAccumulators;
-// };
-
-/**
- * Calculates the remaining HP of all active accumulators.
- *
- * @param accumulators - The list of accumulators to calculate remaining HP from.
- * @returns The total remaining HP of all active accumulators.
+ * @param accumulators - The list of accumulators to sum HP for.
+ * @returns The total remaining HP (never negative).
  */
 export const remainingHp = (accumulators: Accumulator[]): number => {
 	let totalHp: number = 0;
@@ -121,10 +96,10 @@ export const cloneGameState = (gameState: Game): Game => {
 };
 
 /**
- * Retrieves the current player based on the game's turn.
+ * Returns the current player whose turn it is, based on the game state.
  *
  * @param game - The current game state.
- * @returns The player whose turn it currently is.
+ * @returns The GamePlayer object for the current player.
  */
 export const getCurrentPlayer = (game: Game): GamePlayer => {
 	return game.players[game.turn % game.players.length];

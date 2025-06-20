@@ -87,6 +87,18 @@ const advanceToNextTurn = (game: Game): Game => {
 	return game;
 };
 
+ /**
+ * Central function for processing any player action (human or AI).
+ *
+ * Validates the action, updates the game state if valid, and returns whether the action succeeded.
+ * This is the main entry point for executing moves from AI strategies or user input.
+ *
+ * @param game - The current game state (can be null if not started).
+ * @param setGame - React state setter for updating the game state.
+ * @param playerId - The ID of the player performing the action.
+ * @param actionConfig - The action to execute (type and parameters).
+ * @returns True if the action was valid and executed, false otherwise.
+ */
 export const executeAction = (
 	game: Game | null,
 	setGame: Dispatch<SetStateAction<Game | null>>,
@@ -120,6 +132,17 @@ export const executeAction = (
 	return actionSuccess;
 };
 
+/**
+ * Core validation and state transition logic for all actions.
+ *
+ * Checks if the action is valid in the current game state and, if so, returns the updated game state.
+ * If the action is invalid, returns null. This is the main reference for AI developers to understand valid moves.
+ *
+ * @param game - The current game state (can be null).
+ * @param playerId - The ID of the player performing the action.
+ * @param actionConfig - The action to validate and apply.
+ * @returns The new game state if the action is valid, or null if invalid.
+ */
 const getNextGameState = (
 	game: Game | null,
 	playerId: string,

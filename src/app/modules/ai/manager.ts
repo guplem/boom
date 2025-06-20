@@ -10,6 +10,17 @@ const delay = (ms: number): Promise<void> => {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+/**
+ * Main AI execution loop for a player's turn.
+ *
+ * Selects and runs the configured AI strategy for the current player, attempting up to `maxAttempts` times
+ * to produce a valid action. If all attempts fail, falls back to a safe discard action.
+ *
+ * @param userId - The user ID controlling the AI player (used to ensure only the correct user triggers AI moves).
+ * @param game - The current game state.
+ * @param players - Array of all players in the game.
+ * @param setGame - React state setter for updating the game state.
+ */
 export const executeAiStrategy = async (
 	userId: string,
 	game: Game,
@@ -69,7 +80,15 @@ export const executeAiStrategy = async (
 	return executeFallbackAction(game, scenario, setGame, currentPlayer);
 };
 
-// Executes a discard action as a fallback since this action is always valid (with the proper params)
+/**
+ * Executes a fallback action (discard) for the AI player if their strategy fails to produce a valid move.
+ * This is a fail-safe to ensure the game can always proceed.
+ *
+ * @param game - The current game state.
+ * @param scenario - The scenario snapshot for the AI player.
+ * @param setGame - React state setter for updating the game state.
+ * @param currentPlayer - The player object for the AI-controlled player.
+ */
 const executeFallbackAction = (
 	game: Game,
 	scenario: Scenario,
