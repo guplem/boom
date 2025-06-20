@@ -3,7 +3,14 @@ export interface Game {
 	readonly handCardsCount: number;
 	readonly aiDelay: number; // Delay in milliseconds for AI players to make their move
 	turn: number;
-	winnerId?: string | null | undefined; // null if no one won, undefined if game is still ongoing
+	/**
+	 * The winner of the game, if determined.
+	 *
+	 * - `undefined`: The game is still in progress.
+	 * - `string`: The ID of the winning player.
+	 * - `null`: The game ended in a draw (e.g., all players were eliminated simultaneously).
+	 */
+	winnerId?: string | null | undefined;
 	history: HistoryElement[];
 }
 

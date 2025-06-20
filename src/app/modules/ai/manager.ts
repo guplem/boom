@@ -16,7 +16,7 @@ const delay = (ms: number): Promise<void> => {
  * Selects and runs the configured AI strategy for the current player, attempting up to `maxAttempts` times
  * to produce a valid action. If all attempts fail, falls back to a safe discard action.
  *
- * @param userId - The user ID controlling the AI player (used to ensure only the correct user triggers AI moves).
+ * @param userId - The ID of the browser session user. Used to ensure that only the user who "owns" the AI player can trigger its move, preventing multiple clients from controlling the same AI.
  * @param game - The current game state.
  * @param players - Array of all players in the game.
  * @param setGame - React state setter for updating the game state.
@@ -35,7 +35,7 @@ export const executeAiStrategy = async (
 		!currentPlayer ||
 		!currentPlayer.aiStrategy ||
 		currentPlayer.owner !== userId ||
-		game.winnerId
+		game.winnerId !== undefined
 	) {
 		return;
 	}

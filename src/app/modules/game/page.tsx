@@ -20,6 +20,8 @@ export default function GamePage(): JSX.Element {
 	const [game, setGame] = useSyncState<Game | null>(null, [room, 'game']);
 
 	useEffect((): void => {
+		// This effect is the trigger for AI players.
+		// Whenever the game state changes, it checks if it's an AI's turn and, if so, executes its strategy.
 		if (!game || !userId) {
 			return;
 		}

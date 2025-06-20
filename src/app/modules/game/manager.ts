@@ -53,10 +53,15 @@ export const finishGame = (setGame: Dispatch<SetStateAction<Game | null>>): void
 
 /**
  * Advances the game to the next player with more than 0 HP.
- * Sets winnerId if only one player remains alive or if no players remain.
+ *
+ * Responsibilities:
+ * 1. Checks for win or draw conditions by counting living players (those with HP > 0).
+ *    - If no players are alive, sets `winnerId` to `null` (draw).
+ *    - If only one player is alive, sets `winnerId` to that player's ID.
+ * 2. If the game continues, finds the next player in turn order who is still alive and advances the turn.
  *
  * @param game - The current game state
- * @returns Updated game state with new turn and winnerId
+ * @returns {Game} Updated game state with either a new `turn` number or a `winnerId` if the game has ended.
  */
 const advanceToNextTurn = (game: Game): Game => {
 	const alivePlayers: GamePlayer[] = game.players.filter(
@@ -97,7 +102,7 @@ const advanceToNextTurn = (game: Game): Game => {
  * @param setGame - React state setter for updating the game state.
  * @param playerId - The ID of the player performing the action.
  * @param actionConfig - The action to execute (type and parameters).
- * @returns True if the action was valid and executed, false otherwise.
+ * @returns {boolean} True if the action was successfully validated and applied, false otherwise.
  */
 export const executeAction = (
 	game: Game | null,
@@ -141,7 +146,7 @@ export const executeAction = (
  * @param game - The current game state (can be null).
  * @param playerId - The ID of the player performing the action.
  * @param actionConfig - The action to validate and apply.
- * @returns The new game state if the action is valid, or null if invalid.
+ * @returns {Game | null} The new game state if the action is valid, or null if invalid.
  */
 const getNextGameState = (
 	game: Game | null,

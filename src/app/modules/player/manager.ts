@@ -18,8 +18,15 @@ export const userOwnsNonBotPlayer = (players: Player[], userId: string): boolean
 };
 
 /**
- * Validates if a player can be added based on ownership rules
- * Users can only own one non-bot player at a time
+ * Validates if a player can be added based on ownership rules.
+ *
+ * Business rule: A single user can only own one non-AI (human) player at a time, but can create any number of AI players.
+ *
+ * @param existingPlayers - The current list of players in the room.
+ * @param newPlayer - The player to be added.
+ * @returns {{ isValid: boolean; error?: string }}
+ *   - `isValid`: True if the player can be added, false otherwise.
+ *   - `error`: Optional error message if the addition is invalid.
  */
 export const validatePlayerAddition = (
 	existingPlayers: Player[],

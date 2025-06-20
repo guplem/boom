@@ -99,6 +99,58 @@ docker run -p 3000:3000 boom-game
 - **Development**: Hot reloading, TypeScript, ESLint, Prettier
 - **Database**: Flashcore (for game state persistence)
 
+## 🏛️ Application Architecture & Logic Flow
+
+This section outlines the application's structure, from the user's entry to the gameplay loop.
+
+### High-Level Flow
+
+1.  **Entry & Room Selection (`App.tsx`, `RoomPage.tsx`)**:
+    - A new user lands on the app, and a unique user ID is generated and stored locally using a Zustand store (`UserStore`).
+    - The `App.tsx` component checks if the user is already in a room (via `RoomStore`). If not, it renders `RoomPage.tsx`.
+    - On the `RoomPage`, the user can create a new room or join an existing one. This interacts with the `/api/room` endpoint to validate and persist room names using Flashcore.
+
+2.  **Pre-Game Lobby (`GamePage.tsx`, `PlayerPage.tsx`)**:
+    - Once a room is joined, `GamePage.tsx` takes over. Since the `game` state is initially `null`, it renders the `PlayerPage.tsx` lobby.
+    - Here, players in the room can add, configure (name, color, AI strategy), and remove player profiles.
+    - All player data is synchronized in real-time across all clients in the room using `@robojs/sync`.
+
+3.  **Game Start (`manager.ts`, `setup.ts`)**:
+    - Clicking "Start Game" calls the `startGame` function from `GameContext`.
+    - This initializes the shared `game` state object by calling `createGame()` in `src/app/modules/game/setup.ts`.
+    - The new `game` object, containing player hands, accumulators, and turn info, is broadcast to all clients, transitioning them from the lobby to the game board.
+
+4.  **Gameplay Loop (`GameBoardPage.tsx`, `manager.ts`)**:
+    - The `GameBoardPage.tsx` renders the main game interface: player controls, the board with all players (`GamePlayerZone`), and the game log (`GameLogPanel`).
+    - The UI determines whose turn it is based on the shared `game.turn` state.
+    - **Human Player**: When a human player performs an action (e.g., clicks a card and a target), the UI calls `executeAction`.
+    - **AI Player**: A `useEffect` in `GamePage.tsx` listens for changes to the `game` state. If it's an AI's turn, it triggers `executeAiStrategy`, which selects an action and also calls `executeAction`.
+    - `executeAction` validates the move and, if valid, updates the shared `game` state. This update automatically syncs to all players, and the UI re-renders to show the result.
+    - The turn advances, and the loop continues.
+
+5.  **Game End (`manager.ts`, `GameOverPage.tsx`)**:
+    - After each turn, `advanceToNextTurn` in `manager.ts` checks for win conditions (e.g., only one player left with HP).
+    - If a winner is found, the `game.winnerId` property is set.
+    - This change in the shared state causes `GamePage.tsx` to render the `GameOverPage.tsx` for all players.
+
+### State Management
+
+The app uses a three-tiered approach to state management:
+
+- **`@robojs/sync`**: The core of the multiplayer experience. The `useSyncState` hook synchronizes critical game state like `players` and the main `game` object across all clients in the same room. When one client updates this state, all others receive the changes in real-time.
+- **React Context (`GameContext`, `PlayerContext`)**: Used for clean dependency injection. It passes the synced state and core functions (`startGame`, `executeAction`) down the component tree, avoiding prop-drilling.
+- **Zustand (`RoomStore`, `UserStore`)**: Used for client-side state that needs to persist across page reloads (stored in `localStorage`). This includes the user's unique ID and the current room they are in, but not the game state itself.
+
+### Turn and Action Handling
+
+The game logic is centralized in `src/app/modules/game/manager.ts`, ensuring consistent rule enforcement for both human and AI players.
+
+1.  **Turn Tracking**: The `game.turn` property is a simple integer. The current player is calculated via `game.turn % game.players.length`. The `getCurrentPlayer()` utility handles this.
+2.  **Action Execution**: All game moves flow through `executeAction(game, setGame, playerId, actionConfig)`.
+3.  **Validation**: `executeAction` calls `getNextGameState()`, which acts as the single source of truth for all game rules. It checks if a move is valid (e.g., "Is it the player's turn?", "Is the attack value legal?").
+4.  **State Update**: If `getNextGameState()` confirms the move is valid, it returns a new, updated game state object. `executeAction` then uses the `setGame` function (from `useSyncState`) to broadcast this new state to all clients.
+5.  **Turn Advancement**: For actions that end a turn, `advanceToNextTurn()` is called. It finds the next living player and increments `game.turn`, keeping the game moving.
+
 ## 🚀 Deployment (Optional)
 
 > **Note**: Deployment is completely optional. The game runs perfectly locally for development and private games.
