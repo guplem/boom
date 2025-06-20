@@ -98,3 +98,6 @@ web_modules/
 .cloudflare
 .wrangler
 .dev.vars
+
+# Miscellaneous
+*repomix*
