@@ -140,6 +140,121 @@ Contributions are welcome! This is an evolving project with many opportunities:
 4. Commit with clear messages (`git commit -m 'Add card flip animations'`)
 5. Push and create a Pull Request
 
+### 🤖 Developing AI Strategies
+
+The game includes a simple AI system that allows for different computer-controlled player behaviors. You can easily create and add your own strategies. Here’s a step-by-step guide using the existing "Random Attack" strategy as an example.
+
+An AI strategy is essentially a function that receives the current state of the game and decides which action to take.
+
+#### Step 1: Create a New Strategy File
+
+First, create a new TypeScript file for your strategy inside the `src/app/modules/ai/strategies/` directory. For example, let's call our new file `myCleverStrategy.ts`. This convention keeps all AI logic organized in one place.
+
+#### Step 2: Define the Strategy Function
+
+Inside your new file, you'll define and export a function that takes the game scenario as an argument and returns an `ActionConfig` object.
+
+```typescript
+// src/app/modules/ai/strategies/myCleverStrategy.ts
+import { Scenario } from '@/app/modules/ai/model';
+import { ActionConfig, ActionTypes } from '@/app/modules/game/model';
+
+export const myCleverStrategy = (gameScenario: Scenario): ActionConfig => {
+  // Your strategy logic goes here...
+
+  // For now, let's just return a placeholder
+  return {
+    action: ActionTypes.Discard, // A safe fallback action
+    params: {
+      sourceHandIndex: 0
+    }
+  };
+};
+```
+
+**Understanding the `gameScenario` Parameter:**
+
+The `gameScenario` object provides a snapshot of the game from the AI player's perspective. It contains:
+*   `board`: An array of all players' boards, including their `playerId` and their array of `accumulators`.
+*   `playerHand`: An array of numbers representing the cards in the AI's own hand.
+*   `playerId`: The ID of the current AI player.
+*   `turn`: The current turn number.
+*   `history`: An array of all actions taken in the game so far.
+
+**Understanding the `ActionConfig` Return Value:**
+
+Your function *must* return an `ActionConfig` object, which tells the game manager what to do. It has two parts:
+*   `action`: The type of action to perform (e.g., `ActionTypes.Attack`, `ActionTypes.Swap`).
+*   `params`: An object containing the specific details for that action (e.g., who to attack, with which card).
+
+#### Step 3: Implement the Strategy Logic
+
+This is where you'll implement the brain of your AI. Let's analyze the `randomAttackStrategy` from `src/app/modules/ai/strategies/random.ts` to see how it works.
+
+```typescript
+// src/app/modules/ai/strategies/random.ts
+import { Scenario } from '@/app/modules/ai/model';
+import { ActionConfig, ActionTypes } from '@/app/modules/game/model';
+
+export const randomAttackStrategy = (gameScenario: Scenario): ActionConfig => {
+  // 1. Pick a random player to attack from the board.
+  const targetPlayerId: string =
+    gameScenario.board[Math.floor(Math.random() * gameScenario.board.length)].playerId;
+
+  // 2. Find the board of the target player to get their accumulators.
+  const targetBoardEntry = gameScenario.board.find(
+    (b) => b.playerId === targetPlayerId,
+  );
+
+  // 3. Pick a random accumulator to attack from the target's board.
+  const accumulatorsLength: number = targetBoardEntry ? targetBoardEntry.accumulators.length : 0;
+  const accumulatorIndex: number = Math.floor(Math.random() * accumulatorsLength);
+
+  // 4. Assemble and return the final ActionConfig object.
+  return {
+    action: ActionTypes.Attack,
+    params: {
+      targetPlayerId: targetPlayerId, // Who to attack
+      sourceHandIndex: Math.floor(Math.random() * gameScenario.playerHand.length), // Which card to use
+      targetAccumulatorIndex: accumulatorIndex, // Which accumulator to hit
+    },
+  };
+};
+```
+
+**Important Note on Validity:** The game manager will attempt to execute the action you return. If the action is invalid (e.g., attacking an accumulator with a card value higher than its remaining HP), the attempt will fail. The system will retry by calling your function again, up to a configured `maxAttempts`. While this provides some fault tolerance, it's best to write logic that tries to produce valid actions. You can infer validation rules by looking at the logic in `src/app/modules/game/manager.ts`.
+
+#### Step 4: Register Your Strategy
+
+To make your strategy available in the game, you need to register it in `src/app/modules/ai/strategies.ts`.
+
+1.  Import your new strategy function at the top of the file.
+    ```typescript
+    import { myCleverStrategy } from './strategies/myCleverStrategy';
+    ```
+2.  Add a new entry to the `strategiesList` array.
+    ```typescript
+    export const strategiesList: { /*...*/ }[] = [
+      // ... existing strategies
+      {
+        name: 'My Clever Strategy', // This name will appear in the UI dropdown.
+        description: 'This AI analyzes the board and makes a smart move.',
+        getActionFunction: myCleverStrategy, // The function you just created.
+        maxAttempts: 20, // Optional: Increase if your strategy might fail often.
+      },
+    ];
+    ```
+
+#### Step 5: Test Your AI
+
+You're all set! Now you can test your new AI.
+
+1.  Run the game with `npm run dev`.
+2.  In the lobby, create a new player.
+3.  In the "Strategy" dropdown, you should now see "My Clever Strategy". Select it.
+4.  Start the game and watch your AI in action! Check the Game Log on the right to see the moves it makes.
+> You can also see the console logs by opening the browser's developer tools (F12 or right-click → Inspect).
+
 ### Code Standards
 - Follow existing TypeScript patterns
 - Include type annotations for all functions
