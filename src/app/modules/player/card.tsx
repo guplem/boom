@@ -24,6 +24,7 @@ export default function PlayerCard({
 	// Determine if there's content to show in the hover section
 	const hasHoverContent: boolean =
 		!!player.aiStrategy || (showOwnedIndicator && isPlayerOwned(player));
+	const showHover: boolean = !gamePlayer || (isHovered && hasHoverContent);
 
 	return (
 		<div
@@ -46,24 +47,26 @@ export default function PlayerCard({
 				style={{
 					display: 'flex',
 					flexWrap: 'wrap',
-					// flexDirection: 'column',
 					justifyContent: 'center',
 					alignItems: 'center',
 					gap: '8px',
 					flex: 1,
 				}}
 			>
-				<span
-					style={{
-						overflow: 'hidden',
-						textOverflow: 'ellipsis',
-						display: '-webkit-box',
-						WebkitLineClamp: 2,
-						WebkitBoxOrient: 'vertical',
-					}}
-				>
-					{player.name}
-				</span>
+				{!showHover && (
+					<span
+						style={{
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							display: '-webkit-box',
+							WebkitLineClamp: 2,
+							WebkitBoxOrient: 'vertical',
+							cursor: 'default',
+						}}
+					>
+						{player.name}
+					</span>
+				)}
 			</div>
 			<div
 				style={{
@@ -76,11 +79,40 @@ export default function PlayerCard({
 				}}
 			>
 				{/* Show CPU and ownership indicators only on hover and if there's content */}
-				{(!gamePlayer || (isHovered && hasHoverContent)) && (
-					<p style={{ textAlign: 'center' }}>
-						{player.aiStrategy && <span>{player.aiStrategy}</span>}
-						<br />
-						{showOwnedIndicator && isPlayerOwned(player) && <span>(Owned)</span>}
+				{showHover && (
+					<p style={{ textAlign: 'center', cursor: 'default' }}>
+						{player.aiStrategy && (
+							<span
+								style={{
+									display: '-webkit-box',
+									WebkitLineClamp: 2,
+									WebkitBoxOrient: 'vertical',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'normal',
+									maxWidth: '100%',
+								}}
+							>
+								{player.aiStrategy}
+							</span>
+						)}
+						{showOwnedIndicator && isPlayerOwned(player) && (
+							<span
+								style={{
+									display: 'inline-block',
+									padding: '2px 10px',
+									borderRadius: '999px',
+									background: 'rgba(0,0,0,0.15)',
+									color: '#222',
+									fontSize: '0.85em',
+									fontWeight: 500,
+									letterSpacing: '0.02em',
+									marginTop: '4px',
+								}}
+							>
+								Owned
+							</span>
+						)}
 					</p>
 				)}
 
@@ -92,18 +124,19 @@ export default function PlayerCard({
 				)}
 
 				{/* Optional: Display game player info if available */}
-				{gamePlayer && !(isHovered && hasHoverContent) && (
+				{!showHover && (
 					<div
 						style={{
 							display: 'flex',
 							flexDirection: 'row',
 							justifyContent: 'space-evenly',
 							gap: '4px',
+							cursor: 'default',
 						}}
 					>
 						{/* <div>{remainingHp(gamePlayer.accumulators)} HP</div>
 					<div>{remainingAccumulators(gamePlayer.accumulators).length} Acc</div> */}
-						<h2>{remainingAccumulatorsDefending(gamePlayer.accumulators).length}</h2>
+						<h2>{remainingAccumulatorsDefending(gamePlayer?.accumulators ?? []).length}</h2>
 					</div>
 				)}
 			</div>

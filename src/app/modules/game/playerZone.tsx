@@ -24,6 +24,8 @@ export default function GamePlayerZone({
 	style,
 	...props
 }: GamePlayerZoneProps): JSX.Element {
+	const elementsHeight: string = '100px';
+
 	return (
 		<>
 			<PlayerContext.Consumer>
@@ -62,6 +64,7 @@ export default function GamePlayerZone({
 									style={{
 										display: 'flex',
 										flexDirection: 'row',
+										flexWrap: 'wrap',
 										alignItems: 'center',
 										gap: '10px',
 										backgroundColor: playerData.color || 'var(--container)',
@@ -70,17 +73,13 @@ export default function GamePlayerZone({
 										borderBottomRightRadius: '10px',
 										borderTopLeftRadius: isUserPlayer ? '0px' : '10px',
 										borderBottomLeftRadius: isUserPlayer ? '0px' : '10px',
-										// borderTop: isThisPlayerTurn ? '3px solid black' : 'none',
-										// borderRight: isThisPlayerTurn ? '3px solid black' : 'none',
-										// borderBottom: isThisPlayerTurn ? '3px solid black' : 'none',
-										// borderLeft: isThisPlayerTurn && !isUserPlayer ? '3px solid black' : 'none',
-										overflow: 'visible', // <-- Add this line
+										overflow: 'visible',
 										...style,
 									}}
 								>
 									<PlayerCard
 										showOwnedIndicator={!isUserPlayer}
-										style={{ height: '100px' }}
+										style={{ height: elementsHeight }}
 										player={playerData}
 										gamePlayer={gamePlayer}
 									/>
@@ -90,7 +89,7 @@ export default function GamePlayerZone({
 												canSelectAccumulator ? (): void => onSelectAccumulator(index) : undefined
 											}
 											style={{
-												height: '100px',
+												height: elementsHeight,
 												// cursor is now handled by CSS class
 											}}
 											key={index}
