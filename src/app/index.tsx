@@ -30,15 +30,21 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<SyncContextProvider>
-			{/* Add the same background to the full app */}
+			{/* Full-screen noise overlay above all content */}
+			{/* <div className='noisyOverlay' /> */}
+
+			{/* Background noise effect */}
+			<div className='noisyBackground' />
+
+			{/* Background color for the full application */}
 			<div
-				className='noisyBackground'
 				style={{
 					backgroundColor: 'var(--background-for-noise)',
 					overflow: 'auto',
 					minHeight: '100vh',
 				}}
 			>
+				{/* Main application content */}
 				<RouterProvider router={router} />
 			</div>
 		</SyncContextProvider>
