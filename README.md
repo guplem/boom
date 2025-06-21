@@ -2,7 +2,7 @@
 
 A real-time multiplayer web implementation of the **Boom** card game, built with [RoboJS](https://robojs.dev/) and React.
 
-> **Boom** is a strategic card game where players eliminate opponents by destroying their life storage cards. The last player standing wins!
+> **Contribute your AI!** Anyone is more than welcome to develop new AI strategies and make a PR to add them. See the [Developing AI Strategies](#developing-ai-strategies) section below for details.
 
 ## 🚀 TL;DR - Quick Start for Non-Programmers
 
@@ -63,46 +63,81 @@ That's it! 🎉
   ```
   This will start the server at `http://localhost:3000/` and provide a public tunnel URL for multiplayer testing.
 
-## 🏛️ Technology & Architecture
+## 🏛️ Technology Stack
 
-This project uses a modern web stack to create a real-time, interactive experience. The architecture is designed to clearly separate concerns between the client, the server, and the shared state.
-
-### Technology Stack
+This project uses a modern web stack to create a real-time, interactive experience.
 
 - **Frontend**: React, TypeScript, Vite
 - **Backend**: RoboJS Server, Node.js
-- **Real-time State Sync**: `@robojs/sync`
-- **Client-side State**: Zustand (for user/room persistence)
-- **Backend Key-Value Store**: Flashcore
-- **Styling**: Plain CSS with modern features
-- **Code Quality**: ESLint, Prettier
+- **Real-time State Sync**: `@robojs/sync` for multiplayer state.
+- **Client-side State**: Zustand for persistent local state.
+- **Backend Key-Value Store**: Flashcore for ephemeral server-side data.
+- **Styling**: Plain CSS with modern features.
+- **Code Quality**: ESLint, Prettier.
 
-### State Management Deep Dive
+## 🧠 Application & Game Flow
 
-As an experimental project, a key goal was to explore different state management techniques. Here’s how they work together:
+The application is structured around a clear separation of concerns: room management, lobby setup, and the core game loop. State management is key to its real-time functionality.
 
-- **`@robojs/sync` (Real-time Multiplayer State):** This is the core of the multiplayer functionality. The `useSyncState` hook synchronizes the main `game` object and the lobby `players` array across all clients in the same room. When one client updates this state (e.g., by making a move), `@robojs/sync` broadcasts the change to all other clients automatically. This keeps everyone's game board perfectly in sync.
+### 1. Initial Load & Room Selection
 
-- **`Zustand` (Persistent Client State):** Used for simple, client-side state that needs to survive a page refresh. The `persist` middleware stores the data in `localStorage`. In this app, it's used for:
-    - `UserStore`: To remember a user's unique ID.
-    - `RoomStore`: To remember which room the user has joined, so they can be reconnected automatically.
+1. **Entry Point (`index.tsx` -> `App.tsx`)**: The app initializes, setting up React Router and the `SyncContextProvider`.
+2. **User Identification**: On first load, `UserStore` (a Zustand store) generates and persists a unique ID for the browser session in `localStorage`. This ID is used to determine ownership of players.
+3. **Room Handling (`App.tsx`)**:
+  - The app checks the URL for a `?room=` parameter. If present, it validates the room's existence via a `HEAD` request to `/api/room` and automatically joins it.
+  - If no room is joined, the `RoomPage` is displayed, offering to create or join a room.
+  - `RoomCreator` and `RoomPicker` components handle API calls to the backend (`src/api/room.ts`), which uses `Flashcore` to manage the list of available rooms.
+  - Once a room is joined, `RoomStore` (another Zustand store) saves the room name, and the app transitions to the `GamePage`.
 
-- **`Flashcore` (Ephemeral Backend Storage):** This is a simple key-value store running on the backend. It's used by the `/api/room` endpoint to keep track of valid room names that have been created. In this project's current configuration (without a Keyv adapter), the data is **ephemeral** and will be lost if the server restarts. It demonstrates a simple way to share data on the backend without a full database.
+### 2. The Lobby (`PlayerPage.tsx`)
 
-- **`React Context` (Dependency Injection):** `GameContext` and `PlayerContext` are not used for state management themselves, but rather as a clean way to pass the synchronized state and core functions (`startGame`, `executeAction`, etc.) down the component tree, avoiding prop-drilling.
+1. **Synchronized State**: In the lobby, the `players` array is the first piece of state synchronized by `@robojs/sync`'s `useSyncState` hook. Any player added or removed by one client is instantly reflected on all other clients in the same room.
+2. **Player Creation**: The `PlayerCreationForm` allows users to add players.
+  - A user can create multiple AI players but only **one** human player (enforced by `validatePlayerAddition` in `player/manager.ts`).
+  - Each player is assigned an owner ID matching the user's session ID.
+3. **Starting the Game**: The "Start Game" button calls `gameContext.startGame`. This function initializes the main `game` object, which is also a synchronized state via `useSyncState`. The app then transitions from the lobby view to the game board.
 
-### Backend API
+### 3. The Core Game Loop (Event-Driven)
 
-API endpoints are handled by `@robojs/server`. For example, the `src/api/room.ts` file manages room creation and validation. It exposes a `POST` endpoint to create a room and a `HEAD` endpoint to check if a room exists.
+The game does not run on a traditional timer-based loop. Instead, it's **entirely event-driven**, reacting to changes in the shared `game` state. The `GamePage.tsx` component orchestrates this flow.
 
-```typescript
-// Example from src/api/room.ts - creating a room
-const allRooms: string[] = (await Flashcore.get<string[]>('rooms')) ?? [];
-if (allRooms.some((room) => room === providedName)) {
-    return new Response(JSON.stringify({ message: 'Room already exists' }), { status: 409 });
-}
-await Flashcore.set<string[]>('rooms', [...allRooms, providedName]);
-```
+#### Human Player's Turn
+
+1. **UI Enablement**: The `GameBoardPage.tsx` component renders the main interface. It checks if the current player's ID matches the human player's ID and enables/disables controls accordingly.
+2. **Action Selection**:
+  - The user clicks a card in their hand (`GameHandCard.tsx`), which is stored in a local `useState` hook (`handSelected`).
+  - The user then clicks a valid target (an opponent's accumulator for an attack, or their own for a swap).
+3. **Executing the Action**: This UI interaction calls `gameContext.executeAction`, passing an `ActionConfig` object that defines the move (e.g., `{ action: 'attack', params: { ... } }`).
+
+#### AI Player's Turn
+
+1. **The Trigger**: The `useEffect` hook in `GamePage.tsx` listens for any changes to the synchronized `game` object.
+2. **Turn Check**: After each state update, this `useEffect` checks if the game is running and if the current player (`getCurrentPlayer(game)`) is an AI owned by the current user.
+3. **Strategy Execution**: If it's the AI's turn, `executeAiStrategy` (`ai/manager.ts`) is called.
+  - It builds a `Scenario` object (a complete, read-only snapshot of the game).
+  - It passes this `Scenario` to the AI's selected strategy function (e.g., `randomAttackStrategy`).
+  - The strategy function analyzes the `Scenario` and returns its desired `ActionConfig`.
+  - `executeAiStrategy` then calls the same `gameContext.executeAction` function that a human player uses.
+
+### 4. Action Resolution & Turn Advancement
+
+This is the heart of the game's rules engine, located in `src/app/modules/game/manager.ts`.
+
+1. **Central Hub (`executeAction`)**: All actions, whether from a human or AI, are processed here.
+2. **Validation (`getNextGameState`)**:
+  - This pure function is the core of the game logic. It takes the current game state and an action.
+  - It performs all necessary validation (Is it the player's turn? Is the move legal? e.g., "Can't attack with a card value higher than the accumulator's HP?").
+  - If the action is valid, it returns a **new, updated game state**. If invalid, it returns `null`.
+3. **State Update**:
+  - If `getNextGameState` returns a new state, `executeAction` commits it using `setGame()`.
+  - `@robojs/sync` detects this change and instantly broadcasts the new `game` state to all connected clients.
+4. **Turn Advancement (`advanceToNextTurn`)**:
+  - After a valid action, this function is called.
+  - It checks for win/draw conditions by seeing how many players have > 0 HP. If the game ends, it sets the `winnerId`.
+  - Otherwise, it increments the `turn` counter, skipping any eliminated players until it finds the next living player.
+5. **The Loop Continues**: This change to the `turn` number (or `winnerId`) is part of the new game state. The `useEffect` in `GamePage.tsx` detects this change, and the cycle begins again.
+
+This event-driven architecture ensures that the game state is always the single source of truth, and the UI and AI players simply *react* to its changes.
 
 ## 🚀 Deployment (Optional)
 
