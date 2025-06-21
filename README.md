@@ -2,7 +2,9 @@
 
 A real-time multiplayer web implementation of the **Boom** card game, built with [RoboJS](https://robojs.dev/) and React.
 
-> **Contribute your AI!** Anyone is more than welcome to develop new AI strategies and make a PR to add them. See the [Developing AI Strategies](#developing-ai-strategies) section below for details.
+**Boom** is a strategic card game where players eliminate opponents by destroying their life storage cards. The last player standing wins!
+
+> **Contribute your AI!** Anyone is more than welcome to develop new AI strategies and make a PR to add them. See the [Developing AI Strategies](#-developing-ai-strategies) section below for details.
 
 ## 🚀 TL;DR - Quick Start for Non-Programmers
 
